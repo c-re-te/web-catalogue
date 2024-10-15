@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricerca Opere d'Arte</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Ricerca Opere d'Arte</h1>
+        <div class="search-options">
+            <input type="text" id="authorNameInput" placeholder="Autore">
+            <ul id="titleSuggestions"></ul>
+            <input type="text" id="subjectInput" placeholder="Soggetto">
+            <ul id="artistSuggestions"></ul>
+            <input type="number" id="datingFromInput" placeholder="Da anno">
+            <ul id="yearSuggestions"></ul>
+            <input type="number" id="datingToInput" placeholder="A anno">
+            <ul id="yearSuggestions"></ul>
+        </div>
+        <button onclick="advancedSearch()">Ricerca Avanzata</button>
+        
+        <!-- Timer result -->
+        <div id="timer"></div>
+
+        <!-- Query result -->
+        <div id="results"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+

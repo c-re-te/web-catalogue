@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>CReTe PRIN</title>
+        <link rel="mask-icon" href="https://www.unitn.it:443/sites/default/files/favicon/safari-pinned-tab.svg" />
+        <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/android-chrome-192x192.png" sizes="192x192" />
+        
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+       
+        <!-- Google fonts-->
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,600;1,600&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,500;0,600;0,700;1,300;1,500;1,600;1,700&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+
+        <link href="css/mycss.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+
+        <!-- Navigation-->
+
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="unitn-navbar">
+            <div class="container px-5 d-flex align-items-center">
+                <div><h5 style="line-height: 1.5;"><a href="https://www.unitn.it/" style="color: white; text-decoration: none;">Università di Trento</a></h5></div>
+            </div>
+        </nav>
+
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm second-navbar" id="mainNav">
+            <div class="container px-5">
+                <div>
+                    <a class="navbar-brand fw-bold" href="index.html#page-top" id="nav-logo">C.Re.Te.</a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="bi-list"></i>
+                </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto me-4 my-3 my-lg-0">
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle" href="project.html" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Scopri il progetto
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="project.html#page-top">Obiettivi</a></li>
+                            <li><a class="dropdown-item" href="project.html#attività">Attività</a></li>
+                            <li><a class="dropdown-item" href="project.html#team">Team</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item open-modal"><a class="nav-link me-lg-3">Visualizzazioni</a></li>
+                    <li class="nav-item open-modal"><a class="nav-link me-lg-3">Bibliografia</a></li>
+                </ul>
+                <button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" onclick="location.href='search.html'">
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-box-arrow-up-right me-2"></i>
+                        <span class="small">Ricerca nel catalogo</span>
+                    </span>
+                </button>
+            </div>
+            </div>
+        </nav>
+        
+        <!-- Mashead header-->
+        <header class="masthead justify-content-center">
+            <div class="container px-5">
+                <!-- <h1 class="display-4 lh-1 mb-4 text-start">Ricerca nel catalogo</h1> -->
+
+                <div class="row" style="margin-bottom: 2rem; margin-top: 1.5rem">
+                    <div class="col-lg-3 col-md-12 align-items-center">
+                        <p class="fs-5 fw-bold">Ricerca libera</p>
+                    </div> 
+                    <div class="col-lg-9 col-md-12">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Ricerca un'opera tramite testo libero" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12 d-flex align-items-center">
+                        <p class="fs-5 fw-bold">Parametri di ricerca avanzata</p>
+                    </div> 
+                </div>
+                
+                <!-- AUTORE -->
+                <div class="row mb-3">
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <p class="fs-5 mb-0">Autore</p>
+                    </div> 
+                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control" placeholder="Ricerca per autore" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- LOCALIZZAZIONE -->
+                <div class="row mb-3">
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <p class="fs-5 mb-0">Localizzazione</p>
+                    </div> 
+                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control" placeholder="Ricerca per luogo di conservazione dell'opera (attuale o passato)" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DATAZIONE -->
+                <div class="row mb-3">
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <p class="fs-5 mb-0">Datazione</p>
+                    </div> 
+
+                    <div class="col-lg-1 col-sm-3 d-flex align-items-center">
+                        <p class="fs-5 mb-0" style="font-weight: 300">da: </p>
+                    </div>
+                    <div class="col-lg-3 col-sm-9 d-flex align-items-center">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control" placeholder="Da anno" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-1 col-sm-12 d-flex align-items-center"><p></p></div>
+
+                    <div class="col-lg-1 col-sm-3 d-flex align-items-center">
+                        <p class="fs-5 mb-0" style="font-weight: 300">a: </p>
+                    </div>
+                    <div class="col-lg-3 col-sm-9 d-flex align-items-center">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control" placeholder="A anno" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SOGGETTO -->
+                <div class="row mb-3">
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <p class="fs-5 mb-0">Soggetto / Denominazione</p>
+                    </div> 
+                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control" placeholder="Ricerca per soggetto" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- OBJ ID -->
+                <div class="row mb-3">
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <p class="fs-5 mb-0">Tipologia dell'artefatto</p>
+                    </div> 
+                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
+                        <select class="form-select w-100" id="inputGroupSelect01">
+                            <option selected>Indicare la tipologia di oggetto da ricercare</option>
+                            <option value="1">Testa</option>
+                            <option value="2">Busto</option>
+                            <option value="3">Statua</option>
+                            <option value="4">Gruppo scultoreo</option>
+                            <option value="5">Rilievo</option>
+                            <option value="6">Altare</option>
+                            <option value="7">Monumento</option>
+                            <option value="8">Formella architettonica</option>
+                            <option value="9">Decorazione architettonica</option>
+                        </select>   
+                    </div>
+                </div>
+                
+                <!-- TECNICA -->
+                <div class="row mb-3">
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <p class="fs-5 mb-0">Tecnica</p>
+                    </div> 
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                            <label class="form-check-label" for="inlineRadio1">Modellazione</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                            <label class="form-check-label" for="inlineRadio2">A stampo</label>
+                        </div>
+                    </div>
+                
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <p class="fs-5 mb-0">Lavorazione della superficie</p>
+                    </div> 
+                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
+                        <select class="form-select w-100" id="inputGroupSelect01">
+                            <option selected>Indicare la lavorazione</option>
+                            <option value="1">Policroma</option>
+                            <option value="2">Invetriata</option>
+                            <option value="3">Dorata</option>
+                            <option value="4">Patinata</option>
+                            <option value="5">Scialbata</option>
+                            <option value="6">Policromia perduta</option>
+                            <option value="7">Non policroma</option>
+                        </select> 
+                    </div>
+                </div>
+                
+
+                <div class="row justify-content-center" style="margin-top: 4rem">
+                    <div class="col-4 d-flex justify-content-center">
+                        <button type="button" class="btn btn-primary open-modal fs-5">Ricerca <i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+                
+                    
+            </div>
+        </header>
+
+        <!-- Footer-->
+        <footer class="bg-black py-5 animate-on-scroll">
+            <div class="container px-5">
+                <div class="row gx-5 justify-content-lg-between">
+                    
+                    <div class="col-lg-7 col-sm-12 mb-4">
+                        <h3 style="color: white">Partner</h3>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-12">
+                                <img class="institutional-logo" src="assets/img/loghi/unitn/unitn-lettere.png" height="96">
+                            </div>
+
+                            <div class="col-lg-6 col-sm-12">
+                                <img class="institutional-logo" src="assets/img/loghi/unibo/unibo-dipartimento.png" height="96">
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="col-lg-5 col-sm-12 mb-4">
+                        <h3 style="color: white">Sitemap</h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <p><a href="project.html">Progetto</a></p>
+                                <p><a href="search.html">Ricerca nel catalogo</a></p>
+                                <p class="open-modal"><a>Visualizzazioni</a></p> 
+                            </div>
+
+                            <div class="col-6">
+                                <p class="open-modal"><a>Bibliografia</a></p>
+                                <p class="open-modal"><a>Privacy</a></p>
+                                <p class="open-modal"><a>Terms</a></p>
+                            </div>
+
+                        </div>
+                        
+                        
+                    </div>
+
+                    <hr>
+                    
+                    <p>Il progetto C.Re.Te. (Toward a Catalogue of Renaissance Terracotta Sculpture in North Italy) è finanziato dall’Unione Europea - Next Generation EU - Piano Nazionale di Ripresa e Resilienza, Missione 4 - Componente C2 - Investimento 1.1 "Fondo per il Programma Nazionale di Ricerca e Progetti di Rilvante Interesse Nazionale" (PRIN) - Codice Progetto: P2022B8XKA - Codice CUP: E53D23018660001</p>
+
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <img class="institutional-logo" src="assets/img/loghi/pnrr-nextgeu/finanziamento-ue.png" height="64">
+                        </div>
+                    
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <img class="institutional-logo" src="assets/img/loghi/pnrr-nextgeu/downloaded/mur.png" height="64">
+                        </div>
+                    
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <img class="institutional-logo" src="assets/img/loghi/pnrr-nextgeu/downloaded/italiadomani_logo_white.png" height="64">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </footer>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lavori in corso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"> Questa sezione del sito è ancora in costruzione. Sarà disponibile a breve</div>
+                <!-- 
+                <div class="modal-footer">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button> 
+                </div> -->
+            </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+
+        <script>
+            const sliderMin = document.getElementById("slider-min");
+            const sliderMax = document.getElementById("slider-max");
+            const inputMinDate = document.getElementById("input-min-date");
+            const inputMaxDate = document.getElementById("input-max-date");
+        
+            function updateSlidersFromInputs() {
+                sliderMin.value = inputMinDate.value;
+                sliderMax.value = inputMaxDate.value;
+            }
+        
+            function updateInputsFromSliders() {
+                inputMinDate.value = sliderMin.value;
+                inputMaxDate.value = sliderMax.value;
+            }
+        
+            // Event listener per aggiornare le etichette quando si usa il cursore
+            sliderMin.addEventListener("input", function() {
+                if (parseInt(sliderMin.value) > parseInt(sliderMax.value)) {
+                    sliderMin.value = sliderMax.value; // Limita il cursore minimo
+                }
+                updateInputsFromSliders();
+            });
+        
+            sliderMax.addEventListener("input", function() {
+                if (parseInt(sliderMax.value) < parseInt(sliderMin.value)) {
+                    sliderMax.value = sliderMin.value; // Limita il cursore massimo
+                }
+                updateInputsFromSliders();
+            });
+        
+            // Event listener per aggiornare i cursori quando si modifica l'input
+            inputMinDate.addEventListener("input", function() {
+                if (parseInt(inputMinDate.value) > parseInt(inputMaxDate.value)) {
+                    inputMinDate.value = inputMaxDate.value; // Limita l'input minimo
+                }
+                updateSlidersFromInputs();
+            });
+        
+            inputMaxDate.addEventListener("input", function() {
+                if (parseInt(inputMaxDate.value) < parseInt(inputMinDate.value)) {
+                    inputMaxDate.value = inputMinDate.value; // Limita l'input massimo
+                }
+                updateSlidersFromInputs();
+            });
+        
+            // Inizializza gli input con i valori di partenza dei cursori
+            updateInputsFromSliders();
+        </script>
+
+        <script src="js/generaljs.js"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>

@@ -2169,9 +2169,9 @@ textarea.form-control-lg {
   }
 }
 .form-select:focus {
-  border-color: #949bf8;
+  border-color: #8C0B20 /* Original #949bf8*/;
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(41, 55, 240, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(250, 231, 234, 0.25)/* Original rgba(41, 55, 240, 0.25)*/;
 }
 .form-select[multiple], .form-select[size]:not([size="1"]) {
   padding-right: 0.75rem;
@@ -2251,7 +2251,7 @@ textarea.form-control-lg {
 .form-check-input:focus {
   border-color: #949bf8;
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(41, 55, 240, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(250, 231, 234, 0.25) /* Original: rgba(41, 55, 240, 0.25)*/;
 }
 .form-check-input:checked {
   background-color: #B10B25; /*Originally: #2937f0*/;

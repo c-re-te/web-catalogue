@@ -158,6 +158,17 @@ footer a:hover {
     height: 100vh;
     display: flex;
     align-items: center;
+}
+
+@media (max-width: 768px) {
+    .masthead {
+        height: auto;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+}
+
+#index-masthead {
     color: white;
     background-image: 
         linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), /* Gradiente regolato */

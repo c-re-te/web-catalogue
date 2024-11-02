@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 @font-face {
     font-family: 'FrizQuadrataRegular';
     src: url('../assets/font/Friz Quadrata Regular/Friz Quadrata Regular.ttf') format('truetype');
@@ -5,22 +7,8 @@
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'HelveticaCondensedRegular';
-    src: url('../assets/font/Helvetica Condensed Regular/Helvetica Condensed Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'HelveticaNeue';
-    src: url('../assets/font/Helvetica Neue/HelveticaNeueRoman.otf') format('otf');
-    font-weight: normal;
-    font-style: normal;
-}
-
 body {
-    font-family: 'HelveticaCondensedRegular', sans-serif;
+    font-family: 'Noto Sans', sans-serif !important;
 }
 
 h1, #nav-logo, .modal-title, .myquote {
@@ -135,6 +123,24 @@ footer a:hover {
 .icon-btn {
     color: white;
 }
+
 .cardbtn-team:hover {
     color: white;
+}
+
+/* Navbar */
+
+#unitn-navbar {
+    background-color: #B10B25;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.second-navbar {
+    top: 3rem;
+    z-index: 1030;
+}
+
+#nav-logo {
+    font-size: 1.75em;
 }

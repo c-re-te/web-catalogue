@@ -308,56 +308,6 @@
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
 
-        <script>
-            const sliderMin = document.getElementById("slider-min");
-            const sliderMax = document.getElementById("slider-max");
-            const inputMinDate = document.getElementById("input-min-date");
-            const inputMaxDate = document.getElementById("input-max-date");
-        
-            function updateSlidersFromInputs() {
-                sliderMin.value = inputMinDate.value;
-                sliderMax.value = inputMaxDate.value;
-            }
-        
-            function updateInputsFromSliders() {
-                inputMinDate.value = sliderMin.value;
-                inputMaxDate.value = sliderMax.value;
-            }
-        
-            // Event listener per aggiornare le etichette quando si usa il cursore
-            sliderMin.addEventListener("input", function() {
-                if (parseInt(sliderMin.value) > parseInt(sliderMax.value)) {
-                    sliderMin.value = sliderMax.value; // Limita il cursore minimo
-                }
-                updateInputsFromSliders();
-            });
-        
-            sliderMax.addEventListener("input", function() {
-                if (parseInt(sliderMax.value) < parseInt(sliderMin.value)) {
-                    sliderMax.value = sliderMin.value; // Limita il cursore massimo
-                }
-                updateInputsFromSliders();
-            });
-        
-            // Event listener per aggiornare i cursori quando si modifica l'input
-            inputMinDate.addEventListener("input", function() {
-                if (parseInt(inputMinDate.value) > parseInt(inputMaxDate.value)) {
-                    inputMinDate.value = inputMaxDate.value; // Limita l'input minimo
-                }
-                updateSlidersFromInputs();
-            });
-        
-            inputMaxDate.addEventListener("input", function() {
-                if (parseInt(inputMaxDate.value) < parseInt(inputMinDate.value)) {
-                    inputMaxDate.value = inputMinDate.value; // Limita l'input massimo
-                }
-                updateSlidersFromInputs();
-            });
-        
-            // Inizializza gli input con i valori di partenza dei cursori
-            updateInputsFromSliders();
-        </script>
-
         <script src="js/generaljs.js"></script>
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <!-- * *                               SB Forms JS                               * *-->

@@ -24,12 +24,12 @@ h1, #nav-logo, .modal-title, .myquote {
 }
 
 .banner-p-w {
-    font-size: 1.15em;
+    font-size: 1.2em;
     color: white
 }
 
 .banner-p {
-    font-size: 1.15em;
+    font-size: 1em;
 }
 
 .light-on-red:hover {
@@ -51,6 +51,15 @@ h1, #nav-logo, .modal-title, .myquote {
 
 .txtbtn:hover {
     color: #B10B25 !important;
+}
+
+.txtbtn-white {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.txtbtn-white:hover {
+    font-weight: bold !important;
 }
 
 .colbtn {
@@ -143,4 +152,16 @@ footer a:hover {
 
 #nav-logo {
     font-size: 1.75em;
+}
+
+.masthead {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    color: white;
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), /* Gradiente regolato */
+        url('../assets/img/home-masthead-nic-d-arc-detail.jpg');
+    background-size: cover;
+    background-position: center;
 }

@@ -172,7 +172,7 @@ footer a:hover {
     color: white;
     background-image: 
         linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), /* Gradiente regolato */
-        url('../assets/img/home-masthead-nic-d-arc-detail.jpg');
+        url('../assets/img/img-index/masthead-nic-d-arc-detail.jpg');
     background-size: cover;
     background-position: center;
 }

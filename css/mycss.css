@@ -176,3 +176,15 @@ footer a:hover {
     background-size: cover;
     background-position: center;
 }
+
+/*
+.entry-label {
+    padding-left: 1em;
+}
+*/
+
+.thumbnail-img {
+    object-fit: cover;
+    height: 150px; /* Imposta l'altezza delle miniature */
+    width: 150px; /* Imposta la larghezza delle miniature */
+  }

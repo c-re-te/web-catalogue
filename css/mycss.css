@@ -11,9 +11,11 @@ body {
     font-family: 'Noto Sans', sans-serif !important;
 }
 
+/*
 h1, #nav-logo, .modal-title, .myquote {
     font-family: 'FrizQuadrataRegular', sans-serif !important;
 }
+*/
 
 .masthead-woa-img {
     height: 35rem
@@ -189,3 +191,50 @@ footer a:hover {
     height: 200px; /* Imposta l'altezza delle miniature */
     width: 200px; /* Imposta la larghezza delle miniature */
   }
+
+/* DATATABLES */
+
+/* Allinea il testo a sinistra per tutte le celle */
+table.dataTable td, table.dataTable th {
+    text-align: left !important;
+}
+
+/* Layout personalizzato per Show e Search */
+.dataTables_wrapper .dataTables_length, 
+.dataTables_wrapper .dataTables_filter {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+.dataTables_wrapper .dataTables_length {
+    float: left;
+}
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+}
+
+/* Spaziatura migliorata per la paginazione */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.25rem;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #007bff;
+    color: white !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #007bff;
+    color: white !important;
+}
+
+/* Nascondi le frecce affiancate di ordinamento */
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before {
+    display: none !important;
+}

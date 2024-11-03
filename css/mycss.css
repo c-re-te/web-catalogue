@@ -185,6 +185,6 @@ footer a:hover {
 
 .thumbnail-img {
     object-fit: cover;
-    height: 150px; /* Imposta l'altezza delle miniature */
-    width: 150px; /* Imposta la larghezza delle miniature */
+    height: 200px; /* Imposta l'altezza delle miniature */
+    width: 200px; /* Imposta la larghezza delle miniature */
   }

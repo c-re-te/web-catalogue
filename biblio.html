@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Ricerca avanzata - C.Re.Te.</title>
+        <title>Bibliografia - C.Re.Te.</title>
         <link rel="mask-icon" href="https://www.unitn.it:443/sites/default/files/favicon/safari-pinned-tab.svg" />
         <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/favicon-16x16.png" sizes="16x16" />
         <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/favicon-32x32.png" sizes="32x32" />
@@ -27,6 +27,9 @@
         <link href="css/styles.css" rel="stylesheet" />
 
         <link href="css/mycss.css" rel="stylesheet" />
+
+        <!-- Datatable -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
     </head>
     <body id="page-top">
 
@@ -56,12 +59,12 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="project.html#page-top">Obiettivi</a></li>
                             <li><a class="dropdown-item" href="project.html#attività">Attività</a></li>
-                            <li><a class="dropdown-item" href="project.html#team">Team</a></li>
+                            <li class="nav-item"><a href="biblio.html" class="nav-link me-lg-3">Bibliografia</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item open-modal"><a class="nav-link me-lg-3">Visualizzazioni</a></li>
-                    <li class="nav-item"><a href="biblio.html" class="nav-link me-lg-3">Bibliografia</a></li>
+                    <li class="nav-item open-modal"><a class="nav-link me-lg-3">Bibliografia</a></li>
                 </ul>
                 <button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" onclick="location.href='search.html'">
                     <span class="d-flex align-items-center">
@@ -72,156 +75,34 @@
             </div>
             </div>
         </nav>
-        
-        <!-- Mashead header-->
-        <header class="masthead justify-content-center animate-on-scroll" style="margin-top: 2rem;">
-            <div class="container px-5" style="padding-top: 3em;">
-                <!-- <h1 class="display-4 lh-1 mb-4 text-start">Ricerca nel catalogo</h1> -->
 
-                <div class="row" style="margin-bottom: 2rem; margin-top: 1.5rem">
-                    <div class="col-lg-3 col-md-12 align-items-center">
-                        <p class="fs-5 fw-bold">Ricerca libera</p>
-                    </div> 
-                    <div class="col-lg-9 col-md-12">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Ricerca un'opera tramite testo libero" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        </div>
-                    </div>
+        <section class="text-center animate-on-scroll" id="obiettivi" style="margin-top: 90px; padding-bottom: 1em !important;">
+            <div class="container px-5">
+                <div class="row gx-5">
+                    <h1 class="display-4 lh-1 mb-4 text-start">Bibliografia</h1>
+                    <p class="banner-p text-start fs-5"> In questa sezione sono disponibili le fonti e gli studi più importanti per poter approfondire il fenomeno della produzione terracotta rinascimentale nel Nord Italia. È possibile visualizzare la lista completa secondo un ordine alfabetico (cognome del primo autore) o cronologico</p>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-12 d-flex align-items-center">
-                        <p class="fs-5 fw-bold">Parametri di ricerca avanzata</p>
-                    </div> 
-                </div>
-                
-                <!-- AUTORE -->
-                <div class="row mb-3">
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <p class="fs-5 mb-0">Autore</p>
-                    </div> 
-                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
-                        <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Ricerca per autore" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- LOCALIZZAZIONE -->
-                <div class="row mb-3">
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <p class="fs-5 mb-0">Localizzazione</p>
-                    </div> 
-                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
-                        <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Ricerca per luogo di conservazione dell'opera (attuale o passato)" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- DATAZIONE -->
-                <div class="row mb-3">
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <p class="fs-5 mb-0">Datazione</p>
-                    </div> 
-
-                    <div class="col-lg-1 col-sm-3 d-flex align-items-center">
-                        <p class="fs-5 mb-0" style="font-weight: 300">da: </p>
-                    </div>
-                    <div class="col-lg-3 col-sm-9 d-flex align-items-center">
-                        <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Da anno" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-1 col-sm-12 d-flex align-items-center"><p></p></div>
-
-                    <div class="col-lg-1 col-sm-3 d-flex align-items-center">
-                        <p class="fs-5 mb-0" style="font-weight: 300">a: </p>
-                    </div>
-                    <div class="col-lg-3 col-sm-9 d-flex align-items-center">
-                        <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="A anno" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        </div>
-                    </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button class="btn btn-primary me-md-2" type="button">Per nome</button>
+                    <button class="btn btn-primary" type="button">Per data</button>
                 </div>
 
-                <!-- SOGGETTO -->
-                <div class="row mb-3">
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <p class="fs-5 mb-0">Soggetto / Denominazione</p>
-                    </div> 
-                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
-                        <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Ricerca per soggetto" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        </div>
-                    </div>
-                </div>
                 
-                <!-- OBJ ID -->
-                <div class="row mb-3">
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <p class="fs-5 mb-0">Definizione dell'oggetto</p>
-                    </div> 
-                    <div class="col-lg-9 col-md-12 d-flex align-items-center">
-                        <select class="form-select w-100" id="inputGroupSelect01">
-                            <option selected>Indicare la tipologia di oggetto da ricercare</option>
-                            <option value="1">Testa</option>
-                            <option value="2">Busto</option>
-                            <option value="3">Statua</option>
-                            <option value="4">Gruppo scultoreo</option>
-                            <option value="5">Rilievo</option>
-                            <option value="6">Altare</option>
-                            <option value="7">Monumento</option>
-                            <option value="8">Formella architettonica</option>
-                            <option value="9">Decorazione architettonica</option>
-                        </select>   
-                    </div>
-                </div>
                 
-                <!-- TECNICA -->
-                <div class="row mb-3">
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <p class="fs-5 mb-0">Tecnica</p>
-                    </div> 
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                            <label class="form-check-label" for="inlineRadio1">Modellazione</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                            <label class="form-check-label" for="inlineRadio2">A stampo</label>
-                        </div>
+                <div class="row gx-5 justify-content-center">
+                    <div class="col-lg-4 col-md-12">
+                        <p class="fs-5 fw-bold">Visualizza per:</p>
                     </div>
-                
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <p class="fs-5 mb-0">Lavorazione della superficie</p>
-                    </div> 
-                    <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <select class="form-select w-100" id="inputGroupSelect01">
-                            <option selected>Indicare la lavorazione</option>
-                            <option value="1">Policroma</option>
-                            <option value="2">Invetriata</option>
-                            <option value="3">Dorata</option>
-                            <option value="4">Patinata</option>
-                            <option value="5">Scialbata</option>
-                            <option value="6">Policromia perduta</option>
-                            <option value="7">Non policroma</option>
-                        </select> 
-                    </div>
-                </div>
-                
+                    <div class="col-lg-4 col-md-12">
 
-                <div class="row justify-content-center" style="margin-top: 2rem">
-                    <div class="col-4 d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary open-modal fs-5">Ricerca <i class="bi bi-search"></i></button>
+                    </div>
+                    <div class="col-lg-4 col-md-12">
+
                     </div>
                 </div>
-                
-                    
             </div>
-        </header>
+        </section>
 
         <!-- Footer-->
         <footer class="bg-black py-5 animate-on-scroll">
@@ -309,6 +190,9 @@
         <script src="js/scripts.js"></script>
 
         <script src="js/generaljs.js"></script>
+
+        <!-- Datatable -->
+        <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <!-- * *                               SB Forms JS                               * *-->
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->

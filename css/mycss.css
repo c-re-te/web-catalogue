@@ -238,3 +238,26 @@ table.dataTable thead .sorting_asc:before,
 table.dataTable thead .sorting_desc:before {
     display: none !important;
 }
+
+:root {
+    --carousel-img-height: 35rem; /* Altezza standard per le immagini grandi */
+    --carousel-thumbnail-height: 5rem; /* Altezza per le miniature */
+}
+
+/* Assicura che tutte le immagini attive abbiano le stesse dimensioni */
+.carousel-inner img {
+    height: var(--carousel-img-height);
+    object-fit: contain;
+}
+
+/* Stile per le miniature */
+.carousel-thumbnails img {
+    width: 5rem;
+    height: var(--carousel-thumbnail-height);
+    object-fit: cover;
+    cursor: pointer;
+}
+.carousel-indicators {
+    display: flex;
+    justify-content: center;
+}

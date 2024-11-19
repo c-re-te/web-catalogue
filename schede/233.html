@@ -61,18 +61,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto me-4 my-3 my-lg-0">
-                    <li class="nav-item dropdown me-2">
-                        <a class="nav-link dropdown-toggle" href="../project.html" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Scopri il progetto
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="../project.html#page-top">Obiettivi</a></li>
-                            <li><a class="dropdown-item" href="../project.html#attività">Attività</a></li>
-                            <li><a class="dropdown-item" href="../project.html#team">Team</a></li>
-                        </ul>
-                    </li>
-
+                    <li class="nav-item"><a href="../project.html" class="nav-link me-lg-3">Il progetto</a></li>
                     <li class="nav-item open-modal"><a class="nav-link me-lg-3">Visualizzazioni</a></li>
                     <li class="nav-item"><a class="nav-link me-lg-3" href="../biblio.html">Bibliografia</a></li>
                 </ul>
@@ -90,7 +79,67 @@
         <div class="container px-5">
             <h2 class="lh-1 mb-4 text-start">Gian Marco Cavalli (?), Compianto sul Cristo morto</h2>
             <div class="row gx-5 justify-content-center mb-3">
-                <img src="../assets/img/img-schede/233-a.jpg" class="img-entry" style="width: 50rem;">
+                <!-- <img src="../assets/img/img-schede/233-a.jpg" class="img-entry" style="width: 50rem;"> -->
+
+                <!-- Carousel wrapper -->
+                <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel" style="margin-bottom: 3rem;">
+                    <!-- Slides -->
+                    <div class="carousel-inner mb-5">
+                        <div class="carousel-item active">
+                            <img src="../assets/img/img-schede/233-a.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="../assets/img/img-schede/233-b-1.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="../assets/img/img-schede/233-b-2.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="../assets/img/img-schede/233-b-3.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="../assets/img/img-schede/233-b-4.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="../assets/img/img-schede/233-b-5.jpg" class="d-block w-100" alt="...">
+                        </div>
+                    </div>
+                
+                    <!-- Controls  --> 
+                    <!--
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    -->
+                    
+                    <!-- Thumbnails -->
+                    <div class="row carousel-thumbnails  justify-content-center">
+                        <div class="col-sm-1">
+                            <img src="../assets/img/img-schede/233-a.jpg" alt="Thumbnail 1" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active">
+                        </div>
+                        <div class="col-sm-1">
+                            <img src="../assets/img/img-schede/233-b-1.jpg" alt="Thumbnail 2" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1">
+                        </div>
+                        <div class="col-sm-1">
+                            <img src="../assets/img/img-schede/233-b-2.jpg" alt="Thumbnail 3" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2">
+                        </div>
+                        <div class="col-sm-1">
+                            <img src="../assets/img/img-schede/233-b-3.jpg" alt="Thumbnail 2" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3">
+                        </div>
+                        <div class="col-sm-1">
+                            <img src="../assets/img/img-schede/233-b-4.jpg" alt="Thumbnail 3" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4">
+                        </div>
+                        <div class="col-sm-1">
+                            <img src="../assets/img/img-schede/233-b-5.jpg" alt="Thumbnail 2" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5">
+                        </div>
+                    </div>
+                </div>
+                <!-- Carousel wrapper -->
             </div>
 
             <p class="fs-5 fw-bold mt-4" style="color: #B10B25 !important;">AUTORE</p>
@@ -181,12 +230,11 @@
             </div>
 
             <div class="row gx-5 mt-2 entry-label">
-                <p class="fs-5 fw-bold">Localizzazioni precedenti</p>
                 <div class="col-lg-3">
-                    <p class="fs-5 fw-bold"><span>1490</span> - <span>1808</span></p>
+                    <p class="fs-5 fw-bold">Localizzazioni precedenti</p>
                 </div>
                 <div class="col-lg-9">
-                    <p class="fs-5">Convento dell'Annunciata, Medole (MN)</p>
+                    <p class="fs-5"><span>1490</span> - <span>1808</span>: Convento dell'Annunciata, Medole (MN)</p>
                 </div>
             </div>
 
@@ -222,7 +270,6 @@
                 </div>
             </div>
 
-            <p class="fs-5 fw-bold mt-4" style="color: #B10B25 !important;">RISORSE AGGIUNTIVE</p>
             <div class="row gx-5  entry-label">
                 <div class="col-lg-3">
                     <p class="fs-5 fw-bold">Opere associate</p>
@@ -231,24 +278,18 @@
                     <p class="fs-5"><a>Compianto di Medole <i class="bi bi-box-arrow-up-right"></i></a></p>
                 </div>
             </div>
-            <div class="row gx-5 justify-content-center mt-4">
-                <!-- Thumbnail Images -->
-                <div class="col-auto">
-                  <img src="../assets/img/img-schede/233-b-1.jpg" class="thumbnail-img img-thumbnail" alt="Thumbnail 1" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-src="../assets/img/img-schede/233-b-1.jpg">
+            
+            <!-- 
+            <div class="row gx-5  entry-label">
+                <p class="fs-5 fw-bold mt-4" style="color: #B10B25 !important;">RISORSE AGGIUNTIVE</p>
+                <div class="col-lg-3">
+                    <p class="fs-5 fw-bold">Catalogo Zeri</p>
                 </div>
-                <div class="col-auto">
-                  <img src="../assets/img/img-schede/233-b-2.jpg" class="thumbnail-img img-thumbnail" alt="Thumbnail 2" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-src="../assets/img/img-schede/233-b-2.jpg">
-                </div>
-                <div class="col-auto">
-                  <img src="../assets/img/img-schede/233-b-3.jpg" class="thumbnail-img img-thumbnail" alt="Thumbnail 3" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-src="../assets/img/img-schede/233-b-3.jpg">
-                </div>
-                <div class="col-auto">
-                  <img src="../assets/img/img-schede/233-b-4.jpg" class="thumbnail-img img-thumbnail" alt="Thumbnail 4" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-src="../assets/img/img-schede/233-b-4.jpg">
-                </div>
-                <div class="col-auto">
-                  <img src="../assets/img/img-schede/233-b-5.jpg" class="thumbnail-img img-thumbnail" alt="Thumbnail 5" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-src="../assets/img/img-schede/233-b-5.jpg">
+                <div class="col-lg-9">
+                    <p class="fs-5"><a>Scheda <i class="bi bi-box-arrow-up-right"></i></a></p>
                 </div>
             </div>
+            -->      
 
         </div>
     </section>

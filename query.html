@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Risultati della ricerca</title>
+        <link rel="mask-icon" href="https://www.unitn.it:443/sites/default/files/favicon/safari-pinned-tab.svg" />
+        <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" href="https://www.unitn.it:443/sites/default/files/favicon/android-chrome-192x192.png" sizes="192x192" />
+        
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+       
+        <!-- Google fonts-->
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,600;1,600&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,500;0,600;0,700;1,300;1,500;1,600;1,700&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+
+        <link href="css/mycss.css" rel="stylesheet" />
+
+        <!-- Other scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    </head>
+    <body id="page-top">
+
+        <!-- Navigation-->
+
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="unitn-navbar">
+            <div class="container px-5 d-flex align-items-center">
+                <div><h5 style="line-height: 1.5;"><a href="https://www.unitn.it/" style="color: white; text-decoration: none;">Università di Trento</a></h5></div>
+            </div>
+        </nav>
+
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm second-navbar" id="mainNav">
+            <div class="container px-5">
+                <div>
+                    <a class="navbar-brand fw-bold" href="index.html#page-top" id="nav-logo" style="font-family: 'Newsreader' !important;">C.Re.Te.</a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="bi-list"></i>
+                </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto me-4 my-3 my-lg-0">
+                    <li class="nav-item"><a href="project.html" class="nav-link me-lg-3">Il progetto</a></li>
+                    <li class="nav-item open-modal"><a class="nav-link me-lg-3">Visualizzazioni</a></li>
+                    <li class="nav-item"><a href="biblio.html" class="nav-link me-lg-3">Bibliografia</a></li>
+                </ul>
+                <button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" onclick="location.href='search.html'">
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-box-arrow-up-right me-2"></i>
+                        <span class="small">Ricerca nel catalogo</span>
+                    </span>
+                </button>
+            </div>
+            </div>
+        </nav>
+
+        <!-- Resuls description -->
+        <section class="animate-on-scroll" id="obiettivi" style="margin-top: 90px; padding-bottom: 1em !important;">
+            <div class="container px-5">
+                <div class="row gx-5">
+
+                    <!-- Main Col -->
+                    <div class="col-lg-8 col-md-12">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                              <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                              <li class="breadcrumb-item"><a href="search.html">Ricerca avanzata</a></li>
+                              <li class="breadcrumb-item active" aria-current="page">Risultati</li>
+                            </ol>
+                        </nav>                        
+                        <p class="fs-5 fw-bold">Risultati della ricerca</p>
+
+                        <!-- Lista per mostrare i risultati -->
+                        
+                        <!-- <div class="col-md-2 d-flex justify-content-center align-items-center colbtn open-modal">
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+                                -->
+
+                        <div class="card mb-1">
+                            <div class="row g-0">
+                                <div class="col-md-4 col-sm-12">
+                                    <img src="assets/img/fondulis-hand.jpg" class="img-fluid rounded-start query-card-img" alt="...">
+                                </div>
+                                <div class="col-md-8 col-sm-12">
+                                    <div class="card-body">
+                                        <p class="card-text fw-bold">Autore di esempio </p>
+                                        <p class="card-text fw-bold"><a href="..." class="query-result-obj-id">Oggetto di esempio</a></p>
+                                        <p class="card-text">1456 - 1463</p>
+                                        <p class="card-text">Museo Civico di Crema e del Cremasco, Crema (CR)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <ul class="list-group" id="resultsList"></ul>
+
+                        <!-- Paginazione -->
+                        <nav class="mt-2">
+                            <ul class="pagination justify-content-center" id="pagination"></ul>
+                        </nav>
+                    </div>
+
+                    <!-- Sidebar with filters -->
+                    <div class="col-lg-4 col-md-12">
+                        <p class="fs-5">Attiva filtri aggiuntivi</p>
+                        <p style="font-size: 1em; font-weight: 400;">Esplora l'attuale localizzazione delle opere</p>
+                        <img src="https://openmaptiles.org/img/home-banner-map.png" class="img-fluid" alt="Mappa delle opere">
+                        <div class="accordion mt-2" id="accordionQuery">
+                       
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer-->
+        <footer class="bg-black py-5 animate-on-scroll">
+            <div class="container px-5">
+                <div class="row gx-5 justify-content-lg-between">
+                    
+                    <div class="col-lg-7 col-sm-12 mb-4">
+                        <h3 style="color: white">Partner</h3>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-12">
+                                <img class="institutional-logo" src="assets/img/loghi/unitn/unitn-lettere.png" height="96">
+                            </div>
+
+                            <div class="col-lg-6 col-sm-12">
+                                <img class="institutional-logo" src="assets/img/loghi/unibo/unibo-dipartimento.png" height="96">
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="col-lg-5 col-sm-12 mb-4">
+                        <h3 style="color: white">Sitemap</h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <p><a href="project.html">Progetto</a></p>
+                                <p><a href="search.html">Ricerca nel catalogo</a></p>
+                                <p class="open-modal"><a>Visualizzazioni</a></p> 
+                            </div>
+
+                            <div class="col-6">
+                                <p><a href="biblio.html">Bibliografia</a></p>
+                                <p class="open-modal"><a>Privacy</a></p>
+                                <p class="open-modal"><a>Terms</a></p>
+                            </div>
+
+                        </div>
+                        
+                        
+                    </div>
+
+                    <hr>
+                    
+                    <p>Il progetto C.Re.Te. (Toward a Catalogue of Renaissance Terracotta Sculpture in North Italy) è finanziato dall’Unione Europea - Next Generation EU - Piano Nazionale di Ripresa e Resilienza, Missione 4 - Componente C2 - Investimento 1.1 "Fondo per il Programma Nazionale di Ricerca e Progetti di Rilvante Interesse Nazionale" (PRIN) - Codice Progetto: P2022B8XKA - Codice CUP: E53D23018660001</p>
+
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <img class="institutional-logo" src="assets/img/loghi/pnrr-nextgeu/finanziamento-ue.png" height="64">
+                        </div>
+                    
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <img class="institutional-logo" src="assets/img/loghi/pnrr-nextgeu/downloaded/mur.png" height="64">
+                        </div>
+                    
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <img class="institutional-logo" src="assets/img/loghi/pnrr-nextgeu/downloaded/italiadomani_logo_white.png" height="64">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </footer>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lavori in corso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"> Questa sezione del sito è ancora in costruzione. Sarà disponibile a breve</div>
+                <!-- 
+                <div class="modal-footer">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button> 
+                </div> -->
+            </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <script src="js/mapleaflet.js"></script>
+        <script src="js/queryjs.js"></script>
+
+        <script src="js/generaljs.js"></script>
+    </body>
+</html>

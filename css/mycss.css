@@ -38,10 +38,8 @@ h1, #nav-logo, .modal-title, .myquote {
     color: #640817 !important;
 }
 
-.card {
-    height: 100%; /* Ensures that the card takes up full height */
-  }
-  .card-img-top {
+
+.card-img-top {
     height: 12.5rem; /* Sets the height of the image */
     object-fit: cover; /* Ensures the image fits within the designated height without distorting */
   }
@@ -260,4 +258,27 @@ table.dataTable thead .sorting_desc:before {
 .carousel-indicators {
     display: flex;
     justify-content: center;
+}
+
+#accordionQuery .accordion-item .accordion-header {
+    font-family: 'Noto Sans', sans-serif !important;
+}
+
+#accordionQuery .accordion-item .accordion-header .accordion-button {
+    font-weight: bold !important;
+}
+
+#accordionQuery .accordion-item .accordion-body {
+    font-family: 'Noto Sans', sans-serif !important;
+}
+
+.query-card-img {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+}
+
+.accordion-query-body {
+    height: 16rem;
+    overflow-y: scroll;
 }

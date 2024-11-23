@@ -49,7 +49,7 @@ function loadCSV() {
 
             document.getElementById("tot-results").innerHTML = data.length
             // Dopo aver caricato i dati, mostra la prima pagina
-            renderList(currentPage);
+            renderList(currentPage, data);
     
             const combinedAuthors = combineValues(data, 'AUTORE', 'SPECIFICHE-AUTORE');
             renderAccordionSectionFromArray(combinedAuthors, 'Autori', true);
@@ -75,8 +75,11 @@ function loadCSV() {
     });
 }
 
-// Funzione per renderizzare la lista
-function renderList(page) {
+// *************
+// ** RESULTS **
+// *************
+
+function renderList(page, data) {
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pageData = data.slice(startIndex, endIndex);
@@ -151,7 +154,11 @@ function renderList(page) {
     $('#pagination').append(paginationHtml);
 }
 
-// *** FILTERS ***
+// *************
+// ** FILTERS **
+// *************
+
+// For merged multiple columns 
 
 function combineValues(data, col1, col2) { // Combina i valori di due colonne
     return data.map(item => {
@@ -231,9 +238,8 @@ function renderAccordionSectionFromArray(values, label, bool = false) {
     $('#accordionQuery').append(accordionItem);
 }
 
-/**
- * Conta le occorrenze basate sulle colonne del dataset.
- */
+// For single columns 
+
 function countByProperties(properties) {
     const counts = {};
     data.forEach(item => {
@@ -257,9 +263,6 @@ function countByProperties(properties) {
     return counts;
 }
 
-/**
- * Crea una sezione dell'accordion basata sulle colonne di un dataset.
- */
 function renderAccordionSection(properties, label) {
     const counts = countByProperties(properties);
 
@@ -281,6 +284,45 @@ function renderAccordionSection(properties, label) {
         </div>`;
 
     $('#accordionQuery').append(accordionItem);
+}
+
+// *************
+// ** SORTING **
+// *************
+
+// Funzione per ordinare i dati in base al criterio
+function sortData() {
+    let sortedData;
+    var criteria = document.getElementById("sortSelect").value;
+
+    // Ordinamento per autore
+    if (criteria === 'author') {
+        sortedData = [...data].sort((a, b) => a.AUTORE.localeCompare(b.AUTORE)); 
+    } 
+    // Ordinamento per località
+    else if (criteria === 'location') {
+        sortedData = [...data].sort((a, b) => {
+            // Assicurati che 'LOC0-CITTA' sia presente e non nullo
+            return a['LOC0-CITTA']?.localeCompare(b['LOC0-CITTA'] || '');
+        });
+    } 
+    // Ordinamento per data (assicurati che 'DATA-FROM' sia una data valida)
+    else if (criteria === 'date') {
+        sortedData = [...data].sort((a, b) => {
+            // Converte le date in formato timestamp per il confronto
+            return new Date(a['DATA-FROM']) - new Date(b['DATA-FROM']); 
+        });
+    } 
+    // Ordinamento per oggetto
+    else if (criteria === 'object') {
+        sortedData = [...data].sort((a, b) => a.OBJID.localeCompare(b.OBJID));
+    } 
+    // Ordinamento per soggetto (corretto con localeCompare per le stringhe)
+    else if (criteria === 'subject') {
+        sortedData = [...data].sort((a, b) => a.SOGGETTO.localeCompare(b.SOGGETTO)); 
+    }
+
+    renderList(currentPage, sortedData);  // Rende la lista ordinata
 }
 
 // Carica il CSV quando la pagina viene caricata

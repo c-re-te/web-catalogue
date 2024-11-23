@@ -1,17 +1,55 @@
+function loadData() {
+    Papa.parse('./assets/data/sample-query.csv', {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+            // Carica i dati nel formato desiderato
+            data = results.data.map(row => {
+                const lat = parseFloat(row['LOC0-LAT']);
+                const lon = parseFloat(row['LOC0-LONG']);
+
+                // Verifica se latitudine e longitudine sono numeri validi
+                if (isNaN(lat) || isNaN(lon)) {
+                    console.warn(`Dati non validi per latitudine e longitudine: ${row['LOC0-LAT']}, ${row['LOC0-LONG']}`);
+                    return null; // Escludi i dati invalidi
+                }
+
+                return {
+                    AUTORE: row['AUTORE'] || '',
+                    'LOC0-CONT': row['LOC0-CONT'] || '',
+                    'LOC0-CITTA': row['LOC0-CITTA'] || '',
+                    'LOC0-PROV': row['LOC0-PROV'] || '',
+                    'DATA-FROM': row['DATA-FROM'] || '',
+                    'DATA-TO': row['DATA-TO'] || '',
+                    OBJID: row['OGGETTO-DEFINIZIONE'] || '',
+                    TECNICA: row['TECNICA'] || '',
+                    LAVORAZIONE: row['LAVORAZIONE'] || '',
+                    URL: row['ID'],
+                    // Aggiungi latitudine e longitudine solo se sono validi
+                    'LOC0-LAT': lat,
+                    'LOC0-LONG': lon
+                };
+            }).filter(item => item !== null);  // Filtra i dati nulli
+
+            console.log(data);  // Verifica i dati caricati
+
+            return data;
+        }
+    });
+}
+
 am5.ready(function() {
 
     // Create root element
-    // https://www.amcharts.com/docs/v5/getting-started/#Root_element
     var root = am5.Root.new("chartdiv");
     
     // Set themes
-    // https://www.amcharts.com/docs/v5/concepts/themes/
     root.setThemes([
       am5themes_Animated.new(root)
     ]);
     
     // Create the map chart
-    // https://www.amcharts.com/docs/v5/charts/map-chart/
     var chart = root.container.children.push(
       am5map.MapChart.new(root, {
         panX: "rotateX",
@@ -23,9 +61,7 @@ am5.ready(function() {
     var zoomControl = chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
     zoomControl.homeButton.set("visible", true);
     
-    
     // Create main polygon series for countries
-    // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
     var polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
         geoJSON: am5geodata_worldLow,
@@ -34,20 +70,16 @@ am5.ready(function() {
     );
     
     polygonSeries.mapPolygons.template.setAll({
-      fill:am5.color(0xdadada)
+      fill: am5.color(0xdadada)
     });
     
-    
     // Create point series for markers
-    // https://www.amcharts.com/docs/v5/charts/map-chart/map-point-series/
     var pointSeries = chart.series.push(am5map.ClusteredPointSeries.new(root, {}));
     
-    
     // Set clustered bullet
-    // https://www.amcharts.com/docs/v5/charts/map-chart/clustered-point-series/#Group_bullet
     pointSeries.set("clusteredBullet", function(root) {
       var container = am5.Container.new(root, {
-        cursorOverStyle:"pointer"
+        cursorOverStyle: "pointer"
       });
     
       var circle1 = container.children.push(am5.Circle.new(root, {
@@ -74,7 +106,6 @@ am5.ready(function() {
         centerX: am5.p50,
         centerY: am5.p50,
         fill: am5.color(0xffffff),
-        populateText: true,
         fontSize: "8",
         text: "{value}"
       }));
@@ -102,9 +133,36 @@ am5.ready(function() {
       });
     });
     
+    // Carica i dati e aggiungi i marker sulla mappa
+    var artData = loadData(); // Carica i dati
+    for (var i = 0; i < artData.length; i++) {
+      var artwork = artData[i];
+      addArtwork(artwork['LOC0-LONG'], artwork['LOC0-LAT'], artwork['AUTORE'] + " - " + artwork['OBJID']);
+    }
     
-    // Set data
-    var cities = [
+    function addArtwork(longitude, latitude, title) {
+      // Verifica se latitudine e longitudine sono validi prima di aggiungere il punto
+      if (isNaN(longitude) || isNaN(latitude)) {
+        console.warn(`Coordinate non valide: ${latitude}, ${longitude}`);
+        return; // Escludi il marker se le coordinate sono non valide
+      }
+
+      pointSeries.data.push({
+        geometry: { type: "Point", coordinates: [longitude, latitude] },
+        title: title
+      });
+    }
+
+    // Make stuff animate on load
+    chart.appear(1000, 100);
+});
+
+
+
+// end am5.ready()
+
+    // Set data 
+    /* var cities = [
       { title: "Vienna", latitude: 48.2092, longitude: 16.3728 },
       { title: "Minsk", latitude: 53.9678, longitude: 27.5766 },
       { title: "Brussels", latitude: 50.8371, longitude: 4.3676 },
@@ -270,22 +328,4 @@ am5.ready(function() {
       { title: "Dodoma", latitude: -6.167, longitude: 35.7497 },
       { title: "Lome", latitude: 6.1228, longitude: 1.2255 },
       { title: "Tunis", latitude: 36.8117, longitude: 10.1761 }
-    ];
-    
-    for (var i = 0; i < cities.length; i++) {
-      var city = cities[i];
-      addCity(city.longitude, city.latitude, city.title);
-    }
-    
-    function addCity(longitude, latitude, title) {
-      pointSeries.data.push({
-        geometry: { type: "Point", coordinates: [longitude, latitude] },
-        title: title
-      });
-    }
-    
-    // Make stuff animate on load
-    chart.appear(1000, 100);
-    
-    }); // end am5.ready()
-    
+    ]; */

@@ -47,6 +47,7 @@ function loadCSV() {
                 'URL': row['ID'],
             }));
 
+            document.getElementById("tot-results").innerHTML = data.length
             // Dopo aver caricato i dati, mostra la prima pagina
             renderList(currentPage);
     

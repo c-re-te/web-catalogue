@@ -81,7 +81,7 @@
                               <li class="breadcrumb-item active" aria-current="page">Risultati</li>
                             </ol>
                         </nav>                        
-                        <p class="fs-5 fw-bold">Risultati della ricerca</p>
+                        <p class="fs-5"><span class="fw-bold">Risultati della ricerca:</span> <span id="tot-results"></span> opere</p>
 
                         <!-- Lista per mostrare i risultati -->
                         
@@ -90,23 +90,25 @@
                                 </div>
                                 -->
 
-                        <div class="card mb-1">
-                            <div class="row g-0">
-                                <div class="col-md-4 col-sm-12">
-                                    <img src="assets/img/fondulis-hand.jpg" class="img-fluid rounded-start query-card-img" alt="...">
-                                </div>
-                                <div class="col-md-8 col-sm-12">
-                                    <div class="card-body">
-                                        <p class="card-text fw-bold">Autore di esempio </p>
-                                        <p class="card-text fw-bold"><a href="..." class="query-result-obj-id">Oggetto di esempio</a></p>
-                                        <p class="card-text">1456 - 1463</p>
-                                        <p class="card-text">Museo Civico di Crema e del Cremasco, Crema (CR)</p>
+
+                        
+                        <ul class="list-group" id="resultsList">
+                            <div class="card mb-1">
+                                <div class="row g-0">
+                                    <div class="col-md-4 col-sm-12">
+                                        <img src="assets/img/fondulis-hand.jpg" class="img-fluid rounded-start query-card-img" alt="...">
+                                    </div>
+                                    <div class="col-md-8 col-sm-12">
+                                        <div class="card-body">
+                                            <p class="card-text fw-bold">Autore di esempio </p>
+                                            <p class="card-text fw-bold"><a href="..." class="query-result-obj-id">Oggetto di esempio</a></p>
+                                            <p class="card-text">1456 - 1463</p>
+                                            <p class="card-text">Museo Civico di Crema e del Cremasco, Crema (CR)</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <ul class="list-group" id="resultsList"></ul>
+                        </ul>
 
                         <!-- Paginazione -->
                         <nav class="mt-2">

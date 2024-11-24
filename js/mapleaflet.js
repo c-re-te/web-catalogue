@@ -1,331 +1,1901 @@
-function loadData() {
-    Papa.parse('./assets/data/sample-query.csv', {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: function (results) {
-            // Carica i dati nel formato desiderato
-            data = results.data.map(row => {
-                const lat = parseFloat(row['LOC0-LAT']);
-                const lon = parseFloat(row['LOC0-LONG']);
+// Create root element
+// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+var root = am5.Root.new("chartdiv", {
+    homeZoomLevel: 5,
+    homeGeoPoint: { longitude: 10, latitude: 52 }
+});
 
-                // Verifica se latitudine e longitudine sono numeri validi
-                if (isNaN(lat) || isNaN(lon)) {
-                    console.warn(`Dati non validi per latitudine e longitudine: ${row['LOC0-LAT']}, ${row['LOC0-LONG']}`);
-                    return null; // Escludi i dati invalidi
-                }
+// Set themes
+// https://www.amcharts.com/docs/v5/concepts/themes/
+root.setThemes([
+  am5themes_Animated.new(root)
+]);
 
-                return {
-                    AUTORE: row['AUTORE'] || '',
-                    'LOC0-CONT': row['LOC0-CONT'] || '',
-                    'LOC0-CITTA': row['LOC0-CITTA'] || '',
-                    'LOC0-PROV': row['LOC0-PROV'] || '',
-                    'DATA-FROM': row['DATA-FROM'] || '',
-                    'DATA-TO': row['DATA-TO'] || '',
-                    OBJID: row['OGGETTO-DEFINIZIONE'] || '',
-                    TECNICA: row['TECNICA'] || '',
-                    LAVORAZIONE: row['LAVORAZIONE'] || '',
-                    URL: row['ID'],
-                    // Aggiungi latitudine e longitudine solo se sono validi
-                    'LOC0-LAT': lat,
-                    'LOC0-LONG': lon
-                };
-            }).filter(item => item !== null);  // Filtra i dati nulli
+// Create the map chart
+// https://www.amcharts.com/docs/v5/charts/map-chart/
+var chart = root.container.children.push(
+  am5map.MapChart.new(root, {
+    panX: "rotateX",
+    panY: "translateY",
+    projection: am5map.geoMercator(),
+  })
+);
 
-            console.log(data);  // Verifica i dati caricati
+chart.set("zoomControl", am5map.ZoomControl.new(root, {
+}));
 
-            return data;
-        }
-    });
-}
 
-am5.ready(function() {
+// Create main polygon series for countries
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+var polygonSeries = chart.series.push(
+  am5map.MapPolygonSeries.new(root, {
+    geoJSON: am5geodata_worldLow,
+    exclude: ["AQ"]
+  })
+);
 
-    // Create root element
-    var root = am5.Root.new("chartdiv");
-    
-    // Set themes
-    root.setThemes([
-      am5themes_Animated.new(root)
-    ]);
-    
-    // Create the map chart
-    var chart = root.container.children.push(
-      am5map.MapChart.new(root, {
-        panX: "rotateX",
-        panY: "translateY",
-        projection: am5map.geoMercator(),
-      })
-    );
-    
-    var zoomControl = chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
-    zoomControl.homeButton.set("visible", true);
-    
-    // Create main polygon series for countries
-    var polygonSeries = chart.series.push(
-      am5map.MapPolygonSeries.new(root, {
-        geoJSON: am5geodata_worldLow,
-        exclude: ["AQ"]
-      })
-    );
-    
-    polygonSeries.mapPolygons.template.setAll({
-      fill: am5.color(0xdadada)
-    });
-    
-    // Create point series for markers
-    var pointSeries = chart.series.push(am5map.ClusteredPointSeries.new(root, {}));
-    
-    // Set clustered bullet
-    pointSeries.set("clusteredBullet", function(root) {
-      var container = am5.Container.new(root, {
-        cursorOverStyle: "pointer"
-      });
-    
-      var circle1 = container.children.push(am5.Circle.new(root, {
-        radius: 8,
-        tooltipY: 0,
-        fill: am5.color(0xff8c00)
-      }));
-    
-      var circle2 = container.children.push(am5.Circle.new(root, {
-        radius: 12,
-        fillOpacity: 0.3,
-        tooltipY: 0,
-        fill: am5.color(0xff8c00)
-      }));
-    
-      var circle3 = container.children.push(am5.Circle.new(root, {
-        radius: 16,
-        fillOpacity: 0.3,
-        tooltipY: 0,
-        fill: am5.color(0xff8c00)
-      }));
-    
-      var label = container.children.push(am5.Label.new(root, {
-        centerX: am5.p50,
-        centerY: am5.p50,
-        fill: am5.color(0xffffff),
-        fontSize: "8",
-        text: "{value}"
-      }));
-    
-      container.events.on("click", function(e) {
-        pointSeries.zoomToCluster(e.target.dataItem);
-      });
-    
-      return am5.Bullet.new(root, {
-        sprite: container
-      });
-    });
-    
-    // Create regular bullets
-    pointSeries.bullets.push(function() {
-      var circle = am5.Circle.new(root, {
-        radius: 6,
-        tooltipY: 0,
-        fill: am5.color(0xff8c00),
-        tooltipText: "{title}"
-      });
-    
-      return am5.Bullet.new(root, {
-        sprite: circle
-      });
-    });
-    
-    // Carica i dati e aggiungi i marker sulla mappa
-    var artData = loadData(); // Carica i dati
-    for (var i = 0; i < artData.length; i++) {
-      var artwork = artData[i];
-      addArtwork(artwork['LOC0-LONG'], artwork['LOC0-LAT'], artwork['AUTORE'] + " - " + artwork['OBJID']);
-    }
-    
-    function addArtwork(longitude, latitude, title) {
-      // Verifica se latitudine e longitudine sono validi prima di aggiungere il punto
-      if (isNaN(longitude) || isNaN(latitude)) {
-        console.warn(`Coordinate non valide: ${latitude}, ${longitude}`);
-        return; // Escludi il marker se le coordinate sono non valide
-      }
-
-      pointSeries.data.push({
-        geometry: { type: "Point", coordinates: [longitude, latitude] },
-        title: title
-      });
-    }
-
-    // Make stuff animate on load
-    chart.appear(1000, 100);
+polygonSeries.mapPolygons.template.setAll({
+  fill:am5.color(0xdadada)
 });
 
 
+// Create point series for markers
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-point-series/
+var pointSeries = chart.series.push(am5map.ClusteredPointSeries.new(root, {}));
 
-// end am5.ready()
 
-    // Set data 
-    /* var cities = [
-      { title: "Vienna", latitude: 48.2092, longitude: 16.3728 },
-      { title: "Minsk", latitude: 53.9678, longitude: 27.5766 },
-      { title: "Brussels", latitude: 50.8371, longitude: 4.3676 },
-      { title: "Sarajevo", latitude: 43.8608, longitude: 18.4214 },
-      { title: "Sofia", latitude: 42.7105, longitude: 23.3238 },
-      { title: "Zagreb", latitude: 45.815, longitude: 15.9785 },
-      { title: "Pristina", latitude: 42.666667, longitude: 21.166667 },
-      { title: "Prague", latitude: 50.0878, longitude: 14.4205 },
-      { title: "Copenhagen", latitude: 55.6763, longitude: 12.5681 },
-      { title: "Tallinn", latitude: 59.4389, longitude: 24.7545 },
-      { title: "Helsinki", latitude: 60.1699, longitude: 24.9384 },
-      { title: "Paris", latitude: 48.8567, longitude: 2.351 },
-      { title: "Berlin", latitude: 52.5235, longitude: 13.4115 },
-      { title: "Athens", latitude: 37.9792, longitude: 23.7166 },
-      { title: "Budapest", latitude: 47.4984, longitude: 19.0408 },
-      { title: "Reykjavik", latitude: 64.1353, longitude: -21.8952 },
-      { title: "Dublin", latitude: 53.3441, longitude: -6.2675 },
-      { title: "Rome", latitude: 41.8955, longitude: 12.4823 },
-      { title: "Riga", latitude: 56.9465, longitude: 24.1049 },
-      { title: "Vaduz", latitude: 47.1411, longitude: 9.5215 },
-      { title: "Vilnius", latitude: 54.6896, longitude: 25.2799 },
-      { title: "Luxembourg", latitude: 49.61, longitude: 6.1296 },
-      { title: "Skopje", latitude: 42.0024, longitude: 21.4361 },
-      { title: "Valletta", latitude: 35.9042, longitude: 14.5189 },
-      { title: "Chisinau", latitude: 47.0167, longitude: 28.8497 },
-      { title: "Monaco", latitude: 43.7325, longitude: 7.4189 },
-      { title: "Podgorica", latitude: 42.4602, longitude: 19.2595 },
-      { title: "Amsterdam", latitude: 52.3738, longitude: 4.891 },
-      { title: "Oslo", latitude: 59.9138, longitude: 10.7387 },
-      { title: "Warsaw", latitude: 52.2297, longitude: 21.0122 },
-      { title: "Lisbon", latitude: 38.7072, longitude: -9.1355 },
-      { title: "Bucharest", latitude: 44.4479, longitude: 26.0979 },
-      { title: "Moscow", latitude: 55.7558, longitude: 37.6176 },
-      { title: "San Marino", latitude: 43.9424, longitude: 12.4578 },
-      { title: "Belgrade", latitude: 44.8048, longitude: 20.4781 },
-      { title: "Bratislava", latitude: 48.2116, longitude: 17.1547 },
-      { title: "Ljubljana", latitude: 46.0514, longitude: 14.506 },
-      { title: "Madrid", latitude: 40.4167, longitude: -3.7033 },
-      { title: "Stockholm", latitude: 59.3328, longitude: 18.0645 },
-      { title: "Bern", latitude: 46.948, longitude: 7.4481 },
-      { title: "Kiev", latitude: 50.4422, longitude: 30.5367 },
-      { title: "London", latitude: 51.5002, longitude: -0.1262 },
-      { title: "Gibraltar", latitude: 36.1377, longitude: -5.3453 },
-      { title: "Saint Peter Port", latitude: 49.466, longitude: -2.5522 },
-      { title: "Douglas", latitude: 54.167, longitude: -4.4821 },
-      { title: "Saint Helier", latitude: 49.1919, longitude: -2.1071 },
-      { title: "Longyearbyen", latitude: 78.2186, longitude: 15.6488 },
-      { title: "Kabul", latitude: 34.5155, longitude: 69.1952 },
-      { title: "Yerevan", latitude: 40.1596, longitude: 44.509 },
-      { title: "Baku", latitude: 40.3834, longitude: 49.8932 },
-      { title: "Manama", latitude: 26.1921, longitude: 50.5354 },
-      { title: "Dhaka", latitude: 23.7106, longitude: 90.3978 },
-      { title: "Thimphu", latitude: 27.4405, longitude: 89.673 },
-      { title: "Bandar Seri Begawan", latitude: 4.9431, longitude: 114.9425 },
-      { title: "Phnom Penh", latitude: 11.5434, longitude: 104.8984 },
-      { title: "Peking", latitude: 39.9056, longitude: 116.3958 },
-      { title: "Nicosia", latitude: 35.1676, longitude: 33.3736 },
-      { title: "T'bilisi", latitude: 41.701, longitude: 44.793 },
-      { title: "New Delhi", latitude: 28.6353, longitude: 77.225 },
-      { title: "Jakarta", latitude: -6.1862, longitude: 106.8063 },
-      { title: "Teheran", latitude: 35.7061, longitude: 51.4358 },
-      { title: "Baghdad", latitude: 33.3157, longitude: 44.3922 },
-      { title: "Jerusalem", latitude: 31.76, longitude: 35.17 },
-      { title: "Tokyo", latitude: 35.6785, longitude: 139.6823 },
-      { title: "Amman", latitude: 31.9394, longitude: 35.9349 },
-      { title: "Astana", latitude: 51.1796, longitude: 71.4475 },
-      { title: "Kuwait", latitude: 29.3721, longitude: 47.9824 },
-      { title: "Bishkek", latitude: 42.8679, longitude: 74.5984 },
-      { title: "Vientiane", latitude: 17.9689, longitude: 102.6137 },
-      { title: "Beyrouth / Beirut", latitude: 33.8872, longitude: 35.5134 },
-      { title: "Kuala Lumpur", latitude: 3.1502, longitude: 101.7077 },
-      { title: "Ulan Bator", latitude: 47.9138, longitude: 106.922 },
-      { title: "Pyinmana", latitude: 19.7378, longitude: 96.2083 },
-      { title: "Kathmandu", latitude: 27.7058, longitude: 85.3157 },
-      { title: "Muscat", latitude: 23.6086, longitude: 58.5922 },
-      { title: "Islamabad", latitude: 33.6751, longitude: 73.0946 },
-      { title: "Manila", latitude: 14.579, longitude: 120.9726 },
-      { title: "Doha", latitude: 25.2948, longitude: 51.5082 },
-      { title: "Riyadh", latitude: 24.6748, longitude: 46.6977 },
-      { title: "Singapore", latitude: 1.2894, longitude: 103.85 },
-      { title: "Seoul", latitude: 37.5139, longitude: 126.9828 },
-      { title: "Colombo", latitude: 6.9155, longitude: 79.8572 },
-      { title: "Damascus", latitude: 33.5158, longitude: 36.2939 },
-      { title: "Taipei", latitude: 25.0338, longitude: 121.5645 },
-      { title: "Dushanbe", latitude: 38.5737, longitude: 68.7738 },
-      { title: "Bangkok", latitude: 13.7573, longitude: 100.502 },
-      { title: "Dili", latitude: -8.5662, longitude: 125.588 },
-      { title: "Ankara", latitude: 39.9439, longitude: 32.856 },
-      { title: "Ashgabat", latitude: 37.9509, longitude: 58.3794 },
-      { title: "Abu Dhabi", latitude: 24.4764, longitude: 54.3705 },
-      { title: "Tashkent", latitude: 41.3193, longitude: 69.2481 },
-      { title: "Hanoi", latitude: 21.0341, longitude: 105.8372 },
-      { title: "Sanaa", latitude: 15.3556, longitude: 44.2081 },
-      { title: "Buenos Aires", latitude: -34.6118, longitude: -58.4173 },
-      { title: "Bridgetown", latitude: 13.0935, longitude: -59.6105 },
-      { title: "Belmopan", latitude: 17.2534, longitude: -88.7713 },
-      { title: "Sucre", latitude: -19.0421, longitude: -65.2559 },
-      { title: "Brasilia", latitude: -15.7801, longitude: -47.9292 },
-      { title: "Ottawa", latitude: 45.4235, longitude: -75.6979 },
-      { title: "Santiago", latitude: -33.4691, longitude: -70.642 },
-      { title: "Bogota", latitude: 4.6473, longitude: -74.0962 },
-      { title: "San Jose", latitude: 9.9402, longitude: -84.1002 },
-      { title: "Havana", latitude: 23.1333, longitude: -82.3667 },
-      { title: "Roseau", latitude: 15.2976, longitude: -61.39 },
-      { title: "Santo Domingo", latitude: 18.479, longitude: -69.8908 },
-      { title: "Quito", latitude: -0.2295, longitude: -78.5243 },
-      { title: "San Salvador", latitude: 13.7034, longitude: -89.2073 },
-      { title: "Guatemala", latitude: 14.6248, longitude: -90.5328 },
-      { title: "Ciudad de Mexico", latitude: 19.4271, longitude: -99.1276 },
-      { title: "Managua", latitude: 12.1475, longitude: -86.2734 },
-      { title: "Panama", latitude: 8.9943, longitude: -79.5188 },
-      { title: "Asuncion", latitude: -25.3005, longitude: -57.6362 },
-      { title: "Lima", latitude: -12.0931, longitude: -77.0465 },
-      { title: "Castries", latitude: 13.9972, longitude: -60.0018 },
-      { title: "Paramaribo", latitude: 5.8232, longitude: -55.1679 },
-      { title: "Washington D.C.", latitude: 38.8921, longitude: -77.0241 },
-      { title: "Montevideo", latitude: -34.8941, longitude: -56.0675 },
-      { title: "Caracas", latitude: 10.4961, longitude: -66.8983 },
-      { title: "Oranjestad", latitude: 12.5246, longitude: -70.0265 },
-      { title: "Cayenne", latitude: 4.9346, longitude: -52.3303 },
-      { title: "Plymouth", latitude: 16.6802, longitude: -62.2014 },
-      { title: "San Juan", latitude: 18.45, longitude: -66.0667 },
-      { title: "Algiers", latitude: 36.7755, longitude: 3.0597 },
-      { title: "Luanda", latitude: -8.8159, longitude: 13.2306 },
-      { title: "Porto-Novo", latitude: 6.4779, longitude: 2.6323 },
-      { title: "Gaborone", latitude: -24.657, longitude: 25.9089 },
-      { title: "Ouagadougou", latitude: 12.3569, longitude: -1.5352 },
-      { title: "Bujumbura", latitude: -3.3818, longitude: 29.3622 },
-      { title: "Yaounde", latitude: 3.8612, longitude: 11.5217 },
-      { title: "Bangui", latitude: 4.3621, longitude: 18.5873 },
-      { title: "Brazzaville", latitude: -4.2767, longitude: 15.2662 },
-      { title: "Kinshasa", latitude: -4.3369, longitude: 15.3271 },
-      { title: "Yamoussoukro", latitude: 6.8067, longitude: -5.2728 },
-      { title: "Djibouti", latitude: 11.5806, longitude: 43.1425 },
-      { title: "Cairo", latitude: 30.0571, longitude: 31.2272 },
-      { title: "Asmara", latitude: 15.3315, longitude: 38.9183 },
-      { title: "Addis Abeba", latitude: 9.0084, longitude: 38.7575 },
-      { title: "Libreville", latitude: 0.3858, longitude: 9.4496 },
-      { title: "Banjul", latitude: 13.4399, longitude: -16.6775 },
-      { title: "Accra", latitude: 5.5401, longitude: -0.2074 },
-      { title: "Conakry", latitude: 9.537, longitude: -13.6785 },
-      { title: "Bissau", latitude: 11.8598, longitude: -15.5875 },
-      { title: "Nairobi", latitude: -1.2762, longitude: 36.7965 },
-      { title: "Maseru", latitude: -29.2976, longitude: 27.4854 },
-      { title: "Monrovia", latitude: 6.3106, longitude: -10.8047 },
-      { title: "Tripoli", latitude: 32.883, longitude: 13.1897 },
-      { title: "Antananarivo", latitude: -18.9201, longitude: 47.5237 },
-      { title: "Lilongwe", latitude: -13.9899, longitude: 33.7703 },
-      { title: "Bamako", latitude: 12.653, longitude: -7.9864 },
-      { title: "Nouakchott", latitude: 18.0669, longitude: -15.99 },
-      { title: "Port Louis", latitude: -20.1654, longitude: 57.4896 },
-      { title: "Rabat", latitude: 33.9905, longitude: -6.8704 },
-      { title: "Maputo", latitude: -25.9686, longitude: 32.5804 },
-      { title: "Windhoek", latitude: -22.5749, longitude: 17.0805 },
-      { title: "Niamey", latitude: 13.5164, longitude: 2.1157 },
-      { title: "Abuja", latitude: 9.058, longitude: 7.4891 },
-      { title: "Kigali", latitude: -1.9441, longitude: 30.0619 },
-      { title: "Dakar", latitude: 14.6953, longitude: -17.4439 },
-      { title: "Freetown", latitude: 8.4697, longitude: -13.2659 },
-      { title: "Mogadishu", latitude: 2.0411, longitude: 45.3426 },
-      { title: "Pretoria", latitude: -25.7463, longitude: 28.1876 },
-      { title: "Mbabane", latitude: -26.3186, longitude: 31.141 },
-      { title: "Dodoma", latitude: -6.167, longitude: 35.7497 },
-      { title: "Lome", latitude: 6.1228, longitude: 1.2255 },
-      { title: "Tunis", latitude: 36.8117, longitude: 10.1761 }
-    ]; */
+// Set clustered bullet
+// https://www.amcharts.com/docs/v5/charts/map-chart/clustered-point-series/#Group_bullet
+pointSeries.set("clusteredBullet", function(root) {
+  var container = am5.Container.new(root, {
+    cursorOverStyle:"pointer"
+  });
+
+  var circle1 = container.children.push(am5.Circle.new(root, {
+    radius: 8,
+    tooltipY: 0,
+    fill: am5.color(0xff8c00)
+  }));
+
+  var circle2 = container.children.push(am5.Circle.new(root, {
+    radius: 12,
+    fillOpacity: 0.3,
+    tooltipY: 0,
+    fill: am5.color(0xff8c00)
+  }));
+
+  var circle3 = container.children.push(am5.Circle.new(root, {
+    radius: 16,
+    fillOpacity: 0.3,
+    tooltipY: 0,
+    fill: am5.color(0xff8c00)
+  }));
+
+  var label = container.children.push(am5.Label.new(root, {
+    centerX: am5.p50,
+    centerY: am5.p50,
+    fill: am5.color(0xffffff),
+    populateText: true,
+    fontSize: "8",
+    text: "{value}"
+  }));
+
+  container.events.on("click", function(e) {
+    pointSeries.zoomToCluster(e.target.dataItem);
+  });
+
+  return am5.Bullet.new(root, {
+    sprite: container
+  });
+});
+
+// Create regular bullets
+pointSeries.bullets.push(function() {
+  var circle = am5.Circle.new(root, {
+    radius: 6,
+    tooltipY: 0,
+    fill: am5.color(0xff8c00),
+    tooltipText: "{title}"
+  });
+
+  return am5.Bullet.new(root, {
+    sprite: circle
+  });
+});
+
+
+// Set data
+var artworks = [
+    {
+      id: 1,
+      title: "Maestro degli angeli cantori - Testa di giovane",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 2,
+      title: "Maestro degli angeli cantori - Testa di giovane",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 3,
+      title: "Maestro degli angeli cantori - Testa di giovane",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 4,
+      title: "Maestro degli angeli cantori - Busto",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 5,
+      title: "Maestro degli angeli cantori - Veste",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 6,
+      title: "Maestro degli angeli cantori - Panneggio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 7,
+      title: "Maestro degli angeli cantori - Veste",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 8,
+      title: "Maestro degli angeli cantori - Panneggio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 9,
+      title: "Maestro degli angeli cantori - Ala",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 10,
+      title: "Maestro degli angeli cantori - Busto",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 11,
+      title: "Maestro degli angeli cantori - Busto",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 12,
+      title: "Maestro degli angeli cantori - Busto",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 13,
+      title: "Maestro degli angeli cantori - Busto",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 14,
+      title: "Maestro degli angeli cantori - Braccio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 15,
+      title: "Maestro degli angeli cantori - Braccio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 16,
+      title: "Maestro degli angeli cantori - Piede",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 17,
+      title: "Maestro degli angeli cantori - Ala",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 18,
+      title: "Maestro degli angeli cantori - Tamburello",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 19,
+      title: "Maestro degli angeli cantori - Panneggio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 20,
+      title: "Maestro degli angeli cantori - Panneggio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 21,
+      title: "Maestro degli angeli cantori - Panneggio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 22,
+      title: "Maestro degli angeli cantori - Panneggio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 23,
+      title: "Maestro degli angeli cantori - Rilievo",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 24,
+      title: "Maestro degli angeli cantori - Rilievo",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 25,
+      title: "Maestro degli angeli cantori - Rilievo",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 26,
+      title: "Maestro degli angeli cantori - Evangelista",
+      citta: "",
+      latitude: "",
+      longitude: ""
+    },
+    {
+      id: 27,
+      title: "Maestro degli angeli cantori; Giovanni de Fondulis (?) - Madonna col Bambino",
+      citta: "Credera Rubbiano (CR)",
+      latitude: 45.30327,
+      longitude: 9.65606
+    },
+    {
+      id: 28,
+      title: "Maestro degli angeli cantori - Madonna col Bambino",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 29,
+      title: "Maestro degli angeli cantori - Santa Lucia",
+      citta: "Madignano (CR)",
+      latitude: 45.34567,
+      longitude: 9.72326
+    },
+    {
+      id: 30,
+      title: "Agostino de Fondulis (?) - testa femminile",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 31,
+      title: "Anonimo cremasco - testa di cherubino",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 32,
+      title: "Agostino de Fondulis (?) - San Girolamo",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 33,
+      title: "Agostino de Fondulis (?) - San Gregorio Magno",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 34,
+      title: "Agostino de Fondulis (?) - Sant'Agostino",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 35,
+      title: "Agostino de Fondulis (?) - Sant'Ambrogio",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 36,
+      title: "Anonimo lombardo - San Pietro?",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 37,
+      title: "Anonimo lombardo - Frate",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 38,
+      title: "Rinaldo de Staulis (?) - Angelo musicante",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 39,
+      title: "Anonimo cremasco - Testa di monaco",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 40,
+      title: "Giovanni da Roma (?) - Madonna col Bambino e angeli reggicortina",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 41,
+      title: "Maestro della Madonna del topo - Madonna col Bambino",
+      citta: "Sergnano (CR)",
+      latitude: 45.42755,
+      longitude: 9.70122
+    },
+    {
+      id: 42,
+      title: "Elia della Marra (?) - Crocefissione",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 43,
+      title: "Anonimo dell'Italia settentrionale [Luca della Robbia] - Madonna col Bambino",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 44,
+      title: "Sperandio Savelli - Madonna col Bambino",
+      citta: "Castelleone (CR)",
+      latitude: 45.29579,
+      longitude: 9.76091
+    },
+    {
+      id: 45,
+      title: "Elia della Marra (?) - Polittico dell'Annunciazione",
+      citta: "Casalmaggiore (CR)",
+      latitude: 44.98981,
+      longitude: 10.42055
+    },
+    {
+      id: 46,
+      title: "Anonimo lombardo - Madonna col Bambino",
+      citta: "Casalmaggiore (CR)",
+      latitude: 44.98981,
+      longitude: 10.42055
+    },
+    {
+      id: 47,
+      title: "Anonimo lombardo  - Madonna dolente",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 48,
+      title: "Rinaldo de Staulis - Madonna col Bambino",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 49,
+      title: "Rinaldo de Staulis - Angelo annunciante",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 50,
+      title: "Rinaldo de Staulis - Maria Vergine Annunciata",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 51,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 52,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 53,
+      title: "Rinaldo de Staulis - San Matteo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 54,
+      title: "Rinaldo de Staulis - San Giovanni evangelista",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 55,
+      title: "Rinaldo de Staulis - San Marco",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 56,
+      title: "Rinaldo de Staulis - Testa di angelo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 57,
+      title: "Rinaldo de Staulis (Bottega) - Cristo risorto",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 58,
+      title: "Rinaldo de Staulis (Bottega) - Cristo in pietà",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 59,
+      title: "Rinaldo de Staulis (Bottega) - Monogramma bernardiniano",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 60,
+      title: "Rinaldo de Staulis (Bottega) - Testa di cherubino",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 61,
+      title: "Galeotto Pavesi (?) - Testa d'uomo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 62,
+      title: "Anonimo lombardo - San Bernardino da Siena",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 63,
+      title: "Anonimo lombardo - San Pietro Martire?",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 64,
+      title: "Giovanni Antonio Amadeo - Madonna col Bambino",
+      citta: "Castelleone (CR)",
+      latitude: 45.29579,
+      longitude: 9.76091
+    },
+    {
+      id: 65,
+      title: "Francesco Solari (Bottega) - Angelo",
+      citta: "Castelleone (CR)",
+      latitude: 45.29579,
+      longitude: 9.76091
+    },
+    {
+      id: 66,
+      title: "Agostino de Fondulis - Cristo morto",
+      citta: "Palazzo Pignano (CR)",
+      latitude: 45.39007,
+      longitude: 9.56956
+    },
+    {
+      id: 67,
+      title: "Agostino de Fondulis - Sant Maria Maddalena",
+      citta: "Palazzo Pignano (CR)",
+      latitude: 45.39007,
+      longitude: 9.56956
+    },
+    {
+      id: 68,
+      title: "Agostino de Fondulis - San Giovanni evangelista",
+      citta: "Palazzo Pignano (CR)",
+      latitude: 45.39007,
+      longitude: 9.56956
+    },
+    {
+      id: 69,
+      title: "Agostino de Fondulis - San Nicodemo",
+      citta: "Palazzo Pignano (CR)",
+      latitude: 45.39007,
+      longitude: 9.56956
+    },
+    {
+      id: 70,
+      title: "Agostino de Fondulis - San Giuseppe d'Arimatea",
+      citta: "Palazzo Pignano (CR)",
+      latitude: 45.39007,
+      longitude: 9.56956
+    },
+    {
+      id: 71,
+      title: "Agostino de Fondulis - Svenimento della Madonna",
+      citta: "Palazzo Pignano (CR)",
+      latitude: 45.39007,
+      longitude: 9.56956
+    },
+    {
+      id: 72,
+      title: "Agostino de Fondulis - Natività",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 73,
+      title: "Agostino de Fondulis - Resurrezione",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 74,
+      title: "Agostino de Fondulis (Bottega) - Busto di donna",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 75,
+      title: "Agostino de Fondulis (Bottega) - Busto di donna",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 76,
+      title: "Agostino de Fondulis (Bottega) - Madonna col Bambino",
+      citta: "Izano (CR)",
+      latitude: 45.35552,
+      longitude: 9.75138
+    },
+    {
+      id: 77,
+      title: "Agostino de Fondulis (Bottega) - San Rocco",
+      citta: "Izano (CR)",
+      latitude: 45.35552,
+      longitude: 9.75138
+    },
+    {
+      id: 78,
+      title: "Agostino de Fondulis (Bottega) - San Sebastiano",
+      citta: "Izano (CR)",
+      latitude: 45.35552,
+      longitude: 9.75138
+    },
+    {
+      id: 79,
+      title: "Agostino de Fondulis (Bottega) - Cristo Morto",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 80,
+      title: "Agostino de Fondulis (Bottega) - Santa Maria Maddalena",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 81,
+      title: "Agostino de Fondulis (Bottega) - San Giovanni evangelista",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 81,
+      title: "Agostino de Fondulis (Bottega) - San Nicodemo",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 83,
+      title: "Agostino de Fondulis (Bottega) - San Giuseppe d'Arimatea",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 84,
+      title: "Agostino de Fondulis (Bottega) - Svenimento della Madonna",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 85,
+      title: "Agostino de Fondulis (Seguace) - Busto di santo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 86,
+      title: "Rinaldo de Staulis (?) - Angelo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 87,
+      title: "Anonimo dell'Italia settentrionale [Antonio Rossellino] - Madonna col Bambino",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 88,
+      title: "Anonimo lombardo - Cristo in pietà",
+      citta: "Pizzighettone (CR)",
+      latitude: 45.1869,
+      longitude: 9.78781
+    },
+    {
+      id: 89,
+      title: "Anonimo lombardo - Madonna col Bambino",
+      citta: "Ripalta Arpina (CR)",
+      latitude: 45.30187,
+      longitude: 9.72896
+    },
+    {
+      id: 90,
+      title: "Agostino de Fondulis - Pietà",
+      citta: "Cremosano (CR)",
+      latitude: 45.39467,
+      longitude: 9.63826
+    },
+    {
+      id: 91,
+      title: "Anonimo lombardo - San Girolamo",
+      citta: "Capergnanica (CR)",
+      latitude: 45.33869,
+      longitude: 9.64475
+    },
+    {
+      id: 92,
+      title: "Anonimo lombardo - Testa di bambino",
+      citta: "Crema (CR)",
+      latitude: 45.36264,
+      longitude: 9.68176
+    },
+    {
+      id: 93,
+      title: "Antonio Campi (Bottega) - San Filippo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 94,
+      title: "Antonio Campi (Bottega) - San Giuda",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 95,
+      title: "Antonio Campi (Bottega) - San Giacomo Maggiore",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 96,
+      title: "Antonio Campi (Bottega) - San Mattia",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 97,
+      title: "Antonio Campi (Bottega) - San Giovanni",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 98,
+      title: "Antonio Campi (Bottega) - San Tommaso",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 99,
+      title: "Antonio Campi (Bottega) - San Matteo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 100,
+      title: "Antonio Campi (Bottega) - San Giacomo Minore",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 101,
+      title: "Antonio Campi (Bottega) - San Simone",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 102,
+      title: "Antonio Campi (Bottega) - San Bartolomeo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 103,
+      title: "Antonio Campi (Bottega) - Sant'Andrea",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 104,
+      title: "Antonio Campi (Bottega) - San Pietro",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 105,
+      title: "Rinaldo de Staulis - Putto",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 106,
+      title: "Rinaldo de Staulis - Tralci di vite",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 107,
+      title: "Rinaldo de Staulis - Putto",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 108,
+      title: "Rinaldo de Staulis - Tralci di vite",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 109,
+      title: "Rinaldo de Staulis - Putto",
+      citta: "Busseto (PR)",
+      latitude: 44.9794,
+      longitude: 10.04331
+    },
+    {
+      id: 110,
+      title: "Rinaldo de Staulis - Tralci di vite",
+      citta: "Busseto (PR)",
+      latitude: 44.9794,
+      longitude: 10.04331
+    },
+    {
+      id: 111,
+      title: "Rinaldo de Staulis - Putto",
+      citta: "Busseto (PR)",
+      latitude: 44.9794,
+      longitude: 10.04331
+    },
+    {
+      id: 112,
+      title: "Rinaldo de Staulis - Tralci di vite",
+      citta: "Busseto (PR)",
+      latitude: 44.9794,
+      longitude: 10.04331
+    },
+    {
+      id: 113,
+      title: "Rinaldo de Staulis - Putto",
+      citta: "Lodi (LO)",
+      latitude: 45.31357,
+      longitude: 9.50286
+    },
+    {
+      id: 114,
+      title: "Rinaldo de Staulis - Rami di quercia",
+      citta: "Lodi (LO)",
+      latitude: 45.31357,
+      longitude: 9.50286
+    },
+    {
+      id: 115,
+      title: "Rinaldo de Staulis - Putto",
+      citta: "Lodi (LO)",
+      latitude: 45.31357,
+      longitude: 9.50286
+    },
+    {
+      id: 116,
+      title: "Rinaldo de Staulis - Rami di quercia",
+      citta: "Lodi (LO)",
+      latitude: 45.31357,
+      longitude: 9.50286
+    },
+    {
+      id: 117,
+      title: "Rinaldo de Staulis - Angelo",
+      citta: "Castelleone (CR)",
+      latitude: 45.29579,
+      longitude: 9.76091
+    },
+    {
+      id: 118,
+      title: "Rinaldo de Staulis - Angelo",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 119,
+      title: "Rinaldo de Staulis - Angelo",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 120,
+      title: "Rinaldo de Staulis - Angelo",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 121,
+      title: "Rinaldo de Staulis - Angelo",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 122,
+      title: "Rinaldo de Staulis - Angelo",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 123,
+      title: "Rinaldo de Staulis - Testa di putto",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 124,
+      title: "Rinaldo de Staulis - Grappolo d'uva e uccello",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 125,
+      title: "Rinaldo de Staulis - Grande foglia di vite",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 126,
+      title: "Rinaldo de Staulis - Ghirlanda con iscrizione",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 127,
+      title: "Rinaldo de Staulis - Peduccio con cherubino",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 128,
+      title: "Rinaldo de Staulis - Fregio con angioletti e busti clipeati",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 129,
+      title: "Rinaldo de Staulis - Testa di putto",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 130,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 131,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 132,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 133,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 134,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 135,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 136,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 137,
+      title: "Rinaldo de Staulis - Profeta",
+      citta: "Pavia (PV)",
+      latitude: 45.19205,
+      longitude: 9.15917
+    },
+    {
+      id: 138,
+      title: "Agostino de Fondulis - Testa d'uomo",
+      citta: "",
+      latitude: "",
+      longitude: ""
+    },
+    {
+      id: 139,
+      title: "Agostino de Fondulis - Scene mitologiche e profili all'antica",
+      citta: "Piacenza (PC)",
+      latitude: 45.05242,
+      longitude: 9.69342
+    },
+    {
+      id: 140,
+      title: "Agostino de Fondulis - Teoria di tritoni e girali vegetali",
+      citta: "Piacenza (PC)",
+      latitude: 45.05242,
+      longitude: 9.69342
+    },
+    {
+      id: 141,
+      title: "Agostino de Fondulis - Zuffa degli dèi marini e profili all'antica",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 142,
+      title: "Agostino de Fondulis - Scene mitologiche",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 143,
+      title: "Agostino de Fondulis - Elementi vegetali, sfingi e busti di frati carmelitani",
+      citta: "Soncino (CR)",
+      latitude: 45.40033,
+      longitude: 9.86845
+    },
+    {
+      id: 144,
+      title: "Agostino de Fondulis (Seguace) - Tritoni e nereidi",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 145,
+      title: "Anonimo lombardo - Ritratto dell'imperatore Galba",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 146,
+      title: "Anonimo lombardo - Testa d'uomo",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 147,
+      title: "Agostino de Fondulis (Bottega) - Tritoni e stemmi",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 148,
+      title: "Anonimo lombardo - Arpie e capitelli",
+      citta: "Busseto (PR)",
+      latitude: 44.9794,
+      longitude: 10.04331
+    },
+    {
+      id: 149,
+      title: "Anonimo lombardo - Tritoni con vaso e tondo alato",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 150,
+      title: "Anonimo lombardo - Cherubino con cornucopie",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 151,
+      title: "Anonimo lombardo - Sremma della famiglia Pozzi",
+      citta: "Cremona (CR)",
+      latitude: 45.13325,
+      longitude: 10.02129
+    },
+    {
+      id: 152,
+      title: "Michele da Firenze - Coppia di angeli",
+      citta: "Ceresara (MN)",
+      latitude: 45.26228,
+      longitude: 10.56958
+    },
+    {
+      id: 153,
+      title: "Michele da Firenze (Bottega) - Busto angelico",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 154,
+      title: "Michele da Firenze - Pilastrino con angeli",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 155,
+      title: "Michele da Firenze - Cristo in pietà",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 156,
+      title: "Michele da Firenze - Crocefisso",
+      citta: "San Benedetto Po (MN)",
+      latitude: 45.04612,
+      longitude: 10.93367
+    },
+    {
+      id: 157,
+      title: "Michele da Firenze - San Girolamo",
+      citta: "San Benedetto Po (MN)",
+      latitude: 45.04612,
+      longitude: 10.93367
+    },
+    {
+      id: 158,
+      title: "Michele da Firenze - Santo benedicente",
+      citta: "(MN)",
+      latitude: "",
+      longitude: ""
+    },
+    {
+      id: 159,
+      title: "Michele da Firenze (?) - Figura virile cerofora (?)",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 160,
+      title: "Anonimo mantovano [Luca Fancelli] (?) - Angeli reggi-ghirlanda",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 161,
+      title: "Sperandio Savelli - San Francesco (?) e San Bernardino da Siena",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 162,
+      title: "Sperandio Savelli - Madonna col Bambino e angeli reggicortina",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 163,
+      title: "Sperandio Savelli (cerchia) - Testa virile",
+      citta: "San Giorgio Bigarello, Stradella (MN)",
+      latitude: 45.17245,
+      longitude: 10.87327
+    },
+    {
+      id: 164,
+      title: "Sperandio Savelli (cerchia) - Angelo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 165,
+      title: "Sperandio Savelli (cerchia) - Angelo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 166,
+      title: "Elia della Marra - Compianto sul Cristo Morto",
+      citta: "Sermide, Santa Croce (MN)",
+      latitude: 44.98379,
+      longitude: 11.25329
+    },
+    {
+      id: 167,
+      title: "Elia della Marra - Cristo in pietà",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 168,
+      title: "Elia della Marra - Figura virile",
+      citta: "Viadana (MN)",
+      latitude: 44.93553,
+      longitude: 10.51898
+    },
+    {
+      id: 169,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Ceresara (MN)",
+      latitude: 45.26228,
+      longitude: 10.56958
+    },
+    {
+      id: 170,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Bozzolo (MN)",
+      latitude: 45.10324,
+      longitude: 10.47988
+    },
+    {
+      id: 171,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Parma (PR)",
+      latitude: 44.79935,
+      longitude: 10.32618
+    },
+    {
+      id: 172,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 173,
+      title: "Elia della Marra - Annunciazione",
+      citta: "Castel Goffredo (MN)",
+      latitude: 45.29403,
+      longitude: 10.473
+    },
+    {
+      id: 174,
+      title: "Elia della Marra - Devote in preghiera",
+      citta: "Viadana (MN)",
+      latitude: 44.93553,
+      longitude: 10.51898
+    },
+    {
+      id: 175,
+      title: "Elia della Marra - Madonna col Bambino, San Paolo e San Girolamo",
+      citta: "San Benedetto Po  (MN)",
+      latitude: 45.04612,
+      longitude: 10.93367
+    },
+    {
+      id: 176,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Castel d’Ario (MN)",
+      latitude: 45.18798,
+      longitude: 10.97449
+    },
+    {
+      id: 177,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Sabbioneta, Villa Pasquali (MN)",
+      latitude: 44.99943,
+      longitude: 10.5155
+    },
+    {
+      id: 178,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 179,
+      title: "Elia della Marra - Madonna",
+      citta: "Pegognaga (MN)",
+      latitude: 44.99456,
+      longitude: 10.85967
+    },
+    {
+      id: 180,
+      title: "Elia della Marra - Madonna col Bambino",
+      citta: "Castel d’Ario (MN)",
+      latitude: 45.18798,
+      longitude: 10.97449
+    },
+    {
+      id: 181,
+      title: "Elia della Marra - Sant'Antonio Abate",
+      citta: "",
+      latitude: "",
+      longitude: ""
+    },
+    {
+      id: 182,
+      title: "Elia della Marra - Cristo risorto",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 183,
+      title: "Elia della Marra - San Giacomo Maggiore",
+      citta: "Piubega (MN)",
+      latitude: 45.22677,
+      longitude: 10.53195
+    },
+    {
+      id: 184,
+      title: "Elia della Marra (?) - Madonna dell'Umiltà",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 185,
+      title: "Elia della Marra (?) - Crocefissione",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 186,
+      title: "Elia della Marra (?) - Tabernacolo",
+      citta: "Parigi",
+      latitude: 48.85341,
+      longitude: 2.3488
+    },
+    {
+      id: 187,
+      title: "Elia della Marra (?) - Tabernacolo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 188,
+      title: "Elia della Marra (?) - Tabernacolo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 189,
+      title: "Elia della Marra (?) - Tabernacolo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 190,
+      title: "Elia della Marra (?) - Tabernacolo",
+      citta: "Mantova, Frassino (MN)",
+      latitude: 45.16016,
+      longitude: 10.82059
+    },
+    {
+      id: 191,
+      title: "Elia della Marra (?) - Madonna col Bambino",
+      citta: "Parigi",
+      latitude: 48.85341,
+      longitude: 2.3488
+    },
+    {
+      id: 192,
+      title: "Elia della Marra (?) - Madonna col Bambino",
+      citta: "Curtatone, San Silvestro (MN)",
+      latitude: 45.15253,
+      longitude: 10.71989
+    },
+    {
+      id: 193,
+      title: "Elia della Marra (?) - Figura virile",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 194,
+      title: "Anonimo mantovano - Dio Padre e angeli",
+      citta: "Borgo Virgilio (MN)",
+      latitude: 45.08266,
+      longitude: 10.78748
+    },
+    {
+      id: 195,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 196,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 197,
+      title: "Anonimo lombardo - Madonna col Bambino",
+      citta: "Suzzara (MN)",
+      latitude: 44.99187,
+      longitude: 10.74309
+    },
+    {
+      id: 198,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "Suzzara, Sailetto (MN)",
+      latitude: 44.99187,
+      longitude: 10.74309
+    },
+    {
+      id: 199,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 200,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "Pieve di Coriano (MN)",
+      latitude: 45.03388,
+      longitude: 11.1078
+    },
+    {
+      id: 201,
+      title: "Anonimo mantovano - Busto di Madonna",
+      citta: "Goito (MN)",
+      latitude: 45.25076,
+      longitude: 10.66121
+    },
+    {
+      id: 202,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "",
+      latitude: "",
+      longitude: ""
+    },
+    {
+      id: 203,
+      title: "Anonimo mantovano - Putto reggi ghirlanda",
+      citta: "Viadana (MN)",
+      latitude: 44.93553,
+      longitude: 10.51898
+    },
+    {
+      id: 204,
+      title: "Anonimo mantovano - Putto reggi ghirlanda",
+      citta: "Viadana (MN)",
+      latitude: 44.93553,
+      longitude: 10.51898
+    },
+    {
+      id: 205,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "Pegognaga (MN)",
+      latitude: 44.99456,
+      longitude: 10.85967
+    },
+    {
+      id: 206,
+      title: "Anonimo mantovano - Madonna col Bambino",
+      citta: "Volta Mantovana, Cereta (MN)",
+      latitude: 45.30503,
+      longitude: 10.64125
+    },
+    {
+      id: 207,
+      title: "Anonimo dell'Italia settentrionale [Anonimo toscano] - Madonna col Bambino",
+      citta: "(MN)",
+      latitude: "",
+      longitude: ""
+    },
+    {
+      id: 208,
+      title: "Anonimo lombardo - San Francesco riceve le stimmate",
+      citta: "Viadana (MN)",
+      latitude: 44.93553,
+      longitude: 10.51898
+    },
+    {
+      id: 209,
+      title: "Anonimo mantovano - Cristo risorto",
+      citta: "collezione privata (MN)",
+      latitude: "",
+      longitude: ""
+    },
+    {
+      id: 210,
+      title: "Andrea della Robbia (Bottega) - Stemma di Gabriele Ginori",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 211,
+      title: "Anonimo mantovano - Santo",
+      citta: "Asola (MN)",
+      latitude: 45.22018,
+      longitude: 10.41214
+    },
+    {
+      id: 212,
+      title: "Anonimo mantovano - Peduccio con angelo",
+      citta: "San Benedetto Po (MN)",
+      latitude: 45.04612,
+      longitude: 10.93367
+    },
+    {
+      id: 213,
+      title: "Anonimo mantovano - Peduccio con angelo",
+      citta: "San Benedetto Po (MN)",
+      latitude: 45.04612,
+      longitude: 10.93367
+    },
+    {
+      id: 214,
+      title: "Anonimo mantovano - Apostolo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 215,
+      title: "Anonimo mantovano - Apostolo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 216,
+      title: "Anonimo mantovano - Apostolo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 217,
+      title: "Anonimo mantovano - Madonna annunciata",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 218,
+      title: "Anonimo mantovano - Angelo Annunciante",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 219,
+      title: "Anonimo mantovano - Annunciazione con tre apostoli",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 220,
+      title: "Anonimo mantovano - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 221,
+      title: "Gian Marco Cavalli (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 222,
+      title: "Anonimo mantovano - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 223,
+      title: "Anonimo mantovano - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 224,
+      title: "Gian Marco Cavalli (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 225,
+      title: "Gian Marco Cavalli (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 226,
+      title: "Gian Marco Cavalli (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 227,
+      title: "Anonimo mantovano (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 228,
+      title: "Anonimo mantovano (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 229,
+      title: "Anonimo mantovano (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 230,
+      title: "Anonimo mantovano (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 231,
+      title: "Anonimo mantovano (?) - Cherubino",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 232,
+      title: "Gian Marco Cavalli (?) - Deposizione di Cristo",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 233,
+      title: "Gian Marco Cavalli (?) - Compianto sul Cristo Morto",
+      citta: "Medole (MN)",
+      latitude: 45.32588,
+      longitude: 10.51357
+    },
+    {
+      id: 234,
+      title: "Gian Marco Cavalli (?) - Giuseppe d'Arimatea",
+      citta: "Medole (MN)",
+      latitude: 45.32588,
+      longitude: 10.51357
+    },
+    {
+      id: 235,
+      title: "Gian Marco Cavalli (?) - Nicodemo",
+      citta: "Medole (MN)",
+      latitude: 45.32588,
+      longitude: 10.51357
+    },
+    {
+      id: 236,
+      title: "Gian Marco Cavalli (?) - San Giovanni evangelista",
+      citta: "Medole (MN)",
+      latitude: 45.32588,
+      longitude: 10.51357
+    },
+    {
+      id: 237,
+      title: "Gian Marco Cavalli (?) - Maria Maddalena",
+      citta: "Medole (MN)",
+      latitude: 45.32588,
+      longitude: 10.51357
+    },
+    {
+      id: 238,
+      title: "Gian Marco Cavalli (?) - Svenimento della Madonna",
+      citta: "Medole (MN)",
+      latitude: 45.32588,
+      longitude: 10.51357
+    },
+    {
+      id: 239,
+      title: "Gian Marco Cavalli (?) - Cristo morto",
+      citta: "Medole (MN)",
+      latitude: 45.32588,
+      longitude: 10.51357
+    },
+    {
+      id: 240,
+      title: "Gian Marco Cavalli (?) - Deposizione di Cristo",
+      citta: "Viadana (MN)",
+      latitude: 44.93553,
+      longitude: 10.51898
+    },
+    {
+      id: 241,
+      title: "Gian Marco Cavalli (?) - San Sebastiano",
+      citta: "Viadana (MN)",
+      latitude: 44.93553,
+      longitude: 10.51898
+    },
+    {
+      id: 242,
+      title: "Gian Marco Cavalli (?) - Madonna col Bambino",
+      citta: "Revere (MN)",
+      latitude: 45.05207,
+      longitude: 11.13059
+    },
+    {
+      id: 243,
+      title: "Gian Marco Cavalli (?) - Pietà",
+      citta: "San Giorgio Bigarello, Stradella (MN)",
+      latitude: 45.17245,
+      longitude: 10.87327
+    },
+    {
+      id: 244,
+      title: "Gian Marco Cavalli (?) - Battista Spagnoli",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 245,
+      title: "Gian Marco Cavalli (?) - Francesco II Gonzaga",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 246,
+      title: "Gian Marco Cavalli (?) - Virgilio",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 247,
+      title: "Gian Marco Cavalli (?) - Girolamo Andreasi",
+      citta: "Firenze (FI)",
+      latitude: 43.77925,
+      longitude: 11.24626
+    },
+    {
+      id: 248,
+      title: "Gian Marco Cavalli (?) - Francesco II Gonzaga",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 249,
+      title: "Gian Marco Cavalli (?) - Battista Spagnoli",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    },
+    {
+      id: 250,
+      title: "Gian Marco Cavalli (?) - Papa Giulio II",
+      citta: "Mantova (MN)",
+      latitude: 45.16031,
+      longitude: 10.79784
+    }
+  ]
+
+const cities = groupByCity(artworks);
+
+for (var i = 0; i < cities.length; i++) {
+  var city = cities[i];
+  if (city.longitude !== "" && city.latitude !== "") {
+    addCity(city.longitude, city.latitude, city.citta.concat(' ', String(city.no)));
+  }
+}
+
+function addCity(longitude, latitude, title) {
+  pointSeries.data.push({
+    geometry: { type: "Point", coordinates: [longitude, latitude] },
+    title: title
+  });
+}
+
+function filterById(artworks, ids) {
+    return artworks.filter(artwork => ids.includes(artwork.id));
+}
+
+function groupByCity(artworks) {
+    const cityMap = artworks.reduce((acc, artwork) => {
+        const cityKey = artwork.citta;
+        if (!acc[cityKey]) {
+            acc[cityKey] = {
+                no: 0,
+                citta: artwork.citta,
+                latitude: artwork.latitude,
+                longitude: artwork.longitude
+            };
+        }
+        acc[cityKey].no += 1;
+        return acc;
+    }, {});
+
+    // Converti l'oggetto in un array
+    return Object.values(cityMap);
+}
+
+// Make stuff animate on load
+chart.appear(1000, 100);

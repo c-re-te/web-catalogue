@@ -92,7 +92,7 @@ function renderList(page, data) {
                     <div class="card mb-1">
                         <div class="row g-0">
                             <div class="col-md-4 col-sm-12">
-                                <img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="">
+                                <img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item.AUTORE} ${item['SPECIFICHE-AUTORE'] ? `(${item['SPECIFICHE-AUTORE']})` : ''} ${item.SOGGETTO}" style="max-height: 200px">
                             </div>
                             <div class="col-md-8 col-sm-12">
                                 <div class="card-body">

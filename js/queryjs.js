@@ -48,9 +48,11 @@ function loadCSV() {
             }));
 
             document.getElementById("tot-results").innerHTML = data.length
-            // Dopo aver caricato i dati, mostra la prima pagina
+
+            // Display content
             renderList(currentPage, data);
     
+            // Display filters in the accordion
             const combinedAuthors = combineValues(data, 'AUTORE', 'SPECIFICHE-AUTORE');
             renderAccordionSectionFromArray(combinedAuthors, 'Autori', true);
 
@@ -64,6 +66,8 @@ function loadCSV() {
 
             renderAccordionSection(['OBJID'], 'Oggetti (definizione)');
 
+            renderAccordionChronologySection();
+
             const combinedOtherLoc1 = combineValues(data, 'LOC1-CITTA', 'LOC1-CONT');
             const combinedOtherLoc2 = combineValues(data, 'LOC2-CITTA', 'LOC2-CONT');
             const combinedOtherLocs = combinedOtherLoc1.concat(combinedOtherLoc2);
@@ -71,6 +75,8 @@ function loadCSV() {
             renderAccordionSectionFromArray(combinedOtherLocs, 'Provenienza');
 
             renderAccordionSection(['LAVORAZIONE'], 'Lavorazione della superficie');
+
+            renderAccordionSection(['TECNICA'], 'Tecnica');
         }
     });
 }
@@ -88,6 +94,34 @@ function renderList(page, data) {
 
     // *** CONTENT ***
     pageData.forEach(item => {
+        let locationText = '';
+
+        if(item['LOC0-CONT']) {
+            if(item['LOC0-CITTA']) {
+                locationText = `${item['LOC0-CONT']}, `;
+            } else if (item['LOC0-PROV']) {
+                locationText = `${item['LOC0-CONT']} `;
+            } else {
+                locationText = `${item['LOC0-CONT']}`;
+            }
+        }
+
+        if(item['LOC0-CITTA']) {
+            if (item['LOC0-PROV']) {
+                locationText += `${item['LOC0-CITTA']} `;
+            } else {
+                locationText += `${item['LOC0-CITTA']}`;
+            }
+        }
+
+        if (item['LOC0-PROV']) {
+            if (!item['LOC0-CITTA']) {
+                locationText += `Provincia di ${item['LOC0-PROV']}`;
+            } else {
+                locationText += `(${item['LOC0-PROV']})`;
+            }
+        }
+
         const listItem = `
                     <div class="card mb-1">
                         <div class="row g-0">
@@ -99,11 +133,7 @@ function renderList(page, data) {
                                     <p class="card-text">${item.AUTORE} ${item['SPECIFICHE-AUTORE'] ? `(${item['SPECIFICHE-AUTORE']})` : ''}</p>
                                     <p class="card-text fw-bold"><a href="schede/${item.URL}.html" class="query-result-obj-id">${item.SOGGETTO}</a></p>
                                     <p class="card-text">${item['DATA-FROM']} ${item['DATA-FROM'] ? ` - ${item['DATA-TO']}` : `${item['DATA-TO']}`}</p>
-                                    <p class="card-text">
-                                        ${item['LOC0-CITTA'] ? `${item['LOC0-CONT']},` : ``}
-                                        ${item['LOC0-CONT'] ? `${item['LOC0-CITTA']}` : ``}
-                                        ${item['LOC0-CITTA'] ? ` (${item['LOC0-PROV']})` : ``}
-                                    </p>
+                                    <p class="card-text">${locationText}</p>
                                 </div>
                             </div>
                         </div>
@@ -120,7 +150,7 @@ function renderList(page, data) {
 
     // Mostra la prima pagina
     paginationHtml += `<li class="page-item ${page === 1 ? 'disabled' : ''}">
-        <a class="page-link" href="#" onclick="renderList(1)">1</a>
+        <a class="page-link" href="#" onclick="renderList(1, data)">1</a>
     </li>`;
 
     // Aggiungi ellissi se necessario
@@ -134,7 +164,7 @@ function renderList(page, data) {
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `
             <li class="page-item ${i === page ? 'active' : ''}">
-                <a class="page-link" href="#" onclick="renderList(${i})">${i}</a>
+                <a class="page-link" href="#" onclick="renderList(${i}, data)">${i}</a>
             </li>
         `;
     }
@@ -147,7 +177,7 @@ function renderList(page, data) {
     // Mostra l'ultima pagina
     if (totalPages > 1) {
         paginationHtml += `<li class="page-item ${page === totalPages ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="renderList(${totalPages})">${totalPages}</a>
+            <a class="page-link" href="#" onclick="renderList(${totalPages}, data)">${totalPages}</a>
         </li>`;
     }
 
@@ -266,7 +296,10 @@ function countByProperties(properties) {
 function renderAccordionSection(properties, label) {
     const counts = countByProperties(properties);
 
-    const content = Object.entries(counts)
+    const sortedCounts = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1]); // Ordina per valore della frequenza (indice 1)
+
+    const content = sortedCounts
         .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2">${count}</div></div>`).join('');
     
     const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-');
@@ -285,6 +318,40 @@ function renderAccordionSection(properties, label) {
 
     $('#accordionQuery').append(accordionItem);
 }
+
+function renderAccordionChronologySection() {
+    const accordionItem = `
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDatazione" aria-expanded="false" aria-controls="collapseDatazione">
+                    Datazione
+                </button>
+            </h2>
+
+            <div id="collapseDatazione" class="accordion-collapse collapse" data-bs-parent="#accordionQuery">
+                <div class="accordion-body accordion-query-body">
+                    <p>Restringi gli estremi cronologici della tua ricerca</p>
+                    
+                    <form class="form-inline">
+                        <div class="form-row"> 
+                            <div class="form-group mx-sm-3 mb-2">
+                                <input type="password" class="form-control" id="inputDateFrom" placeholder="Da anno">
+                            </div>
+                        
+                            <div class="form-group mx-sm-3 mb-2">
+                                <input type="password" class="form-control" id="inputDateFrom" placeholder="a anno">
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button type="submit" style="margin:auto" class="btn btn-primary mb-2"><i class="bi bi-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>`;
+
+        $('#accordionQuery').append(accordionItem);
+};
 
 // *************
 // ** SORTING **

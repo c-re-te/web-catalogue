@@ -26,6 +26,11 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
 
+        <!-- CSS di Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />  
+
         <link href="css/mycss.css" rel="stylesheet" />
 
         <!-- Other scripts -->
@@ -96,6 +101,7 @@
                             </div>
                             <div class="col-9">
                                 <select id="sortSelect" class="form-select" onchange="sortData()">
+                                    <option value="">Indica un criterio</option>
                                     <option value="author">Autore</option>
                                     <option value="subject">Soggetto</option>
                                     <option value="object">Oggetto</option>
@@ -134,7 +140,12 @@
                         <p class="fs-5">Attiva filtri aggiuntivi</p>
                         <p style="font-size: 1em; font-weight: 400;">Esplora l'attuale localizzazione delle opere</p>
                         
-                        <div id="chartdiv" style="width: 100%; height: 25rem;"></div>
+                        <div id="mapid" style="width: 100%; height: 25rem;"></div>
+                        
+                        <!-- 
+                        Implementation in amCharts5
+                        <div id="chartdiv" style="width: 100%; height: 25rem;"></div> 
+                        -->
 
                         <!--
                         <img src="https://openmaptiles.org/img/home-banner-map.png" class="img-fluid" alt="Mappa delle opere"> -->
@@ -231,19 +242,25 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- Leaflet -->
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
 
         <!-- amCharts -->
+        <!--
         <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
         <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
         <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
         <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+        <script src="js/map-am5.js"></script>
+        -->
 
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
-        <script src="js/mapleaflet.js"></script>
+        <script src="js/generaljs.js"></script>
+
         <script src="js/queryjs.js"></script>
 
-        <script src="js/generaljs.js"></script>
+        <script src="js/map-leaflet.js"></script>
     </body>
 </html>

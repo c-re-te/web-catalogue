@@ -53,14 +53,19 @@ function loadCSV() {
             renderList(currentPage, data);
     
             // Display filters in the accordion
-            const combinedAuthors = combineValues(data, 'AUTORE', 'SPECIFICHE-AUTORE');
-            renderAccordionSectionFromArray(combinedAuthors, 'Autore', true);
+            /* const combinedAuthors = combineValues(data, 'AUTORE', 'SPECIFICHE-AUTORE');
+            renderAccordionSectionFromArray(combinedAuthors, 'Autore', true); */
+            renderAccordionSection(['AUTORE'], 'Autore', true);
 
             const combinedOtherAuthors1 = combineValues(data, 'AUTORE-ALT1', 'AUTORE-ALT1-SPEC');
             const combinedOtherAuthors2 = combineValues(data, 'AUTORE-ALT2', 'AUTORE-ALT2-SPEC');
             const combinedOtherAuthors = combinedOtherAuthors1.concat(combinedOtherAuthors2);
 
             renderAccordionSectionFromArray(combinedOtherAuthors, 'Altre Attribuzioni');
+
+            // Passa questa colonna combinata alla funzione renderAccordionSection
+            // renderAccordionSection(concatValues(data, 'AUTORE-ALT1', 'AUTORE-ALT2'), 'Altre Attribuzioni');
+                
 
             renderAccordionChronologySection();
 
@@ -193,6 +198,23 @@ function renderList(page, data) {
 
 // For merged multiple columns 
 
+function concatValues(data, col1, col2) {
+    const cleanValue = (value) => {
+        // Rimuove tutto ciò che segue uno spazio, parentesi o caratteri speciali
+        return value.split(/[\(\[]/)[0].trim();
+    };
+
+    // Estrai e pulisci i valori delle colonne
+    const autoreAlt1Values = data.map(row => cleanValue(row[col1] || ""));
+    const autoreAlt2Values = data.map(row => cleanValue(row[col2] || ""));
+
+    // Concatena, filtra valori vuoti e restituisce un array unificato
+    return autoreAlt1Values
+        .concat(autoreAlt2Values)
+        .filter(value => value !== "");
+}
+
+
 function combineValues(data, col1, col2) { // Combina i valori di due colonne
     return data.map(item => {
         const val1 = item[col1]?.trim() || ''; // Prende il valore della prima colonna (o stringa vuota)
@@ -296,7 +318,7 @@ function countByProperties(properties) {
     return counts;
 }
 
-function renderAccordionSection(properties, label) {
+function renderAccordionSection(properties, label, bool = false) {
     const counts = countByProperties(properties);
 
     const sortedCounts = Object.entries(counts)
@@ -306,7 +328,10 @@ function renderAccordionSection(properties, label) {
         .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2">${count}</div></div>`).join('');
     
     const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-');
-    const accordionItem = `
+    let accordionItem;
+
+    if(bool) { 
+        accordionItem = `  
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="false" aria-controls="collapse${safeLabel}">
@@ -318,6 +343,21 @@ function renderAccordionSection(properties, label) {
                 <div class="accordion-body accordion-query-body">${content}</div>
             </div>
         </div>`;
+
+    } else {
+        accordionItem = `
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="false" aria-controls="collapse${safeLabel}">
+                        ${label}
+                    </button>
+                </h2>
+
+                <div id="collapse${safeLabel}" class="accordion-collapse collapse" data-bs-parent="#accordionQuery">
+                    <div class="accordion-body accordion-query-body">${content}</div>
+                </div>
+            </div>`;
+    }
 
     $('#accordionQuery').append(accordionItem);
 }

@@ -54,7 +54,7 @@ function loadCSV() {
     
             // Display filters in the accordion
             const combinedAuthors = combineValues(data, 'AUTORE', 'SPECIFICHE-AUTORE');
-            renderAccordionSectionFromArray(combinedAuthors, 'Autori', true);
+            renderAccordionSectionFromArray(combinedAuthors, 'Autore', true);
 
             const combinedOtherAuthors1 = combineValues(data, 'AUTORE-ALT1', 'AUTORE-ALT1-SPEC');
             const combinedOtherAuthors2 = combineValues(data, 'AUTORE-ALT2', 'AUTORE-ALT2-SPEC');
@@ -62,21 +62,24 @@ function loadCSV() {
 
             renderAccordionSectionFromArray(combinedOtherAuthors, 'Altre Attribuzioni');
 
-            renderAccordionSection(['SOGGETTO'], 'Soggetti');
-
-            renderAccordionSection(['OBJID'], 'Oggetti (definizione)');
-
             renderAccordionChronologySection();
+
+            const combinedCurrentLoc = combineValues(data, 'LOC1-CITTA', 'LOC1-CONT');
+            renderAccordionSectionFromArray(combinedCurrentLoc, 'Ubicazione attuale');
 
             const combinedOtherLoc1 = combineValues(data, 'LOC1-CITTA', 'LOC1-CONT');
             const combinedOtherLoc2 = combineValues(data, 'LOC2-CITTA', 'LOC2-CONT');
             const combinedOtherLocs = combinedOtherLoc1.concat(combinedOtherLoc2);
 
-            renderAccordionSectionFromArray(combinedOtherLocs, 'Provenienza');
+            renderAccordionSectionFromArray(combinedOtherLocs, 'Ubicazioni precedenti');
 
-            renderAccordionSection(['LAVORAZIONE'], 'Lavorazione della superficie');
+            renderAccordionSection(['SOGGETTO'], 'Soggetto');
+
+            renderAccordionSection(['OBJID'], 'Oggetto');
 
             renderAccordionSection(['TECNICA'], 'Tecnica');
+
+            renderAccordionSection(['LAVORAZIONE'], 'Lavorazione');
         }
     });
 }
@@ -126,7 +129,7 @@ function renderList(page, data) {
                     <div class="card mb-1">
                         <div class="row g-0">
                             <div class="col-md-4 col-sm-12">
-                                <img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item.AUTORE} ${item['SPECIFICHE-AUTORE'] ? `(${item['SPECIFICHE-AUTORE']})` : ''} ${item.SOGGETTO}" style="max-height: 200px">
+                                <a href="schede/${item.URL}.html"><img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item.AUTORE} ${item['SPECIFICHE-AUTORE'] ? `(${item['SPECIFICHE-AUTORE']})` : ''} ${item.SOGGETTO}" style="max-height: 200px"></a>
                             </div>
                             <div class="col-md-8 col-sm-12">
                                 <div class="card-body">

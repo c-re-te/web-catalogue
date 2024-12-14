@@ -1,172 +1,172 @@
-const itemsPerPage = 15;  // Numero di risultati per pagina
 let currentPage = 1;
 let data = [];
 
-// Funzione per caricare il CSV usando PapaParse
+// Load CSV data using PapaParse
 function loadCSV() {
     Papa.parse('./assets/data/sample-query.csv', {
         download: true,
         header: true,
         skipEmptyLines: true,
         complete: function (results) {
-            // Carica i dati nel formato desiderato
-            data = results.data.map(row => ({
-                AUTORE: row['AUTORE'] || '',
-                'SPECIFICHE-AUTORE': row['SPECIFICHE-AUTORE'] || '',
 
-                'AUTORE-ALT1': row['ALTRO-AUTORE-1'] || '',
-                'AUTORE-ALT1-SPEC': row['ALTRO-AUTORE-1-SPECIFICHE-AUTORE'] || '',
+            data = results.data.map(row => ({ // Map the names of the columns
+                'author': row['autore-0-name'] || '',
+                'author-rif': row['autore-0-rif'] || '',
 
-                'AUTORE-ALT2': row['ALTRO-AUTORE-2'] || '',
-                'AUTORE-ALT2-SPEC': row['ALTRO-AUTORE-2-SPECIFICHE-AUTORE'] || '',
+                'author-1': row['autore-1-name'] || '',
+                'author-1-rif': row['autore-1-rif'] || '',
+
+                'author-2': row['autore-2-name'] || '',
+                'author-2-rif': row['autore-2-rif'] || '',
+
+                'date-from': row['data-da'] || '',
+                'date-to': row['data-a'] || '',
                 
-                'SOGGETTO': row['SOGGETTO'] || '',
+                'subj': row['soggetto'] || '',
 
-                'LAVORAZIONE': row['LAVORAZIONE'] || '',
+                'obj-def': row['oggetto-def'] || '',
+
+                'tech': row['tecnica'] || '',
+                'lav': row['lavorazione'] || '',
                 
-                'LOC0-CONT': row['LOC0-CONT'] || '',
-                'LOC0-CITTA': row['LOC0-CITTA'] || '',
-                'LOC0-PROV': row['LOC0-PROV'] || '',
+                'l0-cont': row['loc-0-contenitore'] || '',
+                'l0-city': row['loc-0-comune'] || '',
+                'l0-prov': row['loc-0-prov'] || '',
 
-                'LOC1-CONT': row['LOC1-CONT'] || '',
-                'LOC1-CITTA': row['LOC1-CITTA'] || '',
-                'LOC1-PROV': row['LOC1-PROV'] || '',
+                'l1-cont': row['loc-1-contenitore'] || '',
+                'l1-city': row['loc-1-comune'] || '',
+                'l1-prov': row['loc-1-prov'] || '',
 
-                'LOC2-CONT': row['LOC2-CONT'] || '',
-                'LOC2-CITTA': row['LOC2-CITTA'] || '',
-                'LOC2-PROV': row['LOC2-PROV'] || '',
-                
-                'DATA-FROM': row['DATA-FROM'] || '',
-                'DATA-TO': row['DATA-TO'] || '',
+                'l2-cont': row['loc-2-contenitore'] || '',
+                'l2-city': row['loc-2-comune'] || '',
+                'l2-prov': row['loc-2-prov'] || '',
 
-                OBJID: row['OGGETTO-DEFINIZIONE'] || '',
-
-                TECNICA: row['TECNICA'] || '',
-                LAVORAZIONE: row['LAVORAZIONE'] || '',
-
-                'URL': row['ID'],
+                'url': row['ID'] || ''
             }));
 
-            document.getElementById("tot-results").innerHTML = data.length
+            document.getElementById("tot-results").innerHTML = data.length;
 
-            // Display content
-            renderList(currentPage, data);
-    
-            // Display filters in the accordion
-            /* const combinedAuthors = combineValues(data, 'AUTORE', 'SPECIFICHE-AUTORE');
-            renderAccordionSectionFromArray(combinedAuthors, 'Autore', true); */
-            renderAccordionSection(['AUTORE'], 'Autore', true);
+            renderResults(currentPage, data, isGrid = false);
 
-            const combinedOtherAuthors1 = combineValues(data, 'AUTORE-ALT1', 'AUTORE-ALT1-SPEC');
-            const combinedOtherAuthors2 = combineValues(data, 'AUTORE-ALT2', 'AUTORE-ALT2-SPEC');
-            const combinedOtherAuthors = combinedOtherAuthors1.concat(combinedOtherAuthors2);
-
-            renderAccordionSectionFromArray(combinedOtherAuthors, 'Altre Attribuzioni');
-
-            // Passa questa colonna combinata alla funzione renderAccordionSection
-            // renderAccordionSection(concatValues(data, 'AUTORE-ALT1', 'AUTORE-ALT2'), 'Altre Attribuzioni');
-                
-
-            renderAccordionChronologySection();
-
-            const combinedCurrentLoc = combineValues(data, 'LOC1-CITTA', 'LOC1-CONT');
-            renderAccordionSectionFromArray(combinedCurrentLoc, 'Ubicazione attuale');
-
-            const combinedOtherLoc1 = combineValues(data, 'LOC1-CITTA', 'LOC1-CONT');
-            const combinedOtherLoc2 = combineValues(data, 'LOC2-CITTA', 'LOC2-CONT');
-            const combinedOtherLocs = combinedOtherLoc1.concat(combinedOtherLoc2);
-
-            renderAccordionSectionFromArray(combinedOtherLocs, 'Ubicazioni precedenti');
-
-            renderAccordionSection(['SOGGETTO'], 'Soggetto');
-
-            renderAccordionSection(['OBJID'], 'Oggetto');
-
-            renderAccordionSection(['TECNICA'], 'Tecnica');
-
-            renderAccordionSection(['LAVORAZIONE'], 'Lavorazione');
+            renderFilters(data)
         }
     });
+
+    return data;
 }
 
 // *************
-// ** RESULTS **
+// ** Results **
 // *************
 
-function renderList(page, data) {
-    const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const pageData = data.slice(startIndex, endIndex);
+function renderResults(page, data, isGrid = false) {
 
     $('#resultsList').empty();
 
-    // *** CONTENT ***
-    pageData.forEach(item => {
-        let locationText = '';
+    if(!isGrid) { 
+        const itemsPerPage = 15;
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageData = data.slice(startIndex, endIndex);
+        
+        // Option A. List view
 
-        if(item['LOC0-CONT']) {
-            if(item['LOC0-CITTA']) {
-                locationText = `${item['LOC0-CONT']}, `;
-            } else if (item['LOC0-PROV']) {
-                locationText = `${item['LOC0-CONT']} `;
-            } else {
-                locationText = `${item['LOC0-CONT']}`;
-            }
-        }
+        pageData.forEach(item => { 
 
-        if(item['LOC0-CITTA']) {
-            if (item['LOC0-PROV']) {
-                locationText += `${item['LOC0-CITTA']} `;
-            } else {
-                locationText += `${item['LOC0-CITTA']}`;
-            }
-        }
-
-        if (item['LOC0-PROV']) {
-            if (!item['LOC0-CITTA']) {
-                locationText += `Provincia di ${item['LOC0-PROV']}`;
-            } else {
-                locationText += `(${item['LOC0-PROV']})`;
-            }
-        }
-
-        const listItem = `
-                    <div class="card mb-1">
-                        <div class="row g-0">
-                            <div class="col-md-4 col-sm-12">
-                                <a href="schede/${item.URL}.html"><img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item.AUTORE} ${item['SPECIFICHE-AUTORE'] ? `(${item['SPECIFICHE-AUTORE']})` : ''} ${item.SOGGETTO}" style="max-height: 200px"></a>
-                            </div>
-                            <div class="col-md-8 col-sm-12">
-                                <div class="card-body">
-                                    <p class="card-text">${item.AUTORE} ${item['SPECIFICHE-AUTORE'] ? `(${item['SPECIFICHE-AUTORE']})` : ''}</p>
-                                    <p class="card-text fw-bold"><a href="schede/${item.URL}.html" class="query-result-obj-id">${item.SOGGETTO}</a></p>
-                                    <p class="card-text">${item['DATA-FROM']} ${item['DATA-FROM'] ? ` - ${item['DATA-TO']}` : `${item['DATA-TO']}`}</p>
-                                    <p class="card-text">${locationText}</p>
+            // Create the single list
+            const listItem = `
+                        <div class="card mb-1">
+                            <div class="row g-0">
+                                <div class="col-md-4 col-sm-12">
+                                    <a href="schede/${item['url']}.html"><img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px"></a>
+                                </div>
+                                <div class="col-md-8 col-sm-12">
+                                    <div class="card-body">
+                                        <p class="card-text">${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''}</p>
+                                        <p class="card-text fw-bold"><a href="schede/${item['url']}.html" class="query-result-obj-id">${item['subj']}</a></p>
+                                        <p class="card-text">${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}</p>
+                                        <p class="card-text">${createLocLabel(item)}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-        $('#resultsList').append(listItem);
-    });
+                    `;
+            $('#resultsList').append(listItem);
+            
+            renderPagination(page, data, itemsPerPage);
+        });
 
-    // *** PAGINATION ***
+    } else {
+
+        const itemsPerPage = 30;
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageData = data.slice(startIndex, endIndex);
+
+        // Option B. Grid view
+
+        renderPagination(data, itemsPerPage);
+
+    }
+
+}
+
+// *** Ancillary functions for filters ***
+
+// 1. createLocLabel, to create the label for the location
+
+function createLocLabel(item) {
+    let locationText = ''; // Create the label for the location
+
+    if(item['l0-cont']) {
+        if(item['l0-city']) {
+            locationText = `${item['l0-cont']}, `;
+        } else if (item['l0-prov']) {
+            locationText = `${item['l0-cont']} `;
+        } else {
+            locationText = `${item['l0-cont']}`;
+        }
+    }
+
+    if(item['l0-city']) {
+        if (item['l0-prov']) {
+            locationText += `${item['l0-city']} `;
+        } else {
+            locationText += `${item['l0-city']}`;
+        }
+    }
+
+    if (item['l0-prov']) {
+        if (!item['l0-city']) {
+            locationText += `Provincia di ${item['l0-prov']}`;
+        } else {
+            locationText += `(${item['l0-prov']})`;
+        }
+    }
+
+    return locationText;
+}
+
+// 2. renderPagination, to paginate with Bootstrap
+
+function renderPagination(page, data, itemsPerPage) {
+
     const totalPages = Math.ceil(data.length / itemsPerPage);
     $('#pagination').empty();
 
     let paginationHtml = '';
 
-    // Mostra la prima pagina
+    // Show first page
     paginationHtml += `<li class="page-item ${page === 1 ? 'disabled' : ''}">
         <a class="page-link" href="#" onclick="renderList(1, data)">1</a>
-    </li>`;
+    </li>`; 
 
-    // Aggiungi ellissi se necessario
+    // If necessary, add ellipsis
     if (page > 3) {
         paginationHtml += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
     }
 
-    // Pagine circostanti alla pagina corrente
+    // Show adjacent pages
     const startPage = Math.max(2, page - 2);
     const endPage = Math.min(totalPages - 1, page + 2);
     for (let i = startPage; i <= endPage; i++) {
@@ -177,12 +177,12 @@ function renderList(page, data) {
         `;
     }
 
-    // Aggiungi ellissi se necessario
+    // If necessary, add ellipsis
     if (page < totalPages - 2) {
         paginationHtml += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-    }
+    } 
 
-    // Mostra l'ultima pagina
+    // Show last page
     if (totalPages > 1) {
         paginationHtml += `<li class="page-item ${page === totalPages ? 'disabled' : ''}">
             <a class="page-link" href="#" onclick="renderList(${totalPages}, data)">${totalPages}</a>
@@ -192,178 +192,36 @@ function renderList(page, data) {
     $('#pagination').append(paginationHtml);
 }
 
+// 3. sortData, so that user can rearrange the content
+
+function sortData(criterion) {
+    let sortedData;
+
+    sortedData = [...data].sort((a, b) => {
+        if(criterion === 'date-from') {  // specific to handle dates
+            return new Date(a[criterion]) - new Date(b[criterion]);
+        } else {
+            return a[criterion]?.localeCompare(b[criterion] || ''); // checking if exists
+        }
+    });
+
+    renderResults(currentPage, sortedData);  // Rende la lista ordinata
+}
+
 // *************
-// ** FILTERS **
+// ** Filters **
 // *************
 
-// For merged multiple columns 
+function renderFilters(data) {
 
-function concatValues(data, col1, col2) {
-    const cleanValue = (value) => {
-        // Rimuove tutto ciò che segue uno spazio, parentesi o caratteri speciali
-        return value.split(/[\(\[]/)[0].trim();
-    };
+    // Accordion section: Autore
+    renderFreqTableInAccordion(data, ['author'], 'Autore', true, true);
 
-    // Estrai e pulisci i valori delle colonne
-    const autoreAlt1Values = data.map(row => cleanValue(row[col1] || ""));
-    const autoreAlt2Values = data.map(row => cleanValue(row[col2] || ""));
+    // Accordion section: Altre attribuzioni
+    renderFreqTableInAccordion(data, ['author-1', 'author-2', 'author-3'], 'Altre attribuzioni', false, true);
 
-    // Concatena, filtra valori vuoti e restituisce un array unificato
-    return autoreAlt1Values
-        .concat(autoreAlt2Values)
-        .filter(value => value !== "");
-}
-
-
-function combineValues(data, col1, col2) { // Combina i valori di due colonne
-    return data.map(item => {
-        const val1 = item[col1]?.trim() || ''; // Prende il valore della prima colonna (o stringa vuota)
-        const val2 = item[col2]?.trim() || ''; // Prende il valore della seconda colonna (o stringa vuota)
-
-        // Combina i valori, escludendo separatori inutili
-        if(val1 && val2) {
-            return `${val1} (${val2})`; // Città (Collocazione)
-        }
-
-        else if(val1 && !val2) {
-            return val1;
-        }
-
-        else if(!val1 && val2) {
-            return val2;
-        }
-    });
-}
-
-function renderAccordionSectionFromArray(values, label, bool = false) {
-    const counts = {};
-    values.forEach(value => {
-        if (value) {
-            // Separiamo i valori con il delimitatore ";"
-            const separatedValues = value.split(';');
-
-            // Conta separatamente ciascun valore
-            separatedValues.forEach(val => {
-                const trimmedVal = val.trim(); // Rimuove gli spazi prima e dopo
-                if (trimmedVal) {
-                    counts[trimmedVal] = (counts[trimmedVal] || 0) + 1;
-                }
-            });
-        }
-    });
-
-    const sortedCounts = Object.entries(counts)
-        .sort((a, b) => b[1] - a[1]); // Ordina per valore della frequenza (indice 1)
-
-    const content = sortedCounts
-        .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`).join('');
-    
-    const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-');
-    let accordionItem;
-    
-    if(bool) {
-        accordionItem = `  
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="true" aria-controls="collapse${safeLabel}">
-                    ${label}
-                </button>
-            </h2>
-
-            <div id="collapse${safeLabel}" class="accordion-collapse collapse show" data-bs-parent="#accordionQuery">
-                <div class="accordion-body accordion-query-body">${content}</div>
-            </div>
-        </div>`;
-
-    } else {
-        accordionItem = `  
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="false" aria-controls="collapse${safeLabel}">
-                    ${label}
-                </button>
-            </h2>
-
-            <div id="collapse${safeLabel}" class="accordion-collapse collapse" data-bs-parent="#accordionQuery">
-                <div class="accordion-body accordion-query-body">${content}</div>
-            </div>
-        </div>`;
-    }
-    
-    $('#accordionQuery').append(accordionItem);
-}
-
-// For single columns 
-
-function countByProperties(properties) {
-    const counts = {};
-    data.forEach(item => {
-        const key = properties
-            .map(prop => item[prop] || '')
-            .filter(val => val.trim() !== '')
-            .join(' ');
-            if (key) {
-                // Separiamo i valori con il delimitatore ";"
-                const separatedValues = key.split(';');
-    
-                // Conta separatamente ciascun valore
-                separatedValues.forEach(val => {
-                    const trimmedVal = val.trim(); // Rimuove gli spazi prima e dopo
-                    if (trimmedVal) {
-                        counts[trimmedVal] = (counts[trimmedVal] || 0) + 1; // Incrementa il conteggio
-                    }
-                });
-            }
-    });
-    return counts;
-}
-
-function renderAccordionSection(properties, label, bool = false) {
-    const counts = countByProperties(properties);
-
-    const sortedCounts = Object.entries(counts)
-        .sort((a, b) => b[1] - a[1]); // Ordina per valore della frequenza (indice 1)
-
-    const content = sortedCounts
-        .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2">${count}</div></div>`).join('');
-    
-    const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-');
-    let accordionItem;
-
-    if(bool) { 
-        accordionItem = `  
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="false" aria-controls="collapse${safeLabel}">
-                    ${label}
-                </button>
-            </h2>
-
-            <div id="collapse${safeLabel}" class="accordion-collapse collapse" data-bs-parent="#accordionQuery">
-                <div class="accordion-body accordion-query-body">${content}</div>
-            </div>
-        </div>`;
-
-    } else {
-        accordionItem = `
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="false" aria-controls="collapse${safeLabel}">
-                        ${label}
-                    </button>
-                </h2>
-
-                <div id="collapse${safeLabel}" class="accordion-collapse collapse" data-bs-parent="#accordionQuery">
-                    <div class="accordion-body accordion-query-body">${content}</div>
-                </div>
-            </div>`;
-    }
-
-    $('#accordionQuery').append(accordionItem);
-}
-
-function renderAccordionChronologySection() {
-    const accordionItem = `
+    // Accordion section: Cronologia
+    const accordionChronoItem = `
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDatazione" aria-expanded="false" aria-controls="collapseDatazione">
@@ -392,50 +250,211 @@ function renderAccordionChronologySection() {
                 </div>
             </div>
         </div>`;
+    $('#accordionQuery').append(accordionChronoItem);
 
-        $('#accordionQuery').append(accordionItem);
-};
+    // Accordion section: Ubicazione attuale
+    renderFreqTableInAccordion(data, ['l0-city', 'l0-cont'], 'Ubicazione attuale', false, true);
 
-// *************
-// ** SORTING **
-// *************
+    // Accordion section: Ubicazione precedenti
+    renderFreqTableInAccordion(data, [['l1-city', 'l1-cont'], ['l2-city', 'l2-cont']], 'Ubicazioni precedenti', false, true);
+    // Accordion section: Soggetto
+    renderFreqTableInAccordion(data, ['subj'], 'Soggetto', false, true);
 
-// Funzione per ordinare i dati in base al criterio
-function sortData() {
-    let sortedData;
-    var criteria = document.getElementById("sortSelect").value;
+    // Accordion section: Oggetto
+    renderFreqTableInAccordion(data, ['obj-def'], 'Oggetto');
 
-    // Ordinamento per autore
-    if (criteria === 'author') {
-        sortedData = [...data].sort((a, b) => a.AUTORE.localeCompare(b.AUTORE)); 
-    } 
-    // Ordinamento per località
-    else if (criteria === 'location') {
-        sortedData = [...data].sort((a, b) => {
-            // Assicurati che 'LOC0-CITTA' sia presente e non nullo
-            return a['LOC0-CITTA']?.localeCompare(b['LOC0-CITTA'] || '');
-        });
-    } 
-    // Ordinamento per data (assicurati che 'DATA-FROM' sia una data valida)
-    else if (criteria === 'date') {
-        sortedData = [...data].sort((a, b) => {
-            // Converte le date in formato timestamp per il confronto
-            return new Date(a['DATA-FROM']) - new Date(b['DATA-FROM']); 
-        });
-    } 
-    // Ordinamento per oggetto
-    else if (criteria === 'object') {
-        sortedData = [...data].sort((a, b) => a.OBJID.localeCompare(b.OBJID));
-    } 
-    // Ordinamento per soggetto (corretto con localeCompare per le stringhe)
-    else if (criteria === 'subject') {
-        sortedData = [...data].sort((a, b) => a.SOGGETTO.localeCompare(b.SOGGETTO)); 
-    }
+    // Accordion section: Tecnica
+    renderFreqTableInAccordion(data, ['tech'], 'Tecnica');
 
-    renderList(currentPage, sortedData);  // Rende la lista ordinata
+    // Accordion section: Lavorazione
+    renderFreqTableInAccordion(data, ['lav'], 'Lavorazione');
+
 }
 
-// Carica il CSV quando la pagina viene caricata
+// *** Main ancillary functions for filters ***
+
+// 1. renderFreqTableInAccordion, to render accordion containing frequency tables
+
+function renderFreqTableInAccordion(data, property, label, isFirst = false, hasSortingButton = false, isByName = false) {
+
+    // Generate the first row of the frequency table using Bootstrap columns
+    const content = retrieveFreqData(data, property, label, isByName)
+        .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
+        .join('');
+
+    const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-'); // Respect syntax for accordion label
+
+    if (hasSortingButton) {
+        const accordionItem = `
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button ${isFirst ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="${isFirst}" aria-controls="collapse${safeLabel}">
+                    ${label}
+                </button>
+            </h2>
+            <div id="collapse${safeLabel}" class="accordion-collapse collapse ${isFirst ? 'show' : ''}" data-bs-parent="#accordionQuery">
+                <div class="accordion-body accordion-query-body">
+                <div class="container">
+                    <div class="row mb-2">
+                        <div class="col-10 d-flex justify-content-end">
+                        <button class="btn btn-primary accordion-filter-button" onclick="resortFilter('${label}', true)"><i class="bi bi-sort-alpha-down"></i></button>
+                        </div>
+                        <div class="col-2 d-flex justify-content-end">
+                        <button class="btn btn-primary accordion-filter-button" onclick="resortFilter('${label}', false)"><i class="bi bi-sort-numeric-down"></i></button>
+                        </div>
+                </div>
+                <div id="content-${label}" class="mt-1">
+                    ${content}
+                </div>
+                </div>
+            </div>
+        </div>`;
+        $('#accordionQuery').append(accordionItem);
+    } else {
+        const accordionItem = `
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button ${isFirst ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${safeLabel}" aria-expanded="${isFirst}" aria-controls="collapse${safeLabel}">
+                    ${label}
+                </button>
+            </h2>
+            <div id="collapse${safeLabel}" class="accordion-collapse collapse ${isFirst ? 'show' : ''}" data-bs-parent="#accordionQuery">
+                <div class="accordion-body accordion-query-body">
+                    ${content}
+                </div>
+            </div>
+        </div>`;
+
+        $('#accordionQuery').append(accordionItem);
+    }
+
+}
+
+// *** Other ancillary functions for filters ***
+
+// 1. combineValues, to combine (horizontal) values from two columns
+
+function combineValues(data, col1, col2) {
+    return data.map((item) => {
+
+        // Get the values of the two cols ... 
+        const val1 = item[col1]?.trim() || '';
+        const val2 = item[col2]?.trim() || ''; 
+
+        // ... and combine them in a single string
+        if(val1 && val2) {
+            return `${val1} (${val2})`; // e.g. Cremona (Museo Civico)
+        }
+
+        else if(val1 && !val2) {
+            return val1;                // e.g. Mantova         
+        }
+
+        else if(!val1 && val2) {
+            return val2;                // e.g. Collezione privata
+        }
+    });
+}
+
+// 2. retrieveFreqData, to retrieve the frequency data to insert in the accordion
+
+function retrieveFreqData(data, property, label, isByName) {
+    let counts = {};
+    let propertyArray = [];
+
+    // Handle exceptions for repeated fields of the dataset
+
+    if (label === "Altre attribuzioni") {          // Except. 1: Other artists 
+
+        for (const prop of property) {
+            for (const element of data.map((row) => row[prop]).filter(val => val)) {
+                propertyArray.push(element);
+            }
+        }
+
+    } else if (label === "Ubicazioni precedenti") { // Except. 2: Other locations
+
+        for (const prop of property) {
+            for (const element of combineValues(data, prop[0], prop[1]).filter(val => val)) {
+                propertyArray.push(element);
+            }
+        }
+
+    } else {
+
+        propertyArray = combineValues(data, property[0], property[1]).filter(val => val);
+    
+    }
+
+    for (const element of propertyArray) {          // Main case (no exceptions)      
+        
+        if (element.includes(';')) { // Split the values with the delimiter ";"
+            const splittedVal = element.split('; '); // e.g. Maestro degli angeli cantori; G. de Fondulis
+            for (const val of splittedVal) {
+                counts[val] = counts[val] ? counts[val] + 1 : 1;
+            }
+        } else {    
+            // Main case (no delimiter)
+            counts[element] = counts[element] ? counts[element] + 1 : 1;
+        }
+    }
+
+    const sortedEntries = Object.entries(counts);
+
+    // Sort the entries
+    if (isByName) {
+        // Alphabetically
+        sortedEntries.sort((a, b) => a[0].localeCompare(b[0]));
+    } else {
+        // By value
+        sortedEntries.sort((a, b) => b[1] - a[1]);
+    }
+
+    return sortedEntries;
+}
+
+// 3. resortFilter, to allow to toggle between alphabetical and by value sorting
+
+function resortFilter(label, isByName = false) {
+
+    // Use the label as a key to retrieve the property and rerun renderFreqTableInAccordion
+    let property = [];
+
+    if (label === "Autore") {
+        property = ['author'];
+    }
+    else if (label === "Altre attribuzioni") {
+        property = ['author-1', 'author-2', 'author-3'];
+    }
+    else if (label === "Ubicazione attuale") {
+        property = ['l0-city', 'l0-cont'];
+    }
+    else if (label === "Ubicazioni precedenti") {
+        property = [['l1-city', 'l1-cont'], ['l2-city', 'l2-cont']];
+    }
+    else if (label === "Soggetto") {
+        property = ['subj'];
+    }
+    else if (label === "Oggetto") {
+        property = ['obj-def'];
+    }
+    else if (label === "Tecnica") {
+        property = ['tech'];
+    }
+    else if (label === "Lavorazione") {
+        property = ['lav'];
+    }
+
+    const content = retrieveFreqData(data, property, label, isByName)
+        .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
+        .join('');
+
+    // Replace the content of the accordion
+    var accordionContent = document.getElementById(`content-${label}`) ;
+    accordionContent.innerHTML = content;
+}
+
+// Load CSV data and render the results
 $(document).ready(function () {
     loadCSV();
 });

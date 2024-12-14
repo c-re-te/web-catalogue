@@ -306,3 +306,14 @@ table.dataTable thead .sorting_desc:before {
         }
     
 }
+
+.accordion-filter-button {
+    border-radius: 15%;
+    height: 2em;
+    width: 2em;
+    display: flex; /* Flexbox per centrare l'icona */
+    align-items: center; /* Centra verticalmente l'icona */
+    justify-content: center; /* Centra orizzontalmente l'icona */
+    padding: 0; /* Rimuove eventuale padding */
+    color: white;
+}

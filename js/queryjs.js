@@ -41,13 +41,20 @@ function loadCSV() {
                 'l2-city': row['loc-2-comune'] || '',
                 'l2-prov': row['loc-2-prov'] || '',
 
-                'url': row['ID'] || ''
+                'url': row['id'] || ''
             }));
 
             document.getElementById("tot-results").innerHTML = data.length;
 
-            renderResults(currentPage, data, isGrid = false);
+            /* 
 
+            Ipotizzabile che qui chiamerai la funzione di query e tramite ID
+            selezionerai solo i risultati che ti interessano ottenendo
+            un nuovo array che va a sostituire data in rr. 57 e seguenti
+
+            */ 
+
+            renderResults(currentPage, data, isGrid = false);
             renderFilters(data)
         }
     });
@@ -61,15 +68,18 @@ function loadCSV() {
 
 function renderResults(page, data, isGrid = false) {
 
-    $('#resultsList').empty();
+    if(!isGrid) {
 
-    if(!isGrid) { 
+        // Option A. List view
+
+        console.log($('#resultsGrid').text(), $('#resultsList').text())
+        $('#resultsList').empty();
+        $('#resultsGrid').empty();
+
         const itemsPerPage = 15;
         const startIndex = (page - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const pageData = data.slice(startIndex, endIndex);
-        
-        // Option A. List view
 
         pageData.forEach(item => { 
 
@@ -98,14 +108,40 @@ function renderResults(page, data, isGrid = false) {
 
     } else {
 
+        // Option B. Grid view
+
+        $('#resultsList').empty();
+        $('#resultsGrid').empty();
+
         const itemsPerPage = 30;
         const startIndex = (page - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const pageData = data.slice(startIndex, endIndex);
 
-        // Option B. Grid view
+        pageData.forEach(item => { 
 
-        renderPagination(data, itemsPerPage);
+            // Create the single grid
+            const gridItem = `
+                        <div class="col-md-4 col-sm-12 d-flex mt-2 justify-content-center">
+                            <div class="card d-flex flex-column" style="width: 15rem;" onclick="location.href='schede/${item['url']}.html'">
+                                <img src="assets/img/img-placeholder.png" class="card-img-top" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}">
+                                <div class="card-body d-flex flex-column">
+                                        <small class="card-text">
+                                            ${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} <br>
+                                            ${item['subj']},
+                                            ${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}
+                                        </small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            // , ${createLocLabel(item)}
+            console.log(gridItem);
+
+            $('#resultsGrid').append(gridItem);
+            
+            renderPagination(page, data, itemsPerPage);
+        });
 
     }
 
@@ -300,7 +336,7 @@ function renderFreqTableInAccordion(data, property, label, isFirst = false, hasS
                         <button class="btn btn-primary accordion-filter-button" onclick="resortFilter('${label}', true)"><i class="bi bi-sort-alpha-down"></i></button>
                         </div>
                         <div class="col-2 d-flex justify-content-end">
-                        <button class="btn btn-primary accordion-filter-button" onclick="resortFilter('${label}', false)"><i class="bi bi-sort-numeric-down"></i></button>
+                        <button class="btn btn-primary accordion-filter-button" onclick="resortFilter('${label}', false)"><i class="bi bi-sort-numeric-down-alt"></i></button>
                         </div>
                 </div>
                 <div id="content-${label}" class="mt-1">
@@ -457,4 +493,16 @@ function resortFilter(label, isByName = false) {
 // Load CSV data and render the results
 $(document).ready(function () {
     loadCSV();
+});
+
+// Change viz system with "viz_mode" toggle button
+
+document.getElementById('viz_mode').addEventListener('change', function () {
+    if (this.checked) {
+        // Page in grid mode
+        renderResults(currentPage, data, isGrid = true);
+    } else {
+        // Page in list mode
+        renderResults(currentPage, data, isGrid = false);
+    }
 });

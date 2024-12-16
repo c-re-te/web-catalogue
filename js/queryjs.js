@@ -100,7 +100,7 @@ function renderResults(page, data, isGrid = false) {
                         <div class="card mb-1">
                             <div class="row g-0">
                                 <div class="col-md-4 col-sm-12">
-                                    <a href="schede/${item['url']}.html"><img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px"></a>
+                                    <a href="schede/${item['url']}.html"><img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px; width: 100%"></a>
                                 </div>
                                 <div class="col-md-8 col-sm-12">
                                     <div class="card-body">
@@ -206,7 +206,7 @@ function renderPagination(page, data, itemsPerPage) {
 
     // Show first page
     paginationHtml += `<li class="page-item ${page === 1 ? 'disabled' : ''}">
-        <a class="page-link" href="#" onclick="renderList(1, data)">1</a>
+        <a class="page-link" href="#" onclick="renderResults(1, data, isGrid)">1</a>
     </li>`; 
 
     // If necessary, add ellipsis
@@ -220,7 +220,7 @@ function renderPagination(page, data, itemsPerPage) {
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `
             <li class="page-item ${i === page ? 'active' : ''}">
-                <a class="page-link" href="#" onclick="renderList(${i}, data)">${i}</a>
+                <a class="page-link" href="#" onclick="renderResults(${i}, data, isGrid)">${i}</a>
             </li>
         `;
     }
@@ -233,7 +233,7 @@ function renderPagination(page, data, itemsPerPage) {
     // Show last page
     if (totalPages > 1) {
         paginationHtml += `<li class="page-item ${page === totalPages ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="renderList(${totalPages}, data)">${totalPages}</a>
+            <a class="page-link" href="#" onclick="renderResults(${totalPages}, data, isGrid)">${totalPages}</a>
         </li>`;
     }
 
@@ -508,6 +508,7 @@ function resortFilter(label, isByName = false) {
 // 1. load CSV data and render the results
 $(document).ready(function () {
     loadCSV();
+    var isGrid = false;
 });
 
 // 2. change viz system with "viz_mode" toggle button
@@ -516,8 +517,10 @@ document.getElementById('viz_mode').addEventListener('change', function () {
     if (this.checked) {
         // Page in grid mode
         renderResults(currentPage, data, isGrid = true);
+        return isGrid = true;
     } else {
         // Page in list mode
         renderResults(currentPage, data, isGrid = false);
+        return isGrid = false;
     }
 });

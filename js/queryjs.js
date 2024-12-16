@@ -42,9 +42,15 @@ function loadCSV() {
                 'l2-prov': row['loc-2-prov'] || '',
 
                 'url': row['id'] || ''
+
+                // to add: path to main image
             }));
 
-            document.getElementById("tot-results").innerHTML = data.length;
+            if (data.length === 1) { // Exception for singular/plural
+                document.getElementById("tot-results").innerHTML = data.length + " opera";
+            } else {
+                document.getElementById("tot-results").innerHTML = data.length + " opere";
+            }
 
             /* 
 
@@ -61,6 +67,12 @@ function loadCSV() {
 
     return data;
 }
+
+// *** MINIBATCH QUERYING FUNCTIONS ***
+
+// function miniBatchQuery(...) {}
+
+// *** DATA VISUALIZATION FUNCTIONS ***
 
 // *************
 // ** Results **
@@ -307,9 +319,8 @@ function renderFilters(data) {
 
 }
 
-// *** Main ancillary functions for filters ***
-
-// 1. renderFreqTableInAccordion, to render accordion containing frequency tables
+// *** Main ancillary function for filters ***
+// ==> renderFreqTableInAccordion, to render accordion containing frequency tables
 
 function renderFreqTableInAccordion(data, property, label, isFirst = false, hasSortingButton = false, isByName = false) {
 
@@ -490,12 +501,16 @@ function resortFilter(label, isByName = false) {
     accordionContent.innerHTML = content;
 }
 
-// Load CSV data and render the results
+// ***************************
+// ** Other functionalities **
+// ***************************
+
+// 1. load CSV data and render the results
 $(document).ready(function () {
     loadCSV();
 });
 
-// Change viz system with "viz_mode" toggle button
+// 2. change viz system with "viz_mode" toggle button
 
 document.getElementById('viz_mode').addEventListener('change', function () {
     if (this.checked) {

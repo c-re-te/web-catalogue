@@ -347,28 +347,3 @@ table.dataTable thead .sorting_desc:before {
     text-align: center;
   }
 
-/* Cluster on Leaflet*/
-
-/* Assicura che il tuo stile abbia priorità */
-.cluster-icon .cluster-circle {
-    background-color: rgba(0, 123, 255, 0.9); /* Colore blu con trasparenza */
-    border-radius: 50%; /* Forma circolare */
-    color: white; /* Colore del testo */
-    font-size: 14px; /* Dimensione del testo */
-    font-weight: bold; /* Grassetto */
-    width: 40px; /* Diametro del cerchio */
-    height: 40px; /* Diametro del cerchio */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid white; /* Bordo bianco */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Ombra */
-}
-
-/* Applica lo stile a tutte le icone dei cluster */
-.cluster-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-

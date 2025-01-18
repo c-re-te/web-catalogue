@@ -141,13 +141,13 @@ function renderResults(page, data, isGrid = false) {
                                         <small class="card-text">
                                             ${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} <br>
                                             ${item['subj']},
-                                            ${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}
+                                            ${item['l0-city']} (${item['l0-prov']})
                                         </small>
                                 </div>
                             </div>
                         </div>
                     `;
-            // , ${createLocLabel(item)}
+            // , ${createLocLabel(item)} OPPURE ${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}
             console.log(gridItem);
 
             $('#resultsGrid').append(gridItem);

@@ -141,7 +141,7 @@ function renderResults(page, data, isGrid = false) {
                                         <small class="card-text">
                                             ${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} <br>
                                             ${item['subj']},
-                                            ${item['l0-city']} (${item['l0-prov']})
+                                            ${createLocLabel(item)}
                                         </small>
                                 </div>
                             </div>

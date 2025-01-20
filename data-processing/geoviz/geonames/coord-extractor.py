@@ -2,8 +2,8 @@ import pandas as pd
 import geocoder
 
 # Nome dei file
-input_csv = 'data-processing/geonames/geonames-uri.csv'
-output_excel = 'data-processing/geonames/coordinates.xslx'
+input_csv = 'data-processing/geoviz/geonames/geonames-uri-25.csv'
+output_excel = 'data-processing/geoviz/geonames/coordinates.xslx'
 
 # Legge il file CSV di input
 df = pd.read_csv(input_csv, header=None, names=['URI'])
@@ -33,8 +33,8 @@ for index, row in df.iterrows():
         df.at[index, 'Latitude'] = ""
         df.at[index, 'Longitude'] = ""
 
-
+print(df)
 # Salva il file CSV di output
-df[['URI', 'Latitude', 'Longitude']].to_excel(output_excel, index=False, engine='openpyxl')
+#df[['URI', 'Latitude', 'Longitude']].to_excel(output_excel, index=False, engine='openpyxl')
 
 print(f"Output salvato in {output_excel}")

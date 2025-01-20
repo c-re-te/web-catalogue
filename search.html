@@ -74,7 +74,7 @@
                     </div> 
                     <div class="col-lg-9 col-md-12">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Ricerca un'opera tramite testo libero" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <input type="text" class="form-control crete-query-form" placeholder="Ricerca un'opera tramite testo libero" id="input-free">
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                     </div> 
                     <div class="col-lg-9 col-md-12 d-flex align-items-center">
                         <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Ricerca per autore" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <input type="text" class="form-control crete-query-form" placeholder="Ricerca per autore" id="input-aut">
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                     </div>
                     <div class="col-lg-3 col-sm-9 d-flex align-items-center">
                         <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Da anno" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <input type="text" class="form-control crete-query-form" placeholder="Da anno" id="input-date-from">
                         </div>
                     </div>
 
@@ -119,19 +119,19 @@
                     </div>
                     <div class="col-lg-3 col-sm-9 d-flex align-items-center">
                         <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="A anno" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <input type="text" class="form-control crete-query-form" placeholder="A anno" id="input-date-to">
                         </div>
                     </div>
                 </div>
                 
-                <!-- LOCALIZZAZIONE -->
+                <!-- UBICAZIONE -->
                 <div class="row mb-3">
                     <div class="col-lg-3 col-md-12 d-flex align-items-center">
                         <p class="fs-5 mb-0">Ubicazione</p>
                     </div> 
                     <div class="col-lg-9 col-md-12 d-flex align-items-center">
                         <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Ricerca per ubicazione dell'opera (attuale o passata)" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <input type="text" class="form-control crete-query-form" placeholder="Ricerca per ubicazione dell'opera (attuale o passata)" id="input-loc">
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                     </div> 
                     <div class="col-lg-9 col-md-12 d-flex align-items-center">
                         <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Ricerca per soggetto" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <input type="text" class="form-control crete-query-form" placeholder="Ricerca per soggetto" id="input-date-sub">
                         </div>
                     </div>
                 </div>
@@ -155,17 +155,17 @@
                         <p class="fs-5 mb-0">Oggetto</p>
                     </div> 
                     <div class="col-lg-9 col-md-12 d-flex align-items-center">
-                        <select class="form-select w-100" id="inputGroupSelect01">
+                        <select class="form-select crete-query-form w-100" id="select-obj">
                             <option selected>Scegli la tipologia</option>
-                            <option value="1">Testa</option>
-                            <option value="2">Busto</option>
-                            <option value="3">Statua</option>
-                            <option value="4">Gruppo scultoreo</option>
-                            <option value="5">Rilievo</option>
-                            <option value="6">Altare</option>
-                            <option value="7">Monumento</option>
-                            <option value="8">Formella architettonica</option>
-                            <option value="9">Decorazione architettonica</option>
+                            <option value="testa">Testa</option>
+                            <option value="busto">Busto</option>
+                            <option value="statua">Statua</option>
+                            <option value="gruppo">Gruppo scultoreo</option>
+                            <option value="rilievo">Rilievo</option>
+                            <option value="altare">Altare</option>
+                            <option value="monumento">Monumento</option>
+                            <option value="formella">Formella architettonica</option>
+                            <option value="decorarch">Decorazione architettonica</option>
                         </select>   
                     </div>
                 </div>
@@ -177,12 +177,12 @@
                     </div> 
                     <div class="col-lg-3 col-md-12 d-flex align-items-center">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                            <label class="form-check-label" for="inlineRadio1">Modellazione</label>
+                            <input class="form-check-input" type="radio" name="tech-radio-options" id="tech-radio-1" value="modellazione">
+                            <label class="form-check-label" for="tech-radio-1">Modellazione</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                            <label class="form-check-label" for="inlineRadio2">A stampo</label>
+                            <input class="form-check-input" type="radio" name="tech-radio-options" id="tech-radio-2" value="stampo">
+                            <label class="form-check-label" for="tech-radio-2">A stampo</label>
                         </div>
                     </div>
                 
@@ -190,15 +190,15 @@
                         <p class="fs-5 mb-0">Lavorazione della superficie</p>
                     </div> 
                     <div class="col-lg-3 col-md-12 d-flex align-items-center">
-                        <select class="form-select w-100" id="inputGroupSelect01">
+                        <select class="form-select crete-query-form w-100" id="select-sfc">
                             <option selected>Scegli la lavorazione</option>
-                            <option value="1">Policroma</option>
-                            <option value="2">Invetriata</option>
-                            <option value="3">Dorata</option>
-                            <option value="4">Patinata</option>
-                            <option value="5">Scialbata</option>
-                            <option value="6">Policromia perduta</option>
-                            <option value="7">Non policroma</option>
+                            <option value="policr">Policroma</option>
+                            <option value="invetr">Invetriata</option>
+                            <option value="dorata">Dorata</option>
+                            <option value="patina">Patinata</option>
+                            <option value="scial">Scialbata</option>
+                            <option value="lost-p">Policromia perduta</option>
+                            <option value="non-p">Non policroma</option>
                         </select> 
                     </div>
                 </div>
@@ -206,7 +206,7 @@
 
                 <div class="row justify-content-center" style="margin-top: 2rem; margin-bottom: 3rem;">
                     <div class="col-4 d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary open-modal fs-5" onclick="location.href='query.html'"">Ricerca <i class="bi bi-search"></i></button>
+                        <button type="button" class="btn btn-primary fs-5" onclick="sendQueryVal()">Ricerca <i class="bi bi-search"></i></button>
                     </div>
                 </div>
                 
@@ -215,7 +215,7 @@
         </header>
 
         <!-- Footer-->
-        <footer class="bg-black py-5 animate-on-scroll">
+        <footer class="bg-black py-5">
             <div class="container px-5">
                 <div class="row gx-5 justify-content-lg-between">
 
@@ -308,11 +308,9 @@
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
 
+        <script src="js/query-bsearch.js"></script>
+
         <script src="js/generaljs.js"></script>
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <!-- * *                               SB Forms JS                               * *-->
-        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+
     </body>
 </html>

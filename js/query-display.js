@@ -3,7 +3,7 @@ let data = [];
 
 // Load CSV data using PapaParse
 function loadCSV() {
-    Papa.parse('./assets/data/sample-query.csv', {
+    Papa.parse('./assets/data/data-test-jan25-geo.csv', {
         download: true,
         header: true,
         skipEmptyLines: true,
@@ -12,22 +12,37 @@ function loadCSV() {
             data = results.data.map(row => ({ // Map the names of the columns
                 'author': row['autore-0-name'] || '',
                 'author-rif': row['autore-0-rif'] || '',
+                'author-amb': row['autore-0-ambito'] || '',
 
                 'author-1': row['autore-1-name'] || '',
                 'author-1-rif': row['autore-1-rif'] || '',
+                'author-1-amb': row['autore-1-ambito'] || '',
 
                 'author-2': row['autore-2-name'] || '',
                 'author-2-rif': row['autore-2-rif'] || '',
+                'author-2-amb': row['autore-2-ambito'] || '',
+
+                'author-3': row['autore-3-name'] || '',
+                'author-3-rif': row['autore-3-rif'] || '',
+                'author-3-amb': row['autore-3-ambito'] || '',
+
+                'author-4': row['autore-4-name'] || '',
+                'author-4-rif': row['autore-4-rif'] || '',
+                'author-4-amb': row['autore-4-ambito'] || '',
 
                 'date-from': row['data-da'] || '',
                 'date-to': row['data-a'] || '',
                 
                 'subj': row['soggetto'] || '',
+                'deno': row['denominazione'] || '',
 
                 'obj-def': row['oggetto-def'] || '',
 
                 'tech': row['tecnica'] || '',
                 'lav': row['lavorazione'] || '',
+
+                'lat': row['loc-0-lat'] || '',
+                'long': row['loc-0-long'] || '',
                 
                 'l0-cont': row['loc-0-contenitore'] || '',
                 'l0-city': row['loc-0-comune'] || '',
@@ -36,41 +51,58 @@ function loadCSV() {
                 'l1-cont': row['loc-1-contenitore'] || '',
                 'l1-city': row['loc-1-comune'] || '',
                 'l1-prov': row['loc-1-prov'] || '',
+                'l1-cron': row['loc-1-crono'] || '',
 
                 'l2-cont': row['loc-2-contenitore'] || '',
                 'l2-city': row['loc-2-comune'] || '',
                 'l2-prov': row['loc-2-prov'] || '',
+                'l2-cron': row['loc-2-crono'] || '',
 
-                'url': row['id'] || ''
+                'l3-cont': row['loc-3-contenitore'] || '',
+                'l3-city': row['loc-3-comune'] || '',
+                'l3-prov': row['loc-3-prov'] || '',
+                'l3-cron': row['loc-3-crono'] || '',
+
+                'l4-cont': row['loc-4-contenitore'] || '',
+                'l4-city': row['loc-4-comune'] || '',
+                'l4-prov': row['loc-4-prov'] || '',
+                'l4-cron': row['loc-4-crono'] || '',
+
+                'url': row['id'] || '',
+
+                'desc': row['descrizione'] || '',
+
+                'critic': row['not-storico-critiche'] || '',
+                'conserv':  row['stato-conservazione'] || '',	
+                
+                'rest':	row['restauro'] || '',
+                'rel':	row['relazioni'] || '',
 
                 // to add: path to main image
             }));
 
-            if (data.length === 1) { // Exception for singular/plural
-                document.getElementById("tot-results").innerHTML = data.length + " opera";
+            var filterData = data.filter(row => runQuery().includes(row.url));
+
+            if (filterData.length === 1) { // Exception for singular/plural
+                document.getElementById("tot-results").innerHTML = filterData.length + " opera";
             } else {
-                document.getElementById("tot-results").innerHTML = data.length + " opere";
+                document.getElementById("tot-results").innerHTML = filterData.length + " opere";
             }
 
-            /* 
+            // Filter with query
 
-            Ipotizzabile che qui chiamerai la funzione di query e tramite ID
-            selezionerai solo i risultati che ti interessano ottenendo
-            un nuovo array che va a sostituire data in rr. 57 e seguenti
+            renderResults(currentPage, filterData, isGrid = false); // Render results
 
-            */ 
+            leaflet_data(filterData) // Render map
 
-            renderResults(currentPage, data, isGrid = false);
-            renderFilters(data)
+            renderFilters(filterData) // Render other filters
+
+            return filterData;
         }
     });
 
     return data;
 }
-
-// *** MINIBATCH QUERYING FUNCTIONS ***
-
-// function miniBatchQuery(...) {}
 
 // *** DATA VISUALIZATION FUNCTIONS ***
 
@@ -84,7 +116,6 @@ function renderResults(page, data, isGrid = false) {
 
         // Option A. List view
 
-        console.log($('#resultsGrid').text(), $('#resultsList').text())
         $('#resultsList').empty();
         $('#resultsGrid').empty();
 
@@ -148,7 +179,7 @@ function renderResults(page, data, isGrid = false) {
                         </div>
                     `;
             // , ${createLocLabel(item)} OPPURE ${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}
-            console.log(gridItem);
+            // console.log(gridItem);
 
             $('#resultsGrid').append(gridItem);
             
@@ -266,7 +297,7 @@ function renderFilters(data) {
     renderFreqTableInAccordion(data, ['author'], 'Autore', true, true);
 
     // Accordion section: Altre attribuzioni
-    renderFreqTableInAccordion(data, ['author-1', 'author-2', 'author-3'], 'Altre attribuzioni', false, true);
+    renderFreqTableInAccordion(data, ['author-1', 'author-2', 'author-3', 'author-4'], 'Altre attribuzioni', false, true);
 
     // Accordion section: Cronologia
     const accordionChronoItem = `
@@ -284,15 +315,17 @@ function renderFilters(data) {
                     <form class="form-inline">
                         <div class="form-row"> 
                             <div class="form-group mx-sm-3 mb-2">
-                                <input type="password" class="form-control" id="inputDateFrom" placeholder="Da anno">
+                                <input class="form-control" id="accordionInputDateFrom" placeholder="Da anno">
                             </div>
                         
                             <div class="form-group mx-sm-3 mb-2">
-                                <input type="password" class="form-control" id="inputDateFrom" placeholder="a anno">
+                                <input class="form-control" id="accordionInputDateTo" placeholder="a anno">
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
-                            <button type="submit" style="margin:auto" class="btn btn-primary mb-2"><i class="bi bi-search"></i></button>
+                            <button style="margin:auto" class="btn btn-primary mb-2" onclick="refineQueryChrono(document.getElementById('accordionInputDateFrom').value, document.getElementById('accordionInputDateTo').value)">
+                                <i class="bi bi-search"></i>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -304,7 +337,7 @@ function renderFilters(data) {
     renderFreqTableInAccordion(data, ['l0-city', 'l0-cont'], 'Ubicazione attuale', false, true);
 
     // Accordion section: Ubicazione precedenti
-    renderFreqTableInAccordion(data, [['l1-city', 'l1-cont'], ['l2-city', 'l2-cont']], 'Ubicazioni precedenti', false, true);
+    renderFreqTableInAccordion(data, [['l1-city', 'l1-cont'], ['l2-city', 'l2-cont'], ['l3-city', 'l3-cont'], ['l4-city', 'l4-cont']], 'Ubicazioni precedenti', false, true);
     // Accordion section: Soggetto
     renderFreqTableInAccordion(data, ['subj'], 'Soggetto', false, true);
 
@@ -326,7 +359,7 @@ function renderFreqTableInAccordion(data, property, label, isFirst = false, hasS
 
     // Generate the first row of the frequency table using Bootstrap columns
     const content = retrieveFreqData(data, property, label, isByName)
-        .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
+        .map(([key, count]) => `<div class="row"><div class="col-10"><a onclick="refineQueryLink(event, this.innerHTML, '${label}')">${key}</a></div><div class="col-2 text-end">${count}</div></div>`)
         .join('');
 
     const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-'); // Respect syntax for accordion label
@@ -493,7 +526,7 @@ function resortFilter(label, isByName = false) {
     }
 
     const content = retrieveFreqData(data, property, label, isByName)
-        .map(([key, count]) => `<div class="row"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
+        .map(([key, count]) => `<div class="row"><div class="col-10"><a onclick="refineQueryLink(event, this.innerHTML, '${label}')">${key}</a></div><div class="col-2 text-end">${count}</div></div>`)
         .join('');
 
     // Replace the content of the accordion
@@ -509,6 +542,7 @@ function resortFilter(label, isByName = false) {
 $(document).ready(function () {
     loadCSV();
     var isGrid = false;
+    return isGrid;
 });
 
 // 2. change viz system with "viz_mode" toggle button
@@ -524,3 +558,9 @@ document.getElementById('viz_mode').addEventListener('change', function () {
         return isGrid = false;
     }
 });
+
+
+function tmp(int) {
+    console.log(`Ciao ${int}`);
+    console.log(`Ciao '${int}'`);
+}

@@ -93,11 +93,13 @@ function loadCSV() {
 
             renderResults(currentPage, filterData, isGrid = false); // Render results
 
-            leaflet_data(filterData) // Render map
+            leaflet_data(filterData)  // Render map
 
             renderFilters(filterData) // Render other filters
 
-            return filterData;
+            data = filterData;        // Update data
+
+            return data;
         }
     });
 
@@ -314,18 +316,19 @@ function renderFilters(data) {
                     
                     <form class="form-inline">
                         <div class="form-row"> 
-                            <div class="form-group mx-sm-3 mb-2">
+                            <div class="form-group mx-sm-3 mb-2 filter-form">
                                 <input class="form-control" id="accordionInputDateFrom" placeholder="Da anno">
                             </div>
                         
-                            <div class="form-group mx-sm-3 mb-2">
+                            <div class="form-group mx-sm-3 mb-2 filter-form">
                                 <input class="form-control" id="accordionInputDateTo" placeholder="a anno">
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
-                            <button style="margin:auto" class="btn btn-primary mb-2" onclick="refineQueryChrono(document.getElementById('accordionInputDateFrom').value, document.getElementById('accordionInputDateTo').value)">
+                            <button style="margin:auto" class="btn btn-primary mb-2" onclick="refineQuery([document.getElementById('accordionInputDateFrom').value, document.getElementById('accordionInputDateTo').value], 'date-form')">
                                 <i class="bi bi-search"></i>
                             </button>
+                        
                         </div>
                     </form>
                 </div>
@@ -359,7 +362,7 @@ function renderFreqTableInAccordion(data, property, label, isFirst = false, hasS
 
     // Generate the first row of the frequency table using Bootstrap columns
     const content = retrieveFreqData(data, property, label, isByName)
-        .map(([key, count]) => `<div class="row"><div class="col-10"><a onclick="refineQueryLink(event, this.innerHTML, '${label}')">${key}</a></div><div class="col-2 text-end">${count}</div></div>`)
+        .map(([key, count]) => `<div class="row filter-row" onclick="refineQuery(['${label}', '${key}'], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
         .join('');
 
     const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-'); // Respect syntax for accordion label
@@ -526,9 +529,9 @@ function resortFilter(label, isByName = false) {
     }
 
     const content = retrieveFreqData(data, property, label, isByName)
-        .map(([key, count]) => `<div class="row"><div class="col-10"><a onclick="refineQueryLink(event, this.innerHTML, '${label}')">${key}</a></div><div class="col-2 text-end">${count}</div></div>`)
+        .map(([key, count]) => `<div class="row filter-row" onclick="refineQuery(['${label}', '${key}'], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
         .join('');
-
+        
     // Replace the content of the accordion
     var accordionContent = document.getElementById(`content-${label}`) ;
     accordionContent.innerHTML = content;

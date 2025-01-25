@@ -345,5 +345,4 @@ table.dataTable thead .sorting_desc:before {
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     text-align: center;
-  }
-
+}

@@ -1,9 +1,9 @@
-// **********************
-// *** in SEARCH.HTML ***
-// **********************
+// **********************************************
+// *** RETRIEVE INPUT PARAMETERS OF THE QUERY ***
+// **********************************************
 
-// From the input values to the URL
-function sendQueryVal() {
+// >>> Main mask in SEARCH.HTML
+function sendNewQueryVal() {
     
     // 1. GET VALUE INDICATED BY USER
     function getValue(inputElement) {
@@ -30,7 +30,7 @@ function sendQueryVal() {
     const formEls = document.getElementsByClassName("crete-query-form");
 
     // Map the values to the query parameters
-    const queryParams = {
+    var queryParams = {
         txt: getValue(formEls[0]),                // Free text search
         aut: getValue(formEls[1]),                // Author
         dfr: getValue(formEls[2]),                // Date From
@@ -43,104 +43,132 @@ function sendQueryVal() {
     };
 
     // 2. COMPOSE TARGET URL QUERY STRING
-    const queryString = Object.entries(queryParams)
+    var queryString = "?" + Object.entries(queryParams)
         .filter(([, value]) => value !== null)                        // Strip nulls
         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`) // Code values
         .join("&");
 
-    // Debug
-    // console.log("Query parameters:", queryParams);
-    // console.log("Query string:", queryString);
-
-    location.href = `query.html?${queryString}`;
+    location.href = `query.html${queryString}`;
 }
 
 // *********************
 // *** in QUERY.HTML ***
 // *********************
 
-// From the URL to query parameters
-function parseQueryString() {
-    // Get and parse URL with URLSearchParams API
-    const queryString = window.location.search; 
-    const urlParams = new URLSearchParams(queryString);
+function parseQueryURLString() {
+    // Get and parse URL
 
-    // Map query string parameters to variables
-    const queryParams = {
-        txt: urlParams.get('txt'),   // Free text search
-        aut: urlParams.get('aut'),   // Author
-        dfr: urlParams.get('dfr'),   // Date From
-        dto: urlParams.get('dto'),   // Date To
-        loc: urlParams.get('loc'),   // Location
-        sub: urlParams.get('sub'),   // Subject
-        obj: urlParams.get('obj'),   // Object
-        tec: urlParams.get('tec'),   // Technique
-        sfc: urlParams.get('sfc'),   // Surface
+    queryParams = {};
 
-        // Specific for filter
-        a_0:urlParams.get('a_0'),       // Current author
-        l_0: urlParams.get('l_0'),      // Current location
-        alt_a: urlParams.get('alt_a'),  // Alternative author
-        alt_l: urlParams.get('alt_l'),  // Alternative locations
-        city: urlParams.get('city'),    // Current city
+    // Parse the query string only in queries
+    if (window.location.search) {
 
-        // Specific for entry
-        rel: urlParams.get('rel')    // Relation !!
-    };
+        // E.g. query.html?obj=rilievo&a_0=Antonio Begarelli
+        // paramsArray[0] = "query.html?"
+        // paramsArray[1][0] = "obj=rilievo"
+        // paramsArray[1][1] = "a_0=Antonio Begarelli"
+
+        paramsArray = window.location.search.split("?")[1].split("&");
+
+        paramsArray.forEach(paramString => {
+            var paramKey = paramString.split("=")[0];                      // obj
+            var paramVal = paramString.split("=")[1].replace(/%20/g, " "); // rilievo
+            
+            if (paramKey in queryParams) {
+            //  E.g. query.html?alt_a=Antonio Begarelli&alt_a=Antonio Begarelli
+            //  queryParams[paramKey] = ["Antonio Begarelli", "Antonio Begarelli"]
+                queryParams[paramKey].push(paramVal);
+            } else {
+                queryParams[paramKey] = [paramVal];
+            }
+        })
+
+    }
 
     return queryParams;
-
-    // Called in function runQuery() of query-display.js
 }
 
-function refineQueryLink(event, filter_value, filter_label) {
-    if (event) {
-    event.preventDefault(); // Block navigation with <a>
+function refineQuery(chosen_filter, filter_type) {
+
+    function updateURLQuery(queryString) {
+
+        const currentString = window.location.search;
+    
+        if (currentString.includes("?")) {
+            var connector = "&";
+        } else {
+            var connector = "?";
+        }
+
+        return currentString + connector + queryString;
+
     }
 
-    if (filter_label === "Autore") {
-        var newQueryToken = `a_0=${encodeURIComponent(filter_value)}`;
-    } else if (filter_label === "Altre attribuzioni") {
-        var newQueryToken = `alt_a=${encodeURIComponent(filter_value)}`;
-    } else if (filter_label === "Ubicazione attuale") {
-        var newQueryToken = `l_0=${encodeURIComponent(filter_value)}`;
-    } else if (filter_label === "Ubicazioni precedenti") {
-        var newQueryToken = `alt_l=${encodeURIComponent(filter_value)}`;
-    } else if (filter_label === "Soggetto") {
-        var newQueryToken = `sub=${encodeURIComponent(filter_value)}`;
-    } else if (filter_label === "Oggetto") {
-        var newQueryToken = `obj=${encodeURIComponent(filter_value)}`;
-    } else if (filter_label === "Tecnica") {
-        var newQueryToken = `tec=${encodeURIComponent(filter_value)}`;
-    } else if (filter_label === "Lavorazione") {
-        var newQueryToken = `sfc=${encodeURIComponent(filter_value)}`;
+    switch (filter_type) {
+
+        case "accordion-row":
+            var filter_label = chosen_filter[0];
+            var filter_value = chosen_filter[1];
+
+            mapped_label = {
+                "Autore": "a_0",
+                "Altre attribuzioni": "alt_a",
+                "Ubicazione attuale": "l_0",
+                "Ubicazioni precedenti": "alt_l",
+                "Soggetto": "sub",
+                "Oggetto": "obj",
+                "Tecnica": "tec",
+                "Lavorazione": "sfc",
+            }
+
+            newQueryToken = mapped_label[filter_label] + "=" + encodeURIComponent(filter_value);
+            location.href = updateURLQuery(newQueryToken);
+            break;
+
+        case "leaflet-map":
+            location.href = updateURLQuery("city=" + encodeURIComponent(chosen_filter));
+            break
+
+        case "date-form":
+            // Dates are the sole case when you can have at most one value
+            // You need to update existing value before sending the query
+            
+            var queryParams = parseQueryURLString()
+            if (chosen_filter[0]) {queryParams['dfr'] = chosen_filter[0]};
+            if (chosen_filter[1]) {queryParams['dto'] = chosen_filter[1]};
+
+
+            // THIS SECTION DOES NOT WORK vvvvvvv
+            var newQueryDateFormString = "dfr=" + encodeURIComponent(parseQueryURLString()['dfr']) + "&dto=" + encodeURIComponent(parseQueryURLString()['dto']);
+            console.log(newQueryDateFormString);
+            location.href = updateURLQuery(updateURLQuery(newQueryDateFormString));
+            // THIS SECTION DOES NOT WORK ^^^^^^
+            
+            break;
+    }
+
+}
+
+
+// NOT WORKING TO REVISE *ALL* FILTERS BY DATE
+function refineQueryChrono(newQueryTokenFrom, newQueryTokenTo) {
+    let newQueryToken = "";
+
+    if (newQueryTokenFrom && newQueryTokenTo) {
+        newQueryToken = `dfr=${encodeURIComponent(newQueryTokenFrom)}&dto=${encodeURIComponent(newQueryTokenTo)}`;
+    } else if (!newQueryTokenFrom && newQueryTokenTo) {
+        newQueryToken = `dto=${encodeURIComponent(newQueryTokenTo)}`;
+    } else if (newQueryTokenFrom && !newQueryTokenTo) {
+        newQueryToken = `dfr=${encodeURIComponent(newQueryTokenFrom)}`;
     }
 
     const queryString = window.location.search;
     
-    if (queryString.includes("?")) {
-        var connector = "&";
-    } else {
-        var connector = "?";
-    }
+    let connector = queryString.includes("?") ? "&" : "?";
 
     location.href = queryString + connector + newQueryToken;
-
 }
 
-function refineQueryMap(city) {
-    newQueryToken = `city=${encodeURIComponent(city)}`;
-    const queryString = window.location.search;
-    
-    if (queryString.includes("?")) {
-        var connector = "&";
-    } else {
-        var connector = "?";
-    }
-
-    location.href = queryString + connector + newQueryToken;
-
-}
 
 // NOT WORKING TO REVISE *ALL* FILTERS BY DATE
 function refineQueryChrono(newQueryTokenFrom, newQueryTokenTo) {
@@ -164,7 +192,7 @@ function refineQueryChrono(newQueryTokenFrom, newQueryTokenTo) {
 // *** MINIBATCH QUERYING FUNCTIONS ***
 
 function runQuery() {
-    const queryParams = parseQueryString();
+    const queryParams = parseQueryURLString() // parseQueryString(); 
 
     const BATCH_SIZE = 100; // Define batch size
     let dataFiltered = [];
@@ -184,131 +212,147 @@ function runQuery() {
     // Compare the results in data with the ones provided in the queryParams
     function processBatch(batch, queryParams) {
         batch.forEach(item => {
-            
+            firstMatch = true;
+
             let isMatch = true; // Flag to track if the item matches all filters
 
-            // Check match for authors
-            if (queryParams.aut && !(
-                item["author"].toLowerCase().includes(queryParams.aut.toLowerCase())   || 
-                item["author-amb"].toLowerCase().includes(queryParams.aut.toLowerCase())   ||
-                item["author-1"].toLowerCase().includes(queryParams.aut.toLowerCase()) || 
-                item["author-1-amb"].toLowerCase().includes(queryParams.aut.toLowerCase()) ||
-                item["author-2"].toLowerCase().includes(queryParams.aut.toLowerCase()) || 
-                item["author-2-amb"].toLowerCase().includes(queryParams.aut.toLowerCase()) ||
-                item["author-3"].toLowerCase().includes(queryParams.aut.toLowerCase()) || 
-                item["author-3-amb"].toLowerCase().includes(queryParams.aut.toLowerCase()) ||
-                item["author-4"].toLowerCase().includes(queryParams.aut.toLowerCase()) || 
-                item["author-4-amb"].toLowerCase().includes(queryParams.aut.toLowerCase())
-            )) {
-                isMatch = false;
-            }
+            // Ancillay function 1: Matches values for repeated fields (author / locations)
+            function matchesValues(valueArray, queryArray, isPartialCheck = true) {
+                if (!Array.isArray(queryArray)) queryArray = [queryArray];                                      // Cast to array
 
-            // Check exact match for object
-            if (queryParams.obj && item["obj-def"].toLowerCase() !== queryParams.obj.toLowerCase()) {
-                isMatch = false;
-            }
-            
-            // Check match for subject
-            if (queryParams.sub && !(
-                item["subj"].toLowerCase().includes(queryParams.sub.toLowerCase()) || 
-                item["deno"].toLowerCase().includes(queryParams.sub.toLowerCase())
-            )) {
-                isMatch = false;
-            }
+                const matchFunc = isPartialCheck
+                // PARTIAL MATCH: Is there at least some value for which it holds that
+                // at least one of the values of the batch row includes 
+                // the query value? Returns a boolean
+                    ? (queryValue, value) => value && value.toLowerCase().includes(queryValue.toLowerCase())
 
-            // Check exact match for technique
-            if (queryParams.tec && item["tech"].toLowerCase() !== queryParams.tec.toLowerCase()) {
-                isMatch = false;
-            }
+                // EXACT MATCH: Is there at least some value for which it holds that
+                // at least one of the values of the batch row matches 
+                // the query value? Returns a boolean
+                    : (queryValue, value) => value && value.toLowerCase() === queryValue.toLowerCase();
 
-            // Check exact match for surface
-            if (queryParams.sfc && item["lav"].toLowerCase() !== queryParams.sfc.toLowerCase()) {
-                isMatch = false;
-            }
-
-            // Check match for chronology
-            if (queryParams.dfr && (isNaN(parseInt(item['date-from'])) || parseInt(item['date-from']) < parseInt(queryParams.dfr))) {
-                isMatch = false; 
-            }
-            
-            if (queryParams.dto && (isNaN(parseInt(item['date-to'])) || (parseInt(item['date-to']) - parseInt(queryParams.dto) < 0))) {
                 
-                isMatch = false;
+                return queryArray.some(queryValue =>
+                    valueArray.some(value => matchFunc(queryValue, value))
+                );
+
+                // Notice that later you check if it DOES NOT match
+                // with !matchesValues(...)
             }
 
-            // Check match for location
-            if (queryParams.loc && !(
-                item["l0-cont"].toLowerCase().includes(queryParams.loc.toLowerCase()) || 
-                item["l0-city"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l0-prov"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l1-cont"].toLowerCase().includes(queryParams.loc.toLowerCase()) || 
-                item["l1-city"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l1-prov"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l2-cont"].toLowerCase().includes(queryParams.loc.toLowerCase()) || 
-                item["l2-city"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l2-prov"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l3-cont"].toLowerCase().includes(queryParams.loc.toLowerCase()) || 
-                item["l3-city"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l3-prov"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l4-cont"].toLowerCase().includes(queryParams.loc.toLowerCase()) || 
-                item["l4-city"].toLowerCase().includes(queryParams.loc.toLowerCase()) ||
-                item["l4-prov"].toLowerCase().includes(queryParams.loc.toLowerCase())
-            )) {
-                isMatch = false;
+            // Ancillary function 2: Filter string creator for locations
+            // iterating over increasing indexes
+            function filterLocStringCreator(item, index) {
+                const cont = item[`l${index}-cont`] || "";
+                const city = item[`l${index}-city`] || "";
+                if (city && cont) return `${city} (${cont})`;
+                return city || cont;
             }
 
-            // Check with free text search
-            if (queryParams.txt && !Object.entries(item).some(([key, value]) => {
-                return value && value.toString().toLowerCase().includes(queryParams.txt.toLowerCase());
+            // =========================
+            // === CHECK FOR MATCHES ===
+            // =========================
+
+            // 0. Free search (partial match)
+            if (queryParams.txt && !Object.values(item).some(value => {
+                return value && value.toString().toLowerCase().includes(queryParams.txt[0].toLowerCase());
             })) {
                 isMatch = false;
             }
-
-            // Specific for FILTERS
-
-            // Check exact match for sure author
-            if (queryParams.a_0 && item["author"].toLowerCase() !== queryParams.a_0.toLowerCase()) {
+            
+            // 1A. Authors and other attributions (partial match)
+            if (queryParams.aut && !matchesValues([
+                item["author"], item["author-amb"], item["author-1"], item["author-1-amb"],
+                item["author-2"], item["author-2-amb"], item["author-3"], item["author-3-amb"],
+                item["author-4"], item["author-4-amb"]
+            ], queryParams.aut, true)) {
                 isMatch = false;
             }
 
-            // Check exact match for other authors
-            if (queryParams.alt_a && !(
-                item["author-1"].toLowerCase().includes(queryParams.alt_a.toLowerCase()) || 
-                item["author-2"].toLowerCase().includes(queryParams.alt_a.toLowerCase()) || 
-                item["author-3"].toLowerCase().includes(queryParams.alt_a.toLowerCase()) || 
-                item["author-4"].toLowerCase().includes(queryParams.alt_a.toLowerCase())  
-            )) {
+            // 1B. Known author (exact match) *
+            if (queryParams.a_0 && item["author"].toLowerCase() !== queryParams.a_0[0].toLowerCase()) {
                 isMatch = false;
             }
 
-            // Check exact match for current loc with container
-                // Recreate the label
-                function filterStringCreator(item, int) {
-                    if (item[`l${int}-cont`] && item[`l${int}-city`]) { 
-                        var locString = item[`l${int}-city`] + " (" + item[`l${int}-cont`] + ")"; 
-                    } else if (item[`l${int}-city`] && !item[`l${int}-cont`]) {var locString = item[`l${int}-city`];}
-                    else if (!item[`l${int}-city`] && item[`l${int}-cont`]) {var locString = item[`l${int}-cont`];}
-                    return locString || ""; 
-                }
+            // 1C. Other attributions (exact match) *
+            if (queryParams.alt_a && !matchesValues([
+                item["author-1"], item["author-2"], item["author-3"], item["author-4"]
+            ], queryParams.alt_a, false)) {
+                isMatch = false;
+            }            
 
-            if (queryParams.l_0 && filterStringCreator(item, 0).toLowerCase() !== queryParams.l_0.toLowerCase()) {
+            // 2. Object (exact match)
+            if (queryParams.obj && item["obj-def"].toLowerCase() !== queryParams.obj[0].toLowerCase()) {
                 isMatch = false;
             }
 
-            // Check exact match for previous loc with container
-            if (queryParams.alt_l && !(
-                filterStringCreator(item, 1).toLowerCase().includes(queryParams.alt_l.toLowerCase()) || 
-                filterStringCreator(item, 2).toLowerCase().includes(queryParams.alt_l.toLowerCase()) || 
-                filterStringCreator(item, 3).toLowerCase().includes(queryParams.alt_l.toLowerCase()) || 
-                filterStringCreator(item, 4).toLowerCase().includes(queryParams.alt_l.toLowerCase())  
-            )) {
+            // 3. Subject / Denominantion (partial match)
+            if (queryParams.sub && !matchesValues([
+                item["subj"], item["deno"]
+            ], queryParams.sub, true)) {
                 isMatch = false;
             }
 
-            // Check exact match for city
-            if (queryParams.city && !(item["l0-city"].toLowerCase().includes(queryParams.city.toLowerCase()))) {
+            // 4. Technique (exact match)
+            if (queryParams.tec && item["tech"].toLowerCase() !== queryParams.tec[0].toLowerCase()) {
                 isMatch = false;
             }
+
+            // 5. Surface (exact match)
+            if (queryParams.sfc && item["lav"].toLowerCase() !== queryParams.sfc[0].toLowerCase()) {
+                isMatch = false;
+            }
+
+            // 6A. Chronology (from)
+            if (queryParams.dfr && (isNaN(item["date-from"]) || parseInt(item["date-from"]) < parseInt(queryParams.dfr[0]))) {
+                isMatch = false;
+            }
+
+            // 6B. Chronology (to)
+            if (queryParams.dto && (isNaN(item["date-to"]) || parseInt(item["date-to"]) > parseInt(queryParams.dto[0]))) {
+                isMatch = false;
+            }
+
+            // 7A. Location - any (partial match)
+            if (queryParams.loc && !matchesValues([
+                item["l0-cont"], item["l0-city"], item["l0-prov"],
+                item["l1-cont"], item["l1-city"], item["l1-prov"],
+                item["l2-cont"], item["l2-city"], item["l2-prov"],
+                item["l3-cont"], item["l3-city"], item["l3-prov"],
+                item["l4-cont"], item["l4-city"], item["l4-prov"]
+            ], queryParams.loc, true)) {
+                isMatch = false;
+            }
+
+            // 7B-α. Current location - full description (exact match) *
+            if (queryParams.l_0 && filterLocStringCreator(item, 0).toLowerCase() !== queryParams.l_0[0].toLowerCase()) {
+                isMatch = false;
+            }
+
+            // 7B-β. Current location - only city (exact match) **
+            if (queryParams.city && !item["l0-city"].toLowerCase().includes(queryParams.city[0].toLowerCase())) {
+                isMatch = false;
+            }
+
+            // 7C. Previous locations - full description (partial match) *
+            if (queryParams.alt_l && !matchesValues([
+                filterLocStringCreator(item, 1),
+                filterLocStringCreator(item, 2),
+                filterLocStringCreator(item, 3),
+                filterLocStringCreator(item, 4)
+            ], queryParams.alt_l), false) {
+                isMatch = false;
+            }
+            
+            // 8. Connected artworks (exact match) ***
+            // ...
+            // Add body of the if statement
+            // ...
+
+            //   * Use only in filters
+            //  ** Use only in filters - Map
+            // *** Use only in entries
+            // ======================
 
             // If the item matches all filters, add it to the filtered results
             if (isMatch) {

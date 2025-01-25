@@ -346,3 +346,8 @@ table.dataTable thead .sorting_desc:before {
     transform: translate(-50%, -50%);
     text-align: center;
   }
+
+.filter-row:hover {
+    background-color: lightgray !important;
+    cursor: pointer;
+}

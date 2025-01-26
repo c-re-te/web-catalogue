@@ -324,11 +324,11 @@ function renderFilters(data) {
                                 <input class="form-control" id="accordionInputDateTo" placeholder="a anno">
                             </div>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <button style="margin:auto" class="btn btn-primary mb-2" onclick="refineQuery([document.getElementById('accordionInputDateFrom').value, document.getElementById('accordionInputDateTo').value], 'date-form')">
+                        <div class="d-flex align-items-center align-text-center">
+                            <button style="margin:auto" type="reset" class="btn btn-primary mb-2" onclick="refineQuery([document.getElementById('accordionInputDateFrom').value, document.getElementById('accordionInputDateTo').value], 'date-form')">
                                 <i class="bi bi-search"></i>
                             </button>
-                        
+                        <!-- "location.href = 'query.html?sub=Compianto'" onclick="refineQuery([document.getElementById('accordionInputDateFrom').value, document.getElementById('accordionInputDateTo').value], 'date-form') -->                        
                         </div>
                     </form>
                 </div>

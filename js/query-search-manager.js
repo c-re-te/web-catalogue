@@ -1,6 +1,6 @@
-// **********************************************
-// *** RETRIEVE INPUT PARAMETERS OF THE QUERY ***
-// **********************************************
+// ************************************************************
+// *** RETRIEVE INPUT PARAMETERS OF THE QUERY - MAIN SEARCH ***
+// ************************************************************
 
 // >>> Main mask in SEARCH.HTML
 function sendNewQueryVal() {
@@ -51,9 +51,10 @@ function sendNewQueryVal() {
     location.href = `query.html${queryString}`;
 }
 
-// *********************
-// *** in QUERY.HTML ***
-// *********************
+// **********************************************
+
+// ANCILLARY FUNCTION 1. Parse string to
+// retrieve query parameters as dictionary
 
 function parseQueryURLString() {
     // Get and parse URL
@@ -87,6 +88,41 @@ function parseQueryURLString() {
 
     return queryParams;
 }
+
+// ANCILLARY FUNCTION 2. Compose string from
+// query parameters dictionary (reverse of 1)
+
+function getURLStringfromParams(queryParams) {
+    const queryArray = [];
+
+    // Iterate over the keys and values in queryParams
+    // queryParams is an object: use for... in not forEach
+    for (const key in queryParams) {
+        if (queryParams.hasOwnProperty(key)) {
+            const values = queryParams[key];
+
+            // Ensure each value is encoded and added as `key=value`
+
+            // For single values: e.g. query.html?alt_a=Alfonso Lombardi
+            if (typeof values === "string") {
+                queryArray.push(`${encodeURIComponent(key)}=${encodeURIComponent(values)}`);
+            } else {
+            // For multiple values: e.g. query.html?alt_a=Alfonso Lombardi&alt_a=Ludovico Castellani
+                for (const value of values) {
+                    queryArray.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+                }
+            }
+        }
+    }
+
+    // Join all key-value pairs with "&" and append to the baseURL
+    return queryArray.join("&");
+}
+
+
+// *******************************************************************
+// *** RETRIEVE INPUT PARAMETERS OF THE QUERY - FILTERS REFINEMENT ***
+// *******************************************************************
 
 function refineQuery(chosen_filter, filter_type) {
 
@@ -130,69 +166,38 @@ function refineQuery(chosen_filter, filter_type) {
             break
 
         case "date-form":
-            // Dates are the sole case when you can have at most one value
-            // You need to update existing value before sending the query
-            
-            var queryParams = parseQueryURLString()
-            if (chosen_filter[0]) {queryParams['dfr'] = chosen_filter[0]};
-            if (chosen_filter[1]) {queryParams['dto'] = chosen_filter[1]};
 
+            // Differently from the other filters, with dates
+            // we need to overwrite previous values and cannot 
+            // be merely appended
 
-            // THIS SECTION DOES NOT WORK vvvvvvv
-            var newQueryDateFormString = "dfr=" + encodeURIComponent(parseQueryURLString()['dfr']) + "&dto=" + encodeURIComponent(parseQueryURLString()['dto']);
-            console.log(newQueryDateFormString);
-            location.href = updateURLQuery(updateURLQuery(newQueryDateFormString));
-            // THIS SECTION DOES NOT WORK ^^^^^^
-            
+            var queryParams = parseQueryURLString()  // Retrieve current parameter
+
+            if (chosen_filter[0]) {
+                queryParams['dfr'] = chosen_filter[0];
+            };
+            if (chosen_filter[1]) {
+                queryParams['dto'] = chosen_filter[1]
+            };
+
+            // Use the ancillary function to compose the query string
+            var newQueryURLString = 'query.html?' + getURLStringfromParams(queryParams);
+            location.href = newQueryURLString;      // Check button: type = "reset"
+
             break;
-    }
-
-}
-
-
-// NOT WORKING TO REVISE *ALL* FILTERS BY DATE
-function refineQueryChrono(newQueryTokenFrom, newQueryTokenTo) {
-    let newQueryToken = "";
-
-    if (newQueryTokenFrom && newQueryTokenTo) {
-        newQueryToken = `dfr=${encodeURIComponent(newQueryTokenFrom)}&dto=${encodeURIComponent(newQueryTokenTo)}`;
-    } else if (!newQueryTokenFrom && newQueryTokenTo) {
-        newQueryToken = `dto=${encodeURIComponent(newQueryTokenTo)}`;
-    } else if (newQueryTokenFrom && !newQueryTokenTo) {
-        newQueryToken = `dfr=${encodeURIComponent(newQueryTokenFrom)}`;
-    }
-
-    const queryString = window.location.search;
     
-    let connector = queryString.includes("?") ? "&" : "?";
+        }
 
-    location.href = queryString + connector + newQueryToken;
 }
 
-
-// NOT WORKING TO REVISE *ALL* FILTERS BY DATE
-function refineQueryChrono(newQueryTokenFrom, newQueryTokenTo) {
-    let newQueryToken = "";
-
-    if (newQueryTokenFrom && newQueryTokenTo) {
-        newQueryToken = `dfr=${encodeURIComponent(newQueryTokenFrom)}&dto=${encodeURIComponent(newQueryTokenTo)}`;
-    } else if (!newQueryTokenFrom && newQueryTokenTo) {
-        newQueryToken = `dto=${encodeURIComponent(newQueryTokenTo)}`;
-    } else if (newQueryTokenFrom && !newQueryTokenTo) {
-        newQueryToken = `dfr=${encodeURIComponent(newQueryTokenFrom)}`;
-    }
-
-    const queryString = window.location.search;
-    
-    let connector = queryString.includes("?") ? "&" : "?";
-
-    location.href = queryString + connector + newQueryToken;
-}
+// **************************************************
+// *** MINIBATCH SEARCH ALGORITHM - in query.html ***
+// **************************************************
 
 // *** MINIBATCH QUERYING FUNCTIONS ***
 
 function runQuery() {
-    const queryParams = parseQueryURLString() // parseQueryString(); 
+    const queryParams = parseQueryURLString()
 
     const BATCH_SIZE = 100; // Define batch size
     let dataFiltered = [];
@@ -298,8 +303,8 @@ function runQuery() {
                 isMatch = false;
             }
 
-            // 5. Surface (exact match)
-            if (queryParams.sfc && item["lav"].toLowerCase() !== queryParams.sfc[0].toLowerCase()) {
+            // 5. Surface (partial match)
+            if (queryParams.sfc && !item["lav"].toLowerCase().includes(queryParams.sfc[0].toLowerCase())) {
                 isMatch = false;
             }
 
@@ -330,7 +335,7 @@ function runQuery() {
             }
 
             // 7B-β. Current location - only city (exact match) **
-            if (queryParams.city && !item["l0-city"].toLowerCase().includes(queryParams.city[0].toLowerCase())) {
+            if (queryParams.city && item["l0-city"].toLowerCase()  !==  queryParams.city[0].toLowerCase()) {
                 isMatch = false;
             }
 

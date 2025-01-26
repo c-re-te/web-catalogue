@@ -76,8 +76,8 @@
 
                     <div class="col-lg-10 justify-content-center">
                         <div class="input-group input-group-lg">
-                            <input type="text" class="form-control" placeholder="Ricerca nel catalogo" aria-label="Recipient's username" aria-describedby="button-addon2">
-                            <button class="btn btn-outline-light light-on-red" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
+                            <input type="text" id="searchbar-index" class="form-control" placeholder="Ricerca nel catalogo" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <button class="btn btn-outline-light light-on-red" type="button" id="button-addon2" onclick="location.href = `query.html?txt=${document.getElementById('searchbar-index').value}`"><i class="bi bi-search"></i></button>
                         </div>
                         <p class="text-end mt-4" style="font-size: 1.2em; color: white"><a href="search.html" class="txtbtn-white">Ricerca avanzata <i class="bi bi-arrow-right-circle"></a></i></p>
                     </div>               
@@ -122,7 +122,7 @@
                                 <span class="placeholder col-2"></span>
                             </p>
                             <div class="mt-auto text-center">
-                            <a class="btn btn-primary open-modal">Scopri di più</a>
+                                <a class="btn btn-primary" onclick="location.href = 'query.html?sub=Compianto'">Scopri di più</a>
                             </div>
                         </div>
                         </div>
@@ -160,7 +160,7 @@
                                 <span class="placeholder col-2"></span>
                             </p>
                             <div class="mt-auto text-center">
-                            <a class="btn btn-primary open-modal">Scopri di più</a>
+                                <a class="btn btn-primary" onclick="location.href = 'query.html?obj=decorazione architettonica'">Scopri di più</a>
                             </div>
                         </div>
                         </div>

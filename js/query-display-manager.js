@@ -97,6 +97,8 @@ function loadCSV() {
 
             renderFilters(filterData) // Render other filters
 
+            displayParams();          // Display parameters above results
+
             data = filterData;        // Update data
 
             return data;
@@ -535,6 +537,55 @@ function resortFilter(label, isByName = false) {
     // Replace the content of the accordion
     var accordionContent = document.getElementById(`content-${label}`) ;
     accordionContent.innerHTML = content;
+}
+
+// *** For filters in main columns ***
+
+function displayParams() {
+    var queryParams = parseQueryURLString();
+
+    var mappingParams = [
+        ["txt", "Ricerca libera"],
+        ["aut", "Autore / Attribuzioni"],
+        ["a_0", "Autore"],
+        ["alt_a", "Altre attribuzioni"],
+        ["dfr", "Datazione (da)"],
+        ["dto", "Datazione (a)"],
+        ["loc", "Ubicazione / Provenance"],
+        ["l_0", "Ubicazione attuale"],
+        ["city", "Ubicazione attuale (città)"],
+        ["alt_l", "Ubicazioni precedenti"],
+        ["sub", "Soggetto"],
+        ["obj", "Oggetto"],
+        ["tec", "Tecnica"],
+        ["sfc", "Lavorazione"],
+        ["rel", "Opere in relazione"]
+    ];    
+    
+    $('#queryParamsContainer').empty();
+
+    // Iterate on mappingArray to respect
+    // the hierarchical order of parameters
+    for (const mappingArray of mappingParams) {
+
+        var paramKey = mappingArray[0];
+
+        // Only if the parameter is present
+        if (queryParams[paramKey]) {
+
+            // Create single string (it handles multiple values)
+            var paramValues = queryParams[paramKey].join(', ');
+
+            // Create the button elements
+            childButton = `
+                <button type="button" class="btn btn-outline-primary btn-sm mt-1" type="reset" onclick="removeQueryParams('${paramKey}')">
+                    <b>${mappingArray[1]}</b>: ${paramValues} <i class="bi bi-x"></i>
+                </button>`
+
+            $('#queryParamsContainer').append(childButton);
+        }
+    }
+    
 }
 
 // ***************************

@@ -351,3 +351,25 @@ table.dataTable thead .sorting_desc:before {
     background-color: lightgray !important;
     cursor: pointer;
 }
+
+
+.query-params-container {
+	margin: 0 0 0 0px;
+}
+
+.query-params-container a {
+	display: inline-block;
+	margin-right: 5px;
+	margin-bottom: 2px;
+	padding: 2px 18px 2px 5px;
+	color: #fff;
+	font-size: 13px;
+	line-height: 17px;
+	background: #2D4F9F url(../img/close-off.svg) no-repeat center right;
+	transition: .2s;
+}
+
+.query-params-container a:hover {
+	background: #69B9EC url(../img/close.svg) no-repeat center right;
+	text-decoration: none;
+}

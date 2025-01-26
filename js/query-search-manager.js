@@ -194,8 +194,6 @@ function refineQuery(chosen_filter, filter_type) {
 // *** MINIBATCH SEARCH ALGORITHM - in query.html ***
 // **************************************************
 
-// *** MINIBATCH QUERYING FUNCTIONS ***
-
 function runQuery() {
     const queryParams = parseQueryURLString()
 
@@ -367,4 +365,20 @@ function runQuery() {
     }
 
     return advancedSearch(queryParams);
+}
+
+// ***********************************************************************
+// *** REMOVE PARAMETERS OF THE QUERY - REFINEMENT via MAINCOL BUTTONS ***
+// ***********************************************************************
+
+function removeQueryParams(paramKey) {
+    const queryParams = parseQueryURLString();
+
+    // Remove the parameter from the dictionary
+    delete queryParams[paramKey];
+
+    // Use the ancillary function to compose the query string
+    const newQueryURLString = 'query.html?' + getURLStringfromParams(queryParams);
+
+    location.href = newQueryURLString;
 }

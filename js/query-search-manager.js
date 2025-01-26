@@ -73,7 +73,7 @@ function parseQueryURLString() {
 
         paramsArray.forEach(paramString => {
             var paramKey = paramString.split("=")[0];                      // obj
-            var paramVal = paramString.split("=")[1].replace(/%20/g, " "); // rilievo
+            var paramVal = decodeURIComponent(paramString.split("=")[1]);  // rilievo
             
             if (paramKey in queryParams) {
             //  E.g. query.html?alt_a=Antonio Begarelli&alt_a=Antonio Begarelli

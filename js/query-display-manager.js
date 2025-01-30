@@ -3,7 +3,7 @@ let data = [];
 
 // Load CSV data using PapaParse
 function loadCSV() {
-    Papa.parse('./assets/data/data-test-jan25-geo.csv', {
+    Papa.parse('./assets/data/data-test-jan25-geo-path.csv', {
         download: true,
         header: true,
         skipEmptyLines: true,
@@ -69,6 +69,7 @@ function loadCSV() {
                 'l4-cron': row['loc-4-crono'] || '',
 
                 'url': row['id'] || '',
+                'path': row['img-path'],
 
                 'desc': row['descrizione'] || '',
 
@@ -130,27 +131,29 @@ function renderResults(page, data, isGrid = false) {
 
         pageData.forEach(item => { 
 
-            // Create the single list
             const listItem = `
-                        <div class="card mb-1">
-                            <div class="row g-0">
-                                <div class="col-md-4 col-sm-12">
-                                    <a href="schede/${item['url']}.html"><img src="assets/img/img-placeholder.png" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px; width: 100%"></a>
-                                </div>
-                                <div class="col-md-8 col-sm-12">
-                                    <div class="card-body">
-                                        <p class="card-text">${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''}</p>
-                                        <p class="card-text fw-bold"><a href="schede/${item['url']}.html" class="query-result-obj-id">${item['subj']}</a></p>
-                                        <p class="card-text">${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}</p>
-                                        <p class="card-text">${createLocLabel(item)}</p>
+                            <div class="card mb-1">
+                                <div class="row g-0">
+                                    <div class="col-md-4 col-sm-12">
+                                        <a href="schede/${item['url']}.html">
+                                            <img src="assets/img/img-schede-draft/${item['path']}" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px; width: 100%; object-fit: cover">            
+                                        </a>
+                                    </div>
+                                    <div class="col-md-8 col-sm-12">
+                                        <div class="card-body">
+                                            <p class="card-text">${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''}</p>
+                                            <p class="card-text fw-bold"><a href="schede/${item['url']}.html" class="query-result-obj-id">${item['subj']}</a></p>
+                                            <p class="card-text">${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}</p>
+                                            <p class="card-text">${createLocLabel(item)}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
-            $('#resultsList').append(listItem);
+                        `;
+                $('#resultsList').append(listItem);
+                
+                renderPagination(page, data, itemsPerPage);
             
-            renderPagination(page, data, itemsPerPage);
         });
 
     } else {
@@ -171,7 +174,7 @@ function renderResults(page, data, isGrid = false) {
             const gridItem = `
                         <div class="col-md-4 col-sm-12 d-flex mt-2 justify-content-center">
                             <div class="card d-flex flex-column" style="width: 15rem;" onclick="location.href='schede/${item['url']}.html'">
-                                <img src="assets/img/img-placeholder.png" class="card-img-top" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}">
+                                <img src="assets/img/img-schede-draft/${item['path']}" class="card-img-top" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}">
                                 <div class="card-body d-flex flex-column">
                                         <small class="card-text">
                                             ${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} <br>

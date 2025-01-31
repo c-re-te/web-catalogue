@@ -7,6 +7,8 @@ function leaflet_data(geo_csv) {
     var artworks_locations = {};
 
     for (const artwork of data_array) {
+
+      console.log(artwork);
       if (artwork['lat'] && artwork['long']) {
         
         const city = artwork['l0-city'];
@@ -22,7 +24,7 @@ function leaflet_data(geo_csv) {
 
         artworks_locations[city]['opere_id'].push(artwork['id']);
         artworks_locations[city]['count'] = artworks_locations[city]['opere_id'].length;
-      } 
+      }
     } 
 
     return artworks_locations; 

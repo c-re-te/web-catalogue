@@ -3,7 +3,7 @@ let data = [];
 
 // Load CSV data using PapaParse
 function loadCSV() {
-    Papa.parse('./assets/data/data-test-jan25-geo-path.csv', {
+    Papa.parse('./assets/data/data-test-jan25.csv', {
         download: true,
         header: true,
         skipEmptyLines: true,

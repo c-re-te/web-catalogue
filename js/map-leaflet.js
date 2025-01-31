@@ -8,7 +8,7 @@ function leaflet_data(geo_csv) {
 
     for (const artwork of data_array) {
 
-      console.log(artwork);
+      // console.log(artwork);
       if (artwork['lat'] && artwork['long']) {
         
         const city = artwork['l0-city'];

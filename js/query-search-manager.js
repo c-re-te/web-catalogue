@@ -348,9 +348,9 @@ function runQuery() {
             }
             
             // 8. Connected artworks (exact match) ***
-            // ...
-            // Add body of the if statement
-            // ...
+            if (queryParams.rel && item["rel"].toLowerCase()  !==  queryParams.rel[0].toLowerCase()) {
+                isMatch = false;
+            }
 
             //   * Use only in filters
             //  ** Use only in filters - Map

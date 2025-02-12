@@ -562,7 +562,7 @@ function displayParams() {
         ["obj", "Oggetto"],
         ["tec", "Tecnica"],
         ["sfc", "Lavorazione"],
-        ["rel", "Opere in relazione"]
+        ["rel", "Opere associate"]
     ];    
     
     $('#queryParamsContainer').empty();

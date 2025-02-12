@@ -296,6 +296,9 @@ function runQuery() {
                 isMatch = false;
             }
 
+            // 3 bis. Subject / Denominantion (exact match) for filters
+            // ...
+
             // 4. Technique (exact match)
             if (queryParams.tec && item["tech"].toLowerCase() !== queryParams.tec[0].toLowerCase()) {
                 isMatch = false;

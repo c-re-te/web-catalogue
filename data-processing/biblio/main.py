@@ -2,9 +2,9 @@ from pprint import pprint
 import pandas as pd
 import ast
 
-df = pd.read_csv('./data-processing/biblio.csv', dtype=str)
+df = pd.read_csv('./data-processing/biblio/biblio.csv', dtype=str)
 
-df_sorted = df.sort_values(by='AUTORE')
+df_sorted = df.sort_values(by='ANNO')
 
 
 crete_array = []
@@ -105,10 +105,9 @@ for idx, row in df.iterrows():
 """
 
 for idx, row in df_sorted.iterrows():
-    ref_html = "<tdr><td>" + str(get_author_string(row)) + "</td><td>" + str(row['ANNO']) + "</td><td>" + str(get_full_ref(row)) + "</td></tdr>"
+    ref_html = "<tr><td>" + str(get_author_string(row)) + "</td><td>" + str(row['ANNO']) + "</td><td>" + str(get_full_ref(row)) + "</td></tr>"
     
     crete_array.append(ref_html)
 
-crete = ast.literal_eval(crete_array)
-
+crete = "".join(crete_array)
 print(crete)

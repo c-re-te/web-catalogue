@@ -1958,8 +1958,8 @@
         <script>
             $(document).ready(function() {
                 $('#example').DataTable({
-                    "order": [[0, "asc"]], // Ordina per Autore (prima colonna)
-                    "dom": '<"top"lfr>t<"bottom"ip><"clear">', // Layout per Show e Search
+                    "order": [[1, "asc"]],                     // Order by date (2nd column)
+                    "dom": '<"top"lfr>t<"bottom"ip><"clear">', // Layout for Show & Search
                     "language": {
                         "lengthMenu": "Mostra _MENU_ elementi per pagina",
                         "search": "Cerca:",
@@ -1978,11 +1978,5 @@
                 });
             });
         </script>
-
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <!-- * *                               SB Forms JS                               * *-->
-        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
     </body>
 </html>

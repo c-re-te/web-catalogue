@@ -1,3 +1,20 @@
+window.onload = function() { // Set visualisation
+
+    // 1. Always set the <form-switch> unchecked by default
+    let changeViz = document.getElementById('viz_mode');
+    changeViz.checked = false;
+    
+    // 2. Always set the <select> el on the first choice by default
+    let select = document.getElementById("sortSelect");
+    if (select) {
+        select.selectedIndex = 0;
+    }
+
+    return isGrid;
+};
+
+
+
 let currentPage = 1;
 let data = [];
 
@@ -84,6 +101,12 @@ function loadCSV() {
 
             var filterData = data.filter(row => runQuery().includes(row.url));
 
+            filterData.sort((a, b) => {
+                let dateA = a['date-from'] ? new Date(a['date-from']) : new Date(0);
+                let dateB = b['date-from'] ? new Date(b['date-from']) : new Date(0);
+                return dateA - dateB;
+            });
+
             if (filterData.length === 1) { // Exception for singular/plural
                 document.getElementById("tot-results").innerHTML = filterData.length + " opera";
             } else {
@@ -130,6 +153,8 @@ function renderResults(page, data, isGrid = false) {
         const pageData = data.slice(startIndex, endIndex);
 
         pageData.forEach(item => { 
+
+            // console.log(item['author'], item['url']);
 
             const listItem = `
                             <div class="card mb-1">
@@ -223,12 +248,15 @@ function createLocLabel(item) {
     }
 
     if (item['l0-prov']) {
-        if (!item['l0-city']) {
-            locationText += `Provincia di ${item['l0-prov']}`;
-        } else {
+        if (item['l0-city']) {
             locationText += `(${item['l0-prov']})`;
         }
     }
+
+    if(item['l0-cont'].toLowerCase() == "collezione privata") { // To handle "Collezione privata"
+        locationText = "Collezione privata";
+    };
+    
 
     return locationText;
 }
@@ -280,18 +308,54 @@ function renderPagination(page, data, itemsPerPage) {
 
 // 3. sortData, so that user can rearrange the content
 
+
 function sortData(criterion) {
-    let sortedData;
+    let sortedData = [...data]; // Copy the array to prevent direct modifications
 
-    sortedData = [...data].sort((a, b) => {
-        if(criterion === 'date-from') {  // specific to handle dates
-            return new Date(a[criterion]) - new Date(b[criterion]);
-        } else {
-            return a[criterion]?.localeCompare(b[criterion] || ''); // checking if exists
-        }
-    });
+    if(criterion == 'l0-city') {
+        // Remove "Collezione privata", "Ubicazione ignota" from the main dataset
+        let extractedData = sortedData.filter(el => el["l0-cont"] == "Collezione privata" || el["l0-cont"]  == "Ubicazione ignota");
+        cleanedData = sortedData.filter((el) => !extractedData.includes(el));
 
-    renderResults(currentPage, sortedData);  // Rende la lista ordinata
+        // Remove missing cities
+        let missingData = cleanedData.filter(el => !el["l0-city"]);
+        cleanedData = cleanedData.filter((el) => !missingData.includes(el));
+        
+        // Sort the cleaned main dataset
+        cleanedData.sort((a, b) => {
+            if (a[criterion] < b[criterion]) return -1;
+            if (a[criterion] > b[criterion]) return 1;
+            return 0;
+        });
+
+        // Sort the removed data
+        extractedData.sort((a, b) => {
+            if (a["l0-cont"] < b["l0-cont"]) return -1;
+            if (a["l0-cont"] > b["l0-cont"]) return 1;
+            return 0;
+        });
+
+        // Merge the three dataset [MAIN] + "Collezione privata" + "Ubicazione ignota" + missing cities
+
+        sortedData = cleanedData.concat(extractedData).concat(missingData);
+
+    } else {
+        sortedData.sort((a, b) => {
+            if(criterion == 'date-from') {
+                return new Date(a['date-from']) - new Date(b['date-from']);
+            } else {
+                if (a[criterion] < b[criterion]) return -1;
+                if (a[criterion] > b[criterion]) return 1;
+                return 0;
+            }
+        });
+    }
+
+    data = sortedData; 
+    if (criterion == "l0-city") {
+        data.forEach(item => console.log(item["l0-city"]));
+    }
+    renderResults(currentPage, data, isGrid);  // Rende la lista ordinata
 }
 
 // *************
@@ -615,7 +679,6 @@ document.getElementById('viz_mode').addEventListener('change', function () {
         return isGrid = false;
     }
 });
-
 
 function tmp(int) {
     console.log(`Ciao ${int}`);

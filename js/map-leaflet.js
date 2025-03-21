@@ -115,7 +115,7 @@ function leaflet_data(geo_csv) {
   for (let city in artworks_locations) {
     const cityData = artworks_locations[city];
     if (cityData.lat && cityData.long) {
-      const opereText = cityData.count === 1 ? "Un'opera trovata" : `${cityData.count} opere trovate`;
+      const opereText = cityData.count === 1 ? "Una scheda trovata" : `${cityData.count} schede trovate`;
 
       const popupContent = `
             <b>${city}</b> ${cityData.prov ? `(${cityData.prov})` : ''}<br>

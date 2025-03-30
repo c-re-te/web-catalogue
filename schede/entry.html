@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>IN PROGRESS</title>
+    <title id="meta-head">IN PROGRESS</title>
     <link rel="mask-icon" href="https://www.unitn.it:443/sites/default/files/favicon/safari-pinned-tab.svg" />
     <link rel="icon" href="../assets/favicon.ico" sizes="16x16" />
 
@@ -157,18 +157,11 @@
                 <div class="col-lg-3">
                     <p class="fs-5 fw-bold">Localizzazione attuale</p>
                 </div>
-                <div class="col-lg-9">
-                    <p class="fs-5">Chiesa di Santa Maria Assunta, <a href="../query.html?city=Medole">Medole</a> (MN)</p>
-                </div>
+                <div class="col-lg-9" id="entry-current-loc"></div>
             </div>
 
-            <div class="row gx-5 mt-2 entry-label">
-                <div class="col-lg-3">
-                    <p class="fs-5 fw-bold">Localizzazioni precedenti</p>
-                </div>
-                <div class="col-lg-9">
-                    <p class="fs-5">Convento dell'Annunciata, Medole (MN), <span>1490</span> - <span>1808</span></p>
-                </div>
+            <div class="row gx-5 mt-2 entry-label" id="entry-other-locs">
+                
             </div>
 
             <p class="fs-5 fw-bold mt-4" style="color: #B10B25 !important;">NOTA CRITICA</p>
@@ -177,39 +170,26 @@
                     <p class="fs-5 fw-bold">Analisi storico-stilistica</p>
                 </div>
                 <div class="col-lg-9">
-                    <p class="fs-5">Il gruppo, proveniente dal convento agostiniano dell'Annunciata di Medole, a parere di Michela Zurla potrebbe essere stato realizzato attorno al 1499 come ornamento della tomba di Paolo Crema, podestà di Castel Goffredo morto in quell'anno. Le terrecotte erano infatti collocate all'interno della cappella in cui si trovava la sepoltura. In seguito alle soppressioni e alla demolizione dell'originario edificio, le statue furono spostate nella parrocchiale di Medole. Dopo un primo accostamento all'ambito mazzoniano, Adalgisa Lugli ha segnalato le influenze della grafica mantegnesca sul gruppo. Giuliana Algeri e Vittorio Sgarbi hanno addirittura ventilato la possibilità di un intervento diretto dell'artista nell'ideazione del Compianto. Più di recente Marco Scansani ha incluso queste terrecotte nel corpus di un abile plasticatore mantovano vicinissimo alla sensibilità di Andrea Mantegna, forse da identificare con Gian Marco Cavalli.</p>
+                    <p class="fs-5" id="entry-note"></p>
                 </div>
-                <div class="col-lg-3">
-                    <p class="fs-5 fw-bold">Stato di conservazione</p>
-                </div>
-                <div class="col-lg-9">
-                    <p class="fs-5">Il gruppo mostra una cromia moderna, presenta diverse mutilazioni e
-                        reintegrazioni</p>
-                </div>
-                <div class="col-lg-3">
-                    <p class="fs-5 fw-bold">Restauri</p>
+                <div class="col-lg-3" id="entry-cons-state-lab">
                 </div>
                 <div class="col-lg-9">
-                    <p class="fs-5"> Il Compianto fu restaurato una prima volta nel 1826 dal pittore e architetto mantovano Antonio Zanetti (che progettò anche un'ambientazione dipinta per ospitare il gruppo). Nel 1960-1962 fu rimosso il precedente allestimento e Giuseppe Menozzi condusse ulteriori restauri. Nel 2000-2002 è stato compiuto un ultimo intervento per garantire maggiore leggibilità all'insieme.</p>
+                    <p class="fs-5" id="entry-cons-state"></p>
+                </div>
+                <div class="col-lg-3" id="entry-restoration-lab">
+                </div>
+                <div class="col-lg-9">
+                    <p class="fs-5" id="entry-restoration"></p>
                 </div>
                 <div class="col-lg-3">
                     <p class="fs-5 fw-bold">Bibliografia sintetica</p>
                 </div>
-                <div class="col-lg-9">
-                    <p class="fs-5">Lugli A. (1990), <i>Guido Mazzoni e la rinascita della terracotta nel Quattrocento</i>, Allemandi, Torino.</p>
-                    <p class="fs-5">Algeri G. (2004), «Note attorno ad un gruppo in terracotta: il compianto sul Cristo morto», in Fusari G., Rossi M. (a cura di), <i>Sulle tracce di Mantegna: Zebellana, Giolfino e gli altri: sculture lignee tra Lombardia e Veneto</i>,Gruppo San Luca Onlus, Castel Goffredo, pp. 57-61.</p>
-                    <p class="fs-5">Zurla M. (2020), «Scultore lombardo. Compianto sul corpo di Cristo», in	Dionigi R., Ferro F.M. (a cura di), <i> Teatri del sacro e del dolore: i Compianti in legno e terracotta in Lombardia e Piemonte tra Quattrocento e Cinquecento</i>, n. 16, Edizioni dei Soncino, Soncino (CR), pp. 158-160.</p>
-                    <p class="fs-5">Scansani M. (2024), «Un inedito Cristo deposto e altre opere dello scultore di Andrea Mantegna», in <i>Nuovi Studi</i>, XXVIII, pp. 67-87.</p>
+                <div class="col-lg-9" id="entry-bib">
                 </div>
             </div>
 
-            <div class="row gx-5  entry-label">
-                <div class="col-lg-3">
-                    <p class="fs-5 fw-bold">Opere associate</p>
-                </div>
-                <div class="col-lg-9">
-                    <p class="fs-5"><a href="../query.html?rel=Compianto%20di%20Medole">Compianto di Medole <i class="bi bi-box-arrow-up-right"></i></a></p>
-                </div>
+            <div class="row gx-5  entry-label" id="entry-rel">
             </div>
             
             <!-- 
@@ -345,6 +325,7 @@
 
     <script src="../js/generaljs.js"></script>
     <script src="../js/entry-populator.js"></script>
+    <script src="../js/bib-generator.js"></script>
 </body>
 
 </html>

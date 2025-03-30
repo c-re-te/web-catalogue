@@ -160,7 +160,7 @@ function renderResults(page, data, isGrid = false) {
                             <div class="card mb-1">
                                 <div class="row g-0">
                                     <div class="col-md-4 col-sm-12">
-                                        <a href="schede/${item['url']}.html">
+                                        <a href="schede/entry.html?no=${item['url']}">
                                             <img src="assets/img/img-schede-draft/${item['path']}" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px; width: 100%; object-fit: contain">            
                                         </a>
                                     </div>

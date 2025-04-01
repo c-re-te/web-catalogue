@@ -167,7 +167,7 @@ function renderResults(page, data, isGrid = false) {
                                     <div class="col-md-8 col-sm-12">
                                         <div class="card-body">
                                             <p class="card-text">${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''}</p>
-                                            <p class="card-text fw-bold"><a href="schede/${item['url']}.html" class="query-result-obj-id">${item['subj']}</a></p>
+                                            <p class="card-text fw-bold"><a href="schede/entry.html?no=${item['url']}" class="query-result-obj-id">${item['subj']}</a></p>
                                             <p class="card-text">${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}</p>
                                             <p class="card-text">${createLocLabel(item)}</p>
                                         </div>

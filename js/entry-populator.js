@@ -135,7 +135,7 @@ function uploadData(data) {
     // =====================
 
     // == Images ==
-    $("#entry-carousel-img-temp").attr("src", ("../assets/img/img-schede-draft/" + data["img-path"]));
+    $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + data["img-path"]));
     // To update with carousel for more than one image
     // ============
 

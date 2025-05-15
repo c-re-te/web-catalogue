@@ -65,8 +65,9 @@ function getMonograph(row) {
 }
 
 function getEssayInBook(row) {
-    let refFirst = `${row['AUTORE']}, «${row['TITOLO CONTRIBUTO SPECIFICO']}», in `;
-    if (row['CURATORE']) refFirst += `${row['CURATORE']}, `;
+    let refFirst = row['AUTORE'] ? `${row['AUTORE']}, ` : "";
+    refFirst += `«${row['TITOLO CONTRIBUTO SPECIFICO']}», in `;
+    if (row['CURATORE']) refFirst += `${row['CURATORE']} (a cura di), `;
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
@@ -76,7 +77,7 @@ function getEssayInBook(row) {
 
 function getEntry(row) {
     let refFirst = `${row['AUTORE']}, «${row['TITOLO CONTRIBUTO SPECIFICO']}», in `;
-    if (row['CURATORE']) refFirst += `${row['CURATORE']}, `;
+    if (row['CURATORE']) refFirst += `${row['CURATORE']} (a cura di), `;
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
@@ -96,8 +97,9 @@ function getFullRef(row) {
     switch (row['TIPO']) {
         case 'Articolo in periodico': return getArticle(row);
         case 'Monografia': return getMonograph(row);
-        case 'Saggio in volume': 
-        case 'Scheda di catalogo': return getEssayInBook(row);
+        case 'Saggio in volume': return getEssayInBook(row);
+        case 'Fonte in volume': return getEssayInBook(row);
+        case 'Scheda di catalogo': return getEntry(row);
         case 'Tesi': return getThesis(row);
         default: return '';
     }

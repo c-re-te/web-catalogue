@@ -10,6 +10,7 @@ function retrieveBibData(bibId) {
         }
     }); 
 
+    console.log(ref);
     return ref;
 }
  
@@ -20,9 +21,10 @@ function refineMotivationField(cell) {
     if (cell.includes("Bibliografia")) {
         let newMotivString = cell;
 
+        console.log(cell);
         // Iterate to handle multiple motivations
         cell.split(";").forEach(function (item) {
-            if (item.includes("Bibliografia")) {
+            if (item.includes("Bibliografia (")) {
 
                 // Create in-text citation with ad hoc function and update motivation
                 let bibID = item.split("(")[1].replace(")", "").trim();
@@ -55,12 +57,13 @@ function getArticle(row) {
 }
 
 function getMonograph(row) {
-    let refFirst = row['AUTORE'] ? `${row['AUTORE']}, ` : `${row['CURATORE']} (a cura di), `;
+    let refFirst =  row['AUTORE'] ? `${row['AUTORE']}, ` : (row['CURATORE'] ? `${row['CURATORE']} (a cura di), ` : ``);
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
     if (row['EDITORE']) refFirst += `${row['EDITORE']}, `;
-    return `${refFirst}${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
+    if (row['LUOGO EDIZIONE']) refFirst += `${row['LUOGO EDIZIONE']}, `;
+    return `${refFirst}${row['ANNO']}`;
 }
 
 function getEssayInBook(row) {
@@ -116,7 +119,19 @@ function retrieveBib(cell) {
     let htmlBib = [];
     console.log(cell);
     citationData.forEach(function (item) {
-        htmlBib.push(getFullRef(item["data"]) + `${item["pages"] ? `, pp. ${item["pages"].trim()}` : ""}.`);
+        let bibRef = getFullRef(item["data"]);
+
+        // Avoid repetition of pages in the reference
+        if (bibRef.includes("p.") && item["pages"]) {
+            if (bibRef.includes("pp. ")) {
+                bibRef = bibRef.split(", pp. ")[0].trim();
+            } else {
+                bibRef = bibRef.split(", p. ")[0].trim();
+            }
+        }
+        //
+
+        htmlBib.push(bibRef + `${item["pages"] ? `, p. ${item["pages"].trim()}` : ""}.`);
     });
     return htmlBib
 }

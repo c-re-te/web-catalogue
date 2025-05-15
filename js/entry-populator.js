@@ -73,7 +73,7 @@ function capitalizeFirstLetter(string) {
 // 2. Retrieve info of bibliography > See bib-generator.js
 
 // 3. Location text from a list of location data (1 list = 1 location)
-function createLocLabel(locList) { // locList = [data["loc-0-prov"], data["loc-0-comune"], data["loc-0-contenitore"], <chronology for previous locations>]
+function createLocLabel(locList, removeLink = false) { // locList = [data["loc-0-prov"], data["loc-0-comune"], data["loc-0-contenitore"], <chronology for previous locations>]
     
     let locationText = ''; // Create the label for the location
 
@@ -88,7 +88,11 @@ function createLocLabel(locList) { // locList = [data["loc-0-prov"], data["loc-0
     }
 
     if(locList[1]) { // If city...
-        locationText += `<a href="../query.html?city=${encodeURIComponent(locList[1])}">${locList[1]}</a>`;
+        if (!removeLink) {
+            locationText += `<a href="../query.html?city=${encodeURIComponent(locList[1])}">${locList[1]}</a>`;
+        } else {
+            locationText += `${locList[1]}`;
+        }
 
         if (locList[0]) {
             locationText += " ";
@@ -120,12 +124,13 @@ function createLocLabel(locList) { // locList = [data["loc-0-prov"], data["loc-0
 function uploadData(data) {
 
     // == Main title (h2) and header in meta ==
+
     $("#meta-head").html(data["autore-0-name"] + 
-        (data["autore-0-ref"] ? " (" + data["autore-0-ref"] + ")" : "") +
+        (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
         ", " + capitalizeFirstLetter(data["soggetto"]) + " (scheda)");
 
     $("#entry-title").html(data["autore-0-name"] + 
-        (data["autore-0-ref"] ? " (" + data["autore-0-ref"] + ")" : "") +
+        (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
         ", " + capitalizeFirstLetter(data["soggetto"]));
     // =====================
 
@@ -146,20 +151,71 @@ function uploadData(data) {
     ];
 
     function getAuthorString(authorData) {
-        let authorString = `
-        <div class="col-lg-4">
-            <p class="fs-5">
-                <a href="../query.html?aut=${encodeURIComponent(authorData[0])}">${authorData[0]}</a> 
-                ${authorData[1] ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
-                ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
-            </p>
-        </div>
-        
-        <div class="col-lg-5">
-            <p class="fs-5"><span class="fw-bold">Motivazione: </span>${refineMotivationField(authorData[4])}</span></p>
-        </div>`
 
-        return authorString;
+        if (authorData[0].includes("[")) {
+
+            // handles "Anonimo dell'Italia settentrionale [Antonio Rossellino]" (87, 160)
+
+            let authorAnonym = authorData[0].split("[")[0].trim();
+            let authorName = authorData[0].split("[")[1].replace("]", "").trim();
+            authorData[0] = authorAnonym;
+            authorData[1] = authorName;
+
+            let authorString = `
+                <div class="col-lg-4">
+                    <p class="fs-5">
+                        ${authorAnonym} [<a href="../query.html?aut=${encodeURIComponent(authorData[0])}">${authorName}</a>]
+                        ${authorData[1] ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
+                        ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
+                    </p>
+                </div>
+                
+                <div class="col-lg-5">
+                    <p class="fs-5"><span class="fw-bold">Motivazione: </span>${refineMotivationField(authorData[4])}</span></p>
+                </div>`;
+
+            return authorString;
+        } else if (authorData[0].includes(";")) {
+
+            // handles "Ludovico Castellani; Michele da Firenze" (326)   
+            
+            let authorName1 = authorData[0].split(";")[0].trim();
+            let authorName2 = authorData[0].split(";")[1].trim();
+
+            let authorString = `
+                <div class="col-lg-4">
+                    <p class="fs-5">
+                        <a href="../query.html?aut=${encodeURIComponent(authorName1)}">${authorName1}</a>; <a href="../query.html?aut=${encodeURIComponent(authorName2)}">${authorName2}</a>
+                        ${authorData[1] ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
+                        ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
+                    </p>
+                </div>
+                
+                <div class="col-lg-5">
+                    <p class="fs-5"><span class="fw-bold">Motivazione: </span>${refineMotivationField(authorData[4])}</span></p>
+                </div>`;
+
+            return authorString;
+        } else {
+
+            // all other cases
+
+            let authorString = `
+                <div class="col-lg-4">
+                    <p class="fs-5">
+                        <a href="../query.html?aut=${encodeURIComponent(authorData[0])}">${authorData[0]}</a>
+                        ${authorData[1] ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
+                        ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
+                    </p>
+                </div>
+                
+                <div class="col-lg-5">
+                    <p class="fs-5"><span class="fw-bold">Motivazione: </span>${refineMotivationField(authorData[4])}</span></p>
+                </div>`;
+            
+            return authorString;
+        }
+        
     }
 
     $("#entry-first-author").html(
@@ -217,8 +273,10 @@ function uploadData(data) {
 
     // == Dimension ==
     if (data["misure"] !== "") {
-        $("#entry-mis-lab").html(`<p class="fs-5 fw-bold">Dimensioni</p>`);
-        $("#entry-mis").html(`<p class="fs-5" id="entry-mis">${data["misure"]}</p>`);
+        if (!data["misure"].includes("verificare")) {
+            $("#entry-mis-lab").html(`<p class="fs-5 fw-bold">Dimensioni</p>`);
+            $("#entry-mis").html(`<p class="fs-5" id="entry-mis">${data["misure"]}</p>`);
+        }
     }
     // =================
 
@@ -232,21 +290,21 @@ function uploadData(data) {
         [data["loc-3-prov"], data["loc-3-comune"], data["loc-3-contenitore"], data["loc-3-crono"]],
         [data["loc-4-prov"], data["loc-4-comune"], data["loc-4-contenitore"], data["loc-4-crono"]]
     ];
-    $("#entry-current-loc").html(`<p class="fs-5">${createLocLabel(locData[0])}</p>`);
+    $("#entry-current-loc").html(`<p class="fs-5">${createLocLabel(locData[0], false)}</p>`);
 
     if (locData[1].some((element) => element !== "")) { // If at least one alternative attribution exists
         $("#entry-other-locs").html(
             `<div class="col-lg-3">
                 <p class="fs-5 fw-bold">Localizzazioni precedenti</p>
             </div>
-            <div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[1])}</p></div>
+            <div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[1], true)}</p></div>
 
     
-            ${locData[2].some((element) => element !== "") ? `<div class="col-lg-3 col-md-0"></div><div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[2])}</p></div>` : ""}
+            ${locData[2].some((element) => element !== "") ? `<div class="col-lg-3 col-md-0"></div><div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[2], true)}</p></div>` : ""}
     
-            ${locData[3].some((element) => element !== "") ? `<div class="col-lg-3 col-md-0"></div><div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[3])}</p></div>` : ""}
+            ${locData[3].some((element) => element !== "") ? `<div class="col-lg-3 col-md-0"></div><div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[3], true)}</p></div>` : ""}
     
-            ${locData[4].some((element) => element !== "") ? `<div class="col-lg-3 col-md-0"></div><div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[4])}</p></div>` : ""}
+            ${locData[4].some((element) => element !== "") ? `<div class="col-lg-3 col-md-0"></div><div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[4], true)}</p></div>` : ""}
             `
         );
     } else {

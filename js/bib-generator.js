@@ -10,7 +10,6 @@ function retrieveBibData(bibId) {
         }
     }); 
 
-    console.log(ref);
     return ref;
 }
  
@@ -21,7 +20,6 @@ function refineMotivationField(cell) {
     if (cell.includes("Bibliografia")) {
         let newMotivString = cell;
 
-        console.log(cell);
         // Iterate to handle multiple motivations
         cell.split(";").forEach(function (item) {
             if (item.includes("Bibliografia (")) {
@@ -117,7 +115,6 @@ function retrieveBib(cell) {
     });
 
     let htmlBib = [];
-    console.log(cell);
     citationData.forEach(function (item) {
         let bibRef = getFullRef(item["data"]);
 

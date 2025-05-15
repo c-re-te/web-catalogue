@@ -332,8 +332,6 @@ function uploadData(data) {
     $("#entry-bib").html(getBibString(data["bibliografia"])); 
     // ================
 
-    console.log(retrieveBib(data["bibliografia"]));
-
     // == Relationships ==
     if (data["relazioni"] !== "") {
         $("#entry-rel").html(

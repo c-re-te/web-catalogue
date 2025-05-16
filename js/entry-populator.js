@@ -7,7 +7,7 @@ let bibData = [];
 
 async function loadMainCSV() {
     return new Promise((resolve, reject) => {
-        Papa.parse("../assets/data/data-test-jan25.csv", {
+        Papa.parse("../assets/data/test-jan25/data.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
@@ -19,7 +19,7 @@ async function loadMainCSV() {
 
 async function loadBibCSV() {
     return new Promise((resolve, reject) => {
-        Papa.parse("../assets/data/biblio.csv", {
+        Papa.parse("../assets/data/test-jan25/biblio.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,

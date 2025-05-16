@@ -7,7 +7,7 @@ let bibData = [];
 
 async function loadMainCSV() {
     return new Promise((resolve, reject) => {
-        Papa.parse("../assets/data/test-jan25/data.csv", {
+        Papa.parse("../assets/data/test-may25/data.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
@@ -19,7 +19,7 @@ async function loadMainCSV() {
 
 async function loadBibCSV() {
     return new Promise((resolve, reject) => {
-        Papa.parse("../assets/data/test-jan25/biblio.csv", {
+        Papa.parse("../assets/data/test-may25/biblio.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
@@ -135,7 +135,13 @@ function uploadData(data) {
     // =====================
 
     // == Images ==
-    $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + data["img-path"]));
+    let imgPath;
+    if (data["img-path"] === "") {
+        imgPath = "entry-placeholder.jpg";
+    } else {
+        imgPath = data["img-path"];
+    }
+    $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + imgPath));
     // To update with carousel for more than one image
     // ============
 

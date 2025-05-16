@@ -137,7 +137,7 @@ function uploadData(data) {
     // == Images ==
     let imgPath;
     if (data["img-path"] === "") {
-        imgPath = "entry-placeholder.jpg";
+        imgPath = "entry-placeholder.png";
     } else {
         imgPath = data["img-path"];
     }

@@ -343,6 +343,23 @@ function uploadData(data) {
     // ================
 
     // == Relationships ==
+
+    /*
+
+    function splitRel(rel) {
+        let aList = "";
+        if(rel.includes(";")) {
+            rel.split(";").forEach(function (item) {
+                aList += `<a href="../query.html?rel=${encodeURIComponent(item.trim())}">${item} <i class="bi bi-box-arrow-up-right"></i></a><br>`;
+            });
+    } else { 
+            aList = rel; 
+        }
+    
+        return aList;
+    }
+
+    */
     if (data["relazioni"] !== "") {
         $("#entry-rel").html(
             `<div class="col-lg-3">

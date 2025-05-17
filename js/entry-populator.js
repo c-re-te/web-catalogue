@@ -335,7 +335,11 @@ function uploadData(data) {
     // =================
 
     // = Bibliography =
-    $("#entry-bib").html(getBibString(data["bibliografia"])); 
+    if (data["bibliografia"] != "") {
+        $("#entry-bib-lab").html(`<p class="fs-5 fw-bold">Bibliografia sintetica</p>`); 
+        $("#entry-bib").html(getBibString(data["bibliografia"])); 
+    }
+    
     // ================
 
     // == Relationships ==

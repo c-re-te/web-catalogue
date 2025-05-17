@@ -76,12 +76,13 @@ function getEssayInBook(row) {
 }
 
 function getEntry(row) {
+    console.log(row);
     let refFirst = `${row['AUTORE']}, «${row['TITOLO CONTRIBUTO SPECIFICO']}», in `;
     if (row['CURATORE']) refFirst += `${row['CURATORE']} (a cura di), `;
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
-    refFirst += `${refFirst}${row['EDITORE']}, ${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
+    refFirst += `${row['EDITORE']}, ${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
     return row['PAGINE'] ? `${refFirst}, pp. ${row['PAGINE']}.` : `${refFirst}`;
 }
 

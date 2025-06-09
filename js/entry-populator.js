@@ -371,4 +371,9 @@ function uploadData(data) {
         }
     // =================
 
+    if (data["id"].includes("O")) {
+        $("#entry-author").html("Giuseppe Andolina");
+    } else {
+        $("#entry-author").html("Marco Scansani");
+    }
 }

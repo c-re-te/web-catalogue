@@ -199,9 +199,19 @@ function runQuery() {
     const BATCH_SIZE = 100; // Define batch size
     let dataFiltered = [];
 
+    // Remove province from locations strings in filters*
+    if (queryParams.l_0) {
+        queryParams.l_0 = [queryParams.l_0[0].replace(/ \([^)]+\)/g, '')];
+    }
+
+    if (queryParams.alt_l) {
+        queryParams.alt_l = queryParams.alt_l.map(s => s.replace(/ \([^)]+\)/g, ''));
+    }
+
     // Function to perform the search based on queryParams filters
     function advancedSearch(queryParams) {
 
+        console.log(queryParams);
         // Process the dataset in batches
         for (let i = 0; i < data.length; i += BATCH_SIZE) {
             let batch = data.slice(i, i + BATCH_SIZE);
@@ -233,8 +243,10 @@ function runQuery() {
                 // at least one of the values of the batch row matches 
                 // the query value? Returns a boolean
                     : (queryValue, value) => value && value.toLowerCase() === queryValue.toLowerCase();
-
                 
+                if (queryArray.length > 1) {
+
+                }
                 return queryArray.some(queryValue =>
                     valueArray.some(value => matchFunc(queryValue, value))
                 );
@@ -243,12 +255,23 @@ function runQuery() {
                 // with !matchesValues(...)
             }
 
+            // Ancillary function 1B: Exact match for multiple query in the same fiedl (for authors and collocations)
+            function allValuesMatchExact(valueArray, queryArray) {
+                if (!Array.isArray(queryArray)) queryArray = [queryArray];
+
+                return queryArray.every(queryValue =>
+                    valueArray.some(value => 
+                        value && value.toLowerCase() === queryValue.toLowerCase()
+                    )
+                );
+            }
+
             // Ancillary function 2: Filter string creator for locations
             // iterating over increasing indexes
             function filterLocStringCreator(item, index) {
                 const cont = item[`l${index}-cont`] || "";
                 const city = item[`l${index}-city`] || "";
-                if (city && cont) return `${city} (${cont})`;
+                if (city && cont) return `${city}, ${cont}`;
                 return city || cont;
             }
 
@@ -277,12 +300,26 @@ function runQuery() {
                 isMatch = false;
             }
 
-            // 1C. Other attributions (exact match) *
-            if (queryParams.alt_a && !matchesValues([
-                item["author-1"], item["author-2"], item["author-3"], item["author-4"]
-            ], queryParams.alt_a, false)) {
-                isMatch = false;
-            }            
+            // 1C. Other attributions (multiple match) *
+            if (queryParams.alt_a) {
+
+                let itemAuthors = [
+                    item["author-1"],
+                    item["author-2"],
+                    item["author-3"],
+                    item["author-4"]
+                ];
+
+                if (queryParams.alt_a.length === 1) {
+                    if (!itemAuthors.some(val => queryParams.alt_a.includes(val))) {
+                        isMatch = false;
+                    }
+                } else if (queryParams.alt_a.length > 1) {
+                    if(!allValuesMatchExact(itemAuthors, queryParams.alt_a)) {
+                        isMatch = false;
+                    }
+                }
+            }
 
             // 2. Object (exact match)
             if (queryParams.obj && item["obj-def"].toLowerCase() !== queryParams.obj[0].toLowerCase()) {
@@ -329,25 +366,36 @@ function runQuery() {
             ], queryParams.loc, true)) {
                 isMatch = false;
             }
-
+            
             // 7B-α. Current location - full description (exact match) *
             if (queryParams.l_0 && filterLocStringCreator(item, 0).toLowerCase() !== queryParams.l_0[0].toLowerCase()) {
                 isMatch = false;
             }
-
+            
             // 7B-β. Current location - only city (exact match) **
             if (queryParams.city && item["l0-city"].toLowerCase()  !==  queryParams.city[0].toLowerCase()) {
                 isMatch = false;
             }
+            
+            // 7C. Previous locations - full description (multiple match) *
+            if (queryParams.alt_l) {
 
-            // 7C. Previous locations - full description (partial match) *
-            if (queryParams.alt_l && !matchesValues([
-                filterLocStringCreator(item, 1),
-                filterLocStringCreator(item, 2),
-                filterLocStringCreator(item, 3),
-                filterLocStringCreator(item, 4)
-            ], queryParams.alt_l), false) {
-                isMatch = false;
+                let itemLocations = [
+                    filterLocStringCreator(item, 1),
+                    filterLocStringCreator(item, 2),
+                    filterLocStringCreator(item, 3),
+                    filterLocStringCreator(item, 4)
+                ];
+
+                if (queryParams.alt_l.length === 1) {
+                    if (!itemLocations.some(val => queryParams.alt_l.includes(val))) {
+                        isMatch = false;
+                    }
+                } else if (queryParams.alt_l.length > 1) {
+                    if(!allValuesMatchExact(itemLocations, queryParams.alt_l)) {
+                        isMatch = false;
+                    }
+                }
             }
             
             // 8. Connected artworks (exact match) ***

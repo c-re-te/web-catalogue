@@ -616,7 +616,7 @@ function retrieveFreqData(data, property, label, isByName) {
         // Further refinement for the authors
         let cleanElement = element.trim(); // Remove leading/trailing spaces
 
-        // Extract from [...], e.g. Anonimo [Antonio Rossellino]
+        // Extract from [...], e.g. Anonimo [Antonio Rossellino] TO REVISE [da Antonio Rossellino]
         const bracketMatches = cleanElement.match(/\[(.*?)\]/g); 
         const bracketContents = bracketMatches ? bracketMatches.map(s => s.slice(1, -1).trim()) : [];
 
@@ -726,7 +726,7 @@ function displayParams() {
         if (queryParams[paramKey]) {
 
             // Create single string (it handles multiple values)
-            var paramValues = queryParams[paramKey].join(', ');
+            var paramValues = queryParams[paramKey].join('; ');
 
             // Create the button elements
             childButton = `

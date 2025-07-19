@@ -10,7 +10,7 @@ window.onload = function() { // Set visualisation
         select.selectedIndex = 0;
     }
 
-    return isGrid;
+    return isGrid = false;
 };
 
 
@@ -154,7 +154,6 @@ function renderResults(page, data, isGrid = false) {
 
         pageData.forEach(item => { 
 
-            // console.log(item['author'], item['url']);
             let imgpath = "schede/" + item['path'];
             if (item['path'] == "") { 
                 imgpath = "img-placeholder.png";
@@ -215,7 +214,6 @@ function renderResults(page, data, isGrid = false) {
                         </div>
                     `;
             // , ${createLocLabel(item)} OPPURE ${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}
-            // console.log(gridItem);
 
             $('#resultsGrid').append(gridItem);
             
@@ -230,6 +228,7 @@ function renderResults(page, data, isGrid = false) {
 
 // 1. createLocLabel, to create the label for the location
 
+/*
 function createLocLabel(item) {
     let locationText = ''; // Create the label for the location
 
@@ -263,6 +262,48 @@ function createLocLabel(item) {
     
 
     return locationText;
+}
+*/
+
+function createLocLabel(item) {
+    const cont = item['l0-cont']?.trim();
+    const city = item['l0-city']?.trim();
+    const prov = item['l0-prov']?.trim();
+    const fraz = item['l0-fraz']?.trim();
+
+    // Special case: Collezione privata
+    if (cont && cont.toLowerCase() === 'collezione privata') {
+        return 'Collezione privata';
+    }
+
+    // Special case: Sotheby's (or other stand-alone entries)
+    if (cont && cont.toLowerCase().replace(/[’']/g, "'").startsWith("sotheby")) {
+        return cont;
+    }
+
+    let label = '';
+
+    // Città (eventualmente con frazione)
+    if (city) {
+        label += city;
+        if (fraz) {
+            label += `, ${fraz}`;
+        }
+        if (prov) {
+            label += ` (${prov})`;
+        }
+    }
+
+    // Contenitore
+    if (cont) {
+        if (label) {
+            label += `, ${cont}`;
+        } else {
+            label = cont;
+        }
+    }
+
+    return label;
 }
 
 // 2. renderPagination, to paginate with Bootstrap
@@ -410,10 +451,11 @@ function renderFilters(data) {
     $('#accordionQuery').append(accordionChronoItem);
 
     // Accordion section: Ubicazione attuale
-    renderFreqTableInAccordion(data, ['l0-city', 'l0-cont'], 'Ubicazione attuale', false, true);
+    renderFreqTableInAccordion(data, ['l0-city', 'l0-prov', 'l0-cont'], 'Ubicazione attuale', false, true);
 
     // Accordion section: Ubicazione precedenti
-    renderFreqTableInAccordion(data, [['l1-city', 'l1-cont'], ['l2-city', 'l2-cont'], ['l3-city', 'l3-cont'], ['l4-city', 'l4-cont']], 'Ubicazioni precedenti', false, true);
+    renderFreqTableInAccordion(data, [['l1-city', 'l1-prov', 'l1-cont'], ['l2-city', 'l2-prov', 'l2-cont'], ['l3-city', 'l3-prov', 'l3-cont'], ['l4-city', 'l4-prov', 'l4-cont']], 'Ubicazioni precedenti', false, true);
+    
     // Accordion section: Soggetto
     renderFreqTableInAccordion(data, ['subj'], 'Soggetto', false, true);
 
@@ -433,11 +475,13 @@ function renderFilters(data) {
 
 function renderFreqTableInAccordion(data, property, label, isFirst = false, hasSortingButton = false, isByName = false) {
 
+    let content; 
+
     // Generate the first row of the frequency table using Bootstrap columns
-    const content = retrieveFreqData(data, property, label, isByName)
+    content = retrieveFreqData(data, property, label, isByName)
         .map(([key, count]) => `<div class="row filter-row" onclick="refineQuery(['${label}', '${key}'], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
         .join('');
-
+    
     const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-'); // Respect syntax for accordion label
 
     if (hasSortingButton) {
@@ -490,27 +534,52 @@ function renderFreqTableInAccordion(data, property, label, isFirst = false, hasS
 
 // 1. combineValues, to combine (horizontal) values from two columns
 
-function combineValues(data, col1, col2) {
+function combineValues(data, col1, col2, col3) {
     return data.map((item) => {
 
         // Get the values of the two cols ... 
         const val1 = item[col1]?.trim() || '';
         const val2 = item[col2]?.trim() || ''; 
+        const val3 = item[col3]?.trim() || ''; 
 
         // ... and combine them in a single string
-        if(val1 && val2) {
-            return `${val1} (${val2})`; // e.g. Cremona (Museo Civico)
+        // Specific for locations
+
+        let locLabelinFilters = '';
+
+        // If city is known
+        if (val1) {
+
+            // If fraction is known
+            if (val1.includes(",")) {
+                const parts = val1.split(',');
+                city = parts[0].trim();
+                fraz = parts.slice(1).join(',').trim();
+                if (val2) {
+                    locLabelinFilters = `${city} (${val2}), ${fraz}`; // e.g. Alto Reno Terme (BO), Capugnano
+                } 
+            } else {
+                    locLabelinFilters = val1;
+
+                    // If province is known
+                    if (val2) {
+                        locLabelinFilters += ` (${val2})`; // e.g. Bologna (BO)
+                    }
+            }
+
+            // If container is known
+            if (val3) {
+                locLabelinFilters += `, ${val3}`; // e.g. Bologna (BO), Museo Civico
+            }
+
+        } else if(!val1 && val3){
+            locLabelinFilters += `${val3}`; // e.g. Collezione privata
         }
 
-        else if(val1 && !val2) {
-            return val1;                // e.g. Mantova         
-        }
-
-        else if(!val1 && val2) {
-            return val2;                // e.g. Collezione privata
-        }
+        return locLabelinFilters;
     });
 }
+
 
 // 2. retrieveFreqData, to retrieve the frequency data to insert in the accordion
 
@@ -531,27 +600,36 @@ function retrieveFreqData(data, property, label, isByName) {
     } else if (label === "Ubicazioni precedenti") { // Except. 2: Other locations
 
         for (const prop of property) {
-            for (const element of combineValues(data, prop[0], prop[1]).filter(val => val)) {
+            for (const element of combineValues(data, prop[0], prop[1], prop[2]).filter(val => val)) {
                 propertyArray.push(element);
             }
         }
 
     } else {
 
-        propertyArray = combineValues(data, property[0], property[1]).filter(val => val);
+        propertyArray = combineValues(data, property[0], property[1], property[2]).filter(val => val);
     
     }
 
-    for (const element of propertyArray) {          // Main case (no exceptions)      
-        
-        if (element.includes(';')) { // Split the values with the delimiter ";"
-            const splittedVal = element.split('; '); // e.g. Maestro degli angeli cantori; G. de Fondulis
-            for (const val of splittedVal) {
-                counts[val] = counts[val] ? counts[val] + 1 : 1;
-            }
-        } else {    
-            // Main case (no delimiter)
-            counts[element] = counts[element] ? counts[element] + 1 : 1;
+    for (const element of propertyArray) {
+
+        // Further refinement for the authors
+        let cleanElement = element.trim(); // Remove leading/trailing spaces
+
+        // Extract from [...], e.g. Anonimo [Antonio Rossellino]
+        const bracketMatches = cleanElement.match(/\[(.*?)\]/g); 
+        const bracketContents = bracketMatches ? bracketMatches.map(s => s.slice(1, -1).trim()) : [];
+
+        cleanElement = cleanElement.replace(/\[.*?\]/g, '').trim(); // Remove square bracket contents from the main string
+
+        // Combine bracket and non-bracket values into one array
+        // Split by semicolon if needed (e.g. "Anonimo; Maestro degli angeli")
+        const candidates = [cleanElement, ...bracketContents]
+            .flatMap(s => s.includes(';') ? s.split(';').map(x => x.trim()) : [s]);
+
+        // Count occurrences
+        for (const val of candidates) {
+            counts[val] = counts[val] ? counts[val] + 1 : 1;
         }
     }
 
@@ -583,10 +661,10 @@ function resortFilter(label, isByName = false) {
         property = ['author-1', 'author-2', 'author-3'];
     }
     else if (label === "Ubicazione attuale") {
-        property = ['l0-city', 'l0-cont'];
+        property = ['l0-city', 'l0-prov', 'l0-cont'];
     }
     else if (label === "Ubicazioni precedenti") {
-        property = [['l1-city', 'l1-cont'], ['l2-city', 'l2-cont']];
+        property = [['l1-city', 'l1-prov', 'l1-cont'], ['l2-city', 'l2-prov', 'l2-cont'], ['l3-city', 'l3-prov', 'l3-cont'], ['l4-city', 'l4-prov', 'l4-cont']];
     }
     else if (label === "Soggetto") {
         property = ['subj'];
@@ -602,7 +680,10 @@ function resortFilter(label, isByName = false) {
     }
 
     const content = retrieveFreqData(data, property, label, isByName)
-        .map(([key, count]) => `<div class="row filter-row" onclick="refineQuery(['${label}', '${key}'], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
+        .map(([key, count]) => {
+            const safeKey = key.replace(/'/g, "\\'"); // Use safekey to handle single quotes in keys (e.g. "Anonimo dell'Italia settentrionale")
+            return `<div class="row filter-row" onclick="refineQuery(['${label}', '${safeKey}'], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`;
+        })
         .join('');
         
     // Replace the content of the accordion
@@ -683,8 +764,3 @@ document.getElementById('viz_mode').addEventListener('change', function () {
         return isGrid = false;
     }
 });
-
-function tmp(int) {
-    console.log(`Ciao ${int}`);
-    console.log(`Ciao '${int}'`);
-}

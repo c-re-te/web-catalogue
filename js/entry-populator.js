@@ -301,7 +301,7 @@ function uploadData(data) {
     if (locData[1].some((element) => element !== "")) { // If at least one alternative attribution exists
         $("#entry-other-locs").html(
             `<div class="col-lg-3">
-                <p class="fs-5 fw-bold">Localizzazioni precedenti</p>
+                <p class="fs-5 fw-bold">Ubicazioni precedenti</p>
             </div>
             <div class="col-lg-9"><p class="fs-5">${createLocLabel(locData[1], true)}</p></div>
 

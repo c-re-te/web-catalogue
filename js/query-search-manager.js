@@ -196,7 +196,6 @@ function refineQuery(chosen_filter, filter_type) {
 
 function runQuery() {
     const queryParams = parseQueryURLString()
-
     const BATCH_SIZE = 100; // Define batch size
     let dataFiltered = [];
 
@@ -214,6 +213,7 @@ function runQuery() {
 
     // Compare the results in data with the ones provided in the queryParams
     function processBatch(batch, queryParams) {
+
         batch.forEach(item => {
             firstMatch = true;
 
@@ -272,8 +272,8 @@ function runQuery() {
                 isMatch = false;
             }
 
-            // 1B. Known author (exact match) *
-            if (queryParams.a_0 && item["author"].toLowerCase() !== queryParams.a_0[0].toLowerCase()) {
+            // 1B. Known author (partial match)
+            if (queryParams.a_0 && !matchesValues([item["author"]], queryParams.a_0, true)) {
                 isMatch = false;
             }
 

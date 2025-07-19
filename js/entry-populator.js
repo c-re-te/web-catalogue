@@ -109,8 +109,12 @@ function createLocLabel(locList, removeLink = false) { // locList = [data["loc-0
         locationText = "Collezione privata";
     };
     
-    if(locList.length > 3) { // Chronology for previous locations
-        locationText += `${locList[3] ? `, ${locList[3]}` : ""}`;
+    if (locList[3]) {
+        locationText += `, ${locList[3]}`;
+    }
+
+    if(locList.length > 4) { // Chronology for previous locations
+        locationText += `${locList[4] ? `, ${locList[4]}` : ""}`;
     }
     return locationText;
 }
@@ -145,6 +149,13 @@ function uploadData(data) {
     // To update with carousel for more than one image
     // ============
 
+    if (/[a-zA-Z]/.test(data["id"].toLowerCase())) {
+        console.log(/[a-zA-Z]/.test(data["id"].toLowerCase()));
+        $("#entry-author").html("Giuseppe Andolina");
+    } else {
+        $("#entry-author").html("Marco Scansani");
+    }
+
     // == Authors ==
     let authorData = [
         data["autore-0-name"], data["autore-0-url"], data["autore-0-rif"], data["autore-0-ambito"], data["autore-0-motiv"],
@@ -164,14 +175,33 @@ function uploadData(data) {
 
             let authorAnonym = authorData[0].split("[")[0].trim();
             let authorName = authorData[0].split("[")[1].replace("]", "").trim();
+
+            /*
             authorData[0] = authorAnonym;
             authorData[1] = authorName;
-
+            
             let authorString = `
                 <div class="col-lg-4">
                     <p class="fs-5">
                         ${authorAnonym} [<a href="../query.html?aut=${encodeURIComponent(authorData[0])}">${authorName}</a>]
                         ${authorData[1] ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
+                        ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
+                    </p>
+                </div>
+                
+                <div class="col-lg-5">
+                    <p class="fs-5"><span class="fw-bold">Motivazione: </span>${refineMotivationField(authorData[4])}</span></p>
+                </div>`;*/
+            
+            if (authorData[1].includes(";")){
+                authorData[1] = authorData[1].split(";")[1].trim();
+            }
+
+            let authorString = `
+                <div class="col-lg-4">
+                    <p class="fs-5">
+                        ${authorAnonym} [<a href="../query.html?aut=${encodeURIComponent(authorName)}">${authorName}</a>]
+                        ${authorData[1].includes("ulan") ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
                         ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
                     </p>
                 </div>
@@ -188,11 +218,15 @@ function uploadData(data) {
             let authorName1 = authorData[0].split(";")[0].trim();
             let authorName2 = authorData[0].split(";")[1].trim();
 
+            if (authorData[1].includes(";")) {
+                ULAN1 = authorData[1].split(";")[0].trim();
+                ULAN2 = authorData[1].split(";")[1].trim();
+            }
+
             let authorString = `
                 <div class="col-lg-4">
                     <p class="fs-5">
-                        <a href="../query.html?aut=${encodeURIComponent(authorName1)}">${authorName1}</a>; <a href="../query.html?aut=${encodeURIComponent(authorName2)}">${authorName2}</a>
-                        ${authorData[1] ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
+                        <a href="../query.html?aut=${encodeURIComponent(authorName1)}">${authorName1}</a>${ULAN1.includes("ulan") ? ` <sup><a href="${ULAN1}">[ULAN]</a></sup>` : ""}; <a href="../query.html?aut=${encodeURIComponent(authorName2)}">${authorName2}</a>${ULAN2.includes("ulan") ? ` <sup><a href="${ULAN2}">[ULAN]</a></sup>` : ""}
                         ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
                     </p>
                 </div>
@@ -210,7 +244,7 @@ function uploadData(data) {
                 <div class="col-lg-4">
                     <p class="fs-5">
                         <a href="../query.html?aut=${encodeURIComponent(authorData[0])}">${authorData[0]}</a>
-                        ${authorData[1] ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
+                        ${authorData[1].includes("ulan") ? `<sup><a href="${authorData[1]}">[ULAN]</a></sup>` : ""}
                         ${authorData[2] ? `<span>(${authorData[2]})</span>` : ""}
                     </p>
                 </div>
@@ -290,11 +324,11 @@ function uploadData(data) {
 
     // == Location ==
     let locData = [
-        [data["loc-0-prov"], data["loc-0-comune"], data["loc-0-contenitore"]],
-        [data["loc-1-prov"], data["loc-1-comune"], data["loc-1-contenitore"], data["loc-1-crono"]],
-        [data["loc-2-prov"], data["loc-2-comune"], data["loc-2-contenitore"], data["loc-2-crono"]],
-        [data["loc-3-prov"], data["loc-3-comune"], data["loc-3-contenitore"], data["loc-3-crono"]],
-        [data["loc-4-prov"], data["loc-4-comune"], data["loc-4-contenitore"], data["loc-4-crono"]]
+        [data["loc-0-prov"], data["loc-0-comune"], data["loc-0-contenitore"], data["loc-0-specifica"]],
+        [data["loc-1-prov"], data["loc-1-comune"], data["loc-1-contenitore"], data["loc-1-specifica"], data["loc-1-crono"]],
+        [data["loc-2-prov"], data["loc-2-comune"], data["loc-2-contenitore"], data["loc-2-specifica"], data["loc-2-crono"]],
+        [data["loc-3-prov"], data["loc-3-comune"], data["loc-3-contenitore"], data["loc-3-specifica"], data["loc-3-crono"]],
+        [data["loc-4-prov"], data["loc-4-comune"], data["loc-4-contenitore"], data["loc-4-specifica"], data["loc-4-crono"]]
     ];
     $("#entry-current-loc").html(`<p class="fs-5">${createLocLabel(locData[0], false)}</p>`);
 
@@ -335,7 +369,7 @@ function uploadData(data) {
     // =================
 
     // = Bibliography =
-    if (data["bibliografia"] != "") {
+    if (data["bibliografia"] != "" && data["bibliografia"] != "Inedito") {
         $("#entry-bib-lab").html(`<p class="fs-5 fw-bold">Bibliografia sintetica</p>`); 
         $("#entry-bib").html(getBibString(data["bibliografia"])); 
     }
@@ -370,10 +404,5 @@ function uploadData(data) {
             </div>`);
         }
     // =================
-
-    if (data["id"].includes("O")) {
-        $("#entry-author").html("Giuseppe Andolina");
-    } else {
-        $("#entry-author").html("Marco Scansani");
-    }
+    
 }

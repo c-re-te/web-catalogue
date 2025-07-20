@@ -27,9 +27,14 @@ function refineMotivationField(cell) {
                 // Create in-text citation with ad hoc function and update motivation
                 let bibID = item.split("(")[1].replace(")", "").trim();
                 let ref = retrieveBibData(bibID);
-                let citation = ref["AUTORE"].replace(/\b[A-Z]\./g, '') + ref["ANNO"]
+                
+                let citation;
 
-                // FIX also for EDITORS !!!!
+                if (ref["AUTORE"]) {
+                    citation = ref["AUTORE"].replace(/\b[A-Z]\./g, '') + ref["ANNO"]
+                } else if (ref["CURATORE"]) {
+                    citation = ref["CURATORE"].replace(/\b[A-Z]\./g, '') + ref["ANNO"]
+                } 
 
                 // Update the string
                 newMotivString = newMotivString.replace(bibID, citation);
@@ -61,7 +66,7 @@ function getMonograph(row) {
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
-    if (row['EDITORE']) refFirst += `${row['EDITORE']}, `;
+    // if (row['EDITORE']) refFirst += `${row['EDITORE']}, `;
     if (row['LUOGO EDIZIONE']) refFirst += `${row['LUOGO EDIZIONE']}, `;
     return `${refFirst}${row['ANNO']}`;
 }
@@ -73,7 +78,8 @@ function getEssayInBook(row) {
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
-    refFirst += `${row['EDITORE']}, ${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
+    // refFirst += `${row['EDITORE']}, ${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
+    refFirst += `${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
     return row['PAGINE'] ? `${refFirst}, pp. ${row['PAGINE']}.` : `${refFirst}`;
 }
 
@@ -84,13 +90,14 @@ function getEntry(row) {
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
-    refFirst += `${row['EDITORE']}, ${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
+    // refFirst += `${row['EDITORE']}, ${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
+    refFirst += `${row['LUOGO EDIZIONE']}, ${row['ANNO']}`;
     return row['PAGINE'] ? `${refFirst}, pp. ${row['PAGINE']}.` : `${refFirst}`;
 }
 
 function getThesis(row) {
     let refFirst = `${row['AUTORE']}, <i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
-    if (row['EDITORE']) refFirst += `${row['EDITORE']}, `;
+    // if (row['EDITORE']) refFirst += `${row['EDITORE']}, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
     return `${refFirst}${row['ANNO']}`;

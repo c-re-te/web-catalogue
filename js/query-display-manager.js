@@ -308,8 +308,21 @@ function createLocLabel(item) {
 
 // 2. renderPagination, to paginate with Bootstrap
 
-function renderPagination(page, data, itemsPerPage) {
+    // === With ancillary function for the input field
 
+function goToPage(data, totPages) {
+    const page = parseInt(document.getElementById('pageInput').value);
+    if (page && page > 0 && page <= totPages) {
+        renderResults(page, data, isGrid); // se vuoi aggiornare anche i risultati
+    } else {
+        alert(`Inserisci un numero di pagina valido (compreso tra 1 e ${totPages})`);
+    }
+    return false;
+}
+
+    // ===============================================
+
+function renderPagination(page, data, itemsPerPage) {
     const totalPages = Math.ceil(data.length / itemsPerPage);
     $('#pagination').empty();
 
@@ -339,7 +352,7 @@ function renderPagination(page, data, itemsPerPage) {
     // If necessary, add ellipsis
     if (page < totalPages - 2) {
         paginationHtml += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-    } 
+    }
 
     // Show last page
     if (totalPages > 1) {
@@ -348,9 +361,20 @@ function renderPagination(page, data, itemsPerPage) {
         </li>`;
     }
 
+    // Add input field and button
+    paginationHtml += `
+        <li class="page-item ms-3">
+            <input id="pageInput" type="number" min="1" max="${totalPages}" placeholder="${page}" class="form-control" style="width: 80px; display:inline-block;">
+        </li>
+        <li class="page-item">
+            <button class="btn btn-outline-primary" onclick="goToPage(data, ${totalPages})">Vai</button>
+        </li>
+    `;
+
     $('#pagination').append(paginationHtml);
 }
 
+// #onclick="goToPage(${JSON.stringify(data)}, ${itemsPerPage})"
 // 3. sortData, so that user can rearrange the content
 
 

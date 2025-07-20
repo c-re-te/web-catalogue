@@ -211,7 +211,6 @@ function runQuery() {
     // Function to perform the search based on queryParams filters
     function advancedSearch(queryParams) {
 
-        console.log(queryParams);
         // Process the dataset in batches
         for (let i = 0; i < data.length; i += BATCH_SIZE) {
             let batch = data.slice(i, i + BATCH_SIZE);

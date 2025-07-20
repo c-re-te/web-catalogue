@@ -146,6 +146,11 @@ function uploadData(data) {
         imgPath = data["img-path"];
     }
     $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + imgPath));
+
+    if (data["foto-b"]) {
+        console.log("Carousel needed!");
+    }
+    
     // To update with carousel for more than one image
     // ============
 

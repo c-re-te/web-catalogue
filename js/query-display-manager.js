@@ -102,12 +102,25 @@ function loadCSV() {
             var filterData = data.filter(row => runQuery().includes(row.url));
 
             filterData.sort((a, b) => {
-                let dateA = a['date-from'] ? new Date(a['date-from']) : new Date(0);
-                let dateB = b['date-from'] ? new Date(b['date-from']) : new Date(0);
-                return dateA - dateB;
+                // Primary sort: by 'date-from', defaulting to 1970-01-01 if missing
+                let dateA1 = a['date-from'] ? new Date(a['date-from']) : new Date(0);
+                let dateB1 = b['date-from'] ? new Date(b['date-from']) : new Date(0);
+
+                if (dateA1 < dateB1) return -1;
+                if (dateA1 > dateB1) return 1;
+
+                // Secondary sort: by 'date-to', also defaulting to 1970-01-01 if missing
+                let dateA2 = a['date-to'] ? new Date(a['date-to']) : new Date(0);
+                let dateB2 = b['date-to'] ? new Date(b['date-to']) : new Date(0);
+
+                if (dateA2 < dateB2) return -1;
+                if (dateA2 > dateB2) return 1;
+
+                return 0; // Both dates are equal
             });
 
-            if (filterData.length === 1) { // Exception for singular/plural
+            // Exception for singular/plural at the beginning (no. of artworks found)
+            if (filterData.length === 1) { 
                 document.getElementById("tot-results").innerHTML = filterData.length + " opera";
             } else {
                 document.getElementById("tot-results").innerHTML = filterData.length + " opere";
@@ -228,43 +241,6 @@ function renderResults(page, data, isGrid = false) {
 
 // 1. createLocLabel, to create the label for the location
 
-/*
-function createLocLabel(item) {
-    let locationText = ''; // Create the label for the location
-
-    if(item['l0-cont']) {
-        if(item['l0-city']) {
-            locationText = `${item['l0-cont']}, `;
-        } else if (item['l0-prov']) {
-            locationText = `${item['l0-cont']} `;
-        } else {
-            locationText = `${item['l0-cont']}`;
-        }
-    }
-
-    if(item['l0-city']) {
-        if (item['l0-prov']) {
-            locationText += `${item['l0-city']} `;
-        } else {
-            locationText += `${item['l0-city']}`;
-        }
-    }
-
-    if (item['l0-prov']) {
-        if (item['l0-city']) {
-            locationText += `(${item['l0-prov']})`;
-        }
-    }
-
-    if(item['l0-cont'].toLowerCase() == "collezione privata") { // To handle "Collezione privata"
-        locationText = "Collezione privata";
-    };
-    
-
-    return locationText;
-}
-*/
-
 function createLocLabel(item) {
     const cont = item['l0-cont']?.trim();
     const city = item['l0-city']?.trim();
@@ -374,7 +350,6 @@ function renderPagination(page, data, itemsPerPage) {
     $('#pagination').append(paginationHtml);
 }
 
-// #onclick="goToPage(${JSON.stringify(data)}, ${itemsPerPage})"
 // 3. sortData, so that user can rearrange the content
 
 
@@ -410,11 +385,22 @@ function sortData(criterion) {
 
     } else {
         sortedData.sort((a, b) => {
-            if(criterion == 'date-from') {
-                return new Date(a['date-from']) - new Date(b['date-from']);
-            } else {
-                if (a[criterion] < b[criterion]) return -1;
-                if (a[criterion] > b[criterion]) return 1;
+            // Update version: if data-from(A) = date-from(B), 
+            // then sort by date-to() 
+            if (criterion == 'date-from') {
+                const dateA1 = new Date(a['date-from']);
+                const dateB1 = new Date(b['date-from']);
+
+                if (dateA1 < dateB1) return -1;
+                if (dateA1 > dateB1) return 1;
+
+                // Se sono uguali, ordina per 'date-to'
+                const dateA2 = new Date(a['date-to']);
+                const dateB2 = new Date(b['date-to']);
+
+                if (dateA2 < dateB2) return -1;
+                if (dateA2 > dateB2) return 1;
+
                 return 0;
             }
         });

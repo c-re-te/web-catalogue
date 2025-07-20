@@ -287,8 +287,10 @@ function uploadData(data) {
     // =============
 
     // == Date ==
-    $("#entry-from").html(data["data-da"]);
-    $("#entry-to").html(data["data-a"]);
+    if (data["data-da"] === data["data-a"]) {
+        $("#entry-date").html(data["data-a"]);
+    } else $("#entry-date").html(`${data["data-da"]} - ${data["data-a"]}`);
+
     // ==========
 
     // == Object ==

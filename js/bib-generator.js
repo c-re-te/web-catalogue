@@ -29,6 +29,8 @@ function refineMotivationField(cell) {
                 let ref = retrieveBibData(bibID);
                 let citation = ref["AUTORE"].replace(/\b[A-Z]\./g, '') + ref["ANNO"]
 
+                // FIX also for EDITORS !!!!
+
                 // Update the string
                 newMotivString = newMotivString.replace(bibID, citation);
             }

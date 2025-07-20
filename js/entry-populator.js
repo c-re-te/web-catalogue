@@ -129,13 +129,13 @@ function uploadData(data) {
 
     // == Main title (h2) and header in meta ==
 
-    $("#meta-head").html(data["autore-0-name"] + 
-        (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
-        ", " + capitalizeFirstLetter(data["soggetto"]) + " (scheda)");
+    let entryTitle = data["autore-0-name"] + (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
+        ", " + capitalizeFirstLetter(data["soggetto"]);
+    
+    $("#meta-head").html(entryTitle + " (scheda)");
 
-    $("#entry-title").html(data["autore-0-name"] + 
-        (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
-        ", " + capitalizeFirstLetter(data["soggetto"]));
+    $("#entry-title").html(entryTitle);
+
     // =====================
 
     // == Images ==
@@ -148,7 +148,40 @@ function uploadData(data) {
     $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + imgPath));
 
     if (data["foto-b"]) {
-        console.log("Carousel needed!");
+        let counter = 0;
+        for (let path of data["foto-b"].split(";").map(item => item.trim())) {
+            let newFullPath = `../assets/img/schede/${path}`;
+
+            // Main carousel
+            let newCarouselItem = `<div class="carousel-item">
+                            <img src="${newFullPath}" class="d-block w-100" alt="...">
+                        </div>`;
+            $("#entry-carousel-img").append(newCarouselItem);
+
+            // Thumbnails
+            let newThumbnail = `
+                <div class="col-4 col-md-1 mb-1">
+                    <img class="mx-auto d-block" src="${newFullPath}" alt="Additional image for ${entryTitle}" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${counter}">
+                </div>
+            `;
+            $("#carousel-thumbs").append(newThumbnail);
+
+            counter++;
+        }
+
+        let controls = `
+                    <!-- Controls  -->
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+        `;
+        $("#entry-carousel-img").append(controls);
     }
     
     // To update with carousel for more than one image

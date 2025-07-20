@@ -1,0 +1,15 @@
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: transparent; /* optional, in case you want no background */
+  background-size: 100% 100%;
+  width: 2rem;
+  height: 2rem;
+}
+
+.carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23B10B25' viewBox='0 0 8 8'%3E%3Cpath d='M5.5 0L4.8.7 1.5 4l3.3 3.3.7.7L2 4 5.5 0z'/%3E%3C/svg%3E");
+}
+
+.carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23B10B25' viewBox='0 0 8 8'%3E%3Cpath d='M2.5 0L3.2.7 6.5 4l-3.3 3.3-.7.7L6 4 2.5 0z'/%3E%3C/svg%3E");
+}

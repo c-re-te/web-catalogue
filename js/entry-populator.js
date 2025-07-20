@@ -148,7 +148,18 @@ function uploadData(data) {
     $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + imgPath));
 
     if (data["foto-b"]) {
-        let counter = 0;
+
+        let counter = 1;
+
+        // Thumbnail for first image;
+        let mainThumbnail = `
+                <div class="col-4 col-md-1 mb-1">
+                    <img class="mx-auto d-block" src="${"../assets/img/schede/" + imgPath}" alt="Main image for ${entryTitle}" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0">
+                </div>
+            `;
+
+        $("#carousel-thumbs").append(mainThumbnail);
+        
         for (let path of data["foto-b"].split(";").map(item => item.trim())) {
             let newFullPath = `../assets/img/schede/${path}`;
 

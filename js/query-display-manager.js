@@ -172,6 +172,15 @@ function renderResults(page, data, isGrid = false) {
                 imgpath = "img-placeholder.png";
             }
 
+            let dateLabel;
+            if (item['date-from']) {
+                if (item['date-from'] === item['date-to']) {
+                    dateLabel = item['date-from'];
+                } else {
+                    dateLabel = `${item['date-from']} - ${item['date-to']}`;
+                }
+            }
+
             const listItem = `
                             <div class="card mb-1">
                                 <div class="row g-0">
@@ -184,7 +193,7 @@ function renderResults(page, data, isGrid = false) {
                                         <div class="card-body">
                                             <p class="card-text">${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''}</p>
                                             <p class="card-text fw-bold"><a href="schede/entry.html?no=${item['url']}" class="query-result-obj-id">${item['subj']}</a></p>
-                                            <p class="card-text">${item['date-from']} ${item['date-from'] ? ` - ${item['date-to']}` : `${item['date-to']}`}</p>
+                                            <p class="card-text">${dateLabel}</p>
                                             <p class="card-text">${createLocLabel(item)}</p>
                                         </div>
                                     </div>
@@ -211,6 +220,7 @@ function renderResults(page, data, isGrid = false) {
 
         pageData.forEach(item => { 
 
+            let imgpath = "schede/" + item['path'];
             // Create the single grid
             const gridItem = `
                         <div class="col-md-4 col-sm-12 d-flex mt-2 justify-content-center">

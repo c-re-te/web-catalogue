@@ -355,7 +355,7 @@ function uploadData(data) {
     // =============
 
     // == Technique ==
-    $("#entry-tech-lav").html(capitalizeFirstLetter(data["tecnica"]) + ", superficie: " + data["lavorazione"]);
+    $("#entry-tech-lav").html(capitalizeFirstLetter(data["tecnica"]) + ". Superficie: " + data["lavorazione"]);
     // ===============
 
     // == Descrizione ==

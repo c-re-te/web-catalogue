@@ -129,7 +129,7 @@ function retrieveBib(cell) {
     let htmlBib = [];
     citationData.forEach(function (item) {
         let bibRef = getFullRef(item["data"]);
-
+        
         // Avoid repetition of pages in the reference
         if (bibRef.includes("p.") && item["pages"]) {
             if (bibRef.includes("pp. ")) {
@@ -146,6 +146,7 @@ function retrieveBib(cell) {
 }
 
 function getBibString(cell) {
+    cell = cell.replace(/\s*;+\s*$/, ""); // RegEx to avoid issues with final semicolon
     let listOfHTMLRef = retrieveBib(cell).map((x) => `<p class="fs-5">${x}</p>`);
     return listOfHTMLRef.join("\n");
 }

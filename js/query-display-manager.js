@@ -13,7 +13,7 @@ window.onload = function() { // Set visualisation
     return isGrid = false;
 };
 
-
+// **************** //
 
 let currentPage = 1;
 let data = [];
@@ -101,29 +101,13 @@ function loadCSV() {
 
             var filterData = data.filter(row => runQuery().includes(row.url));
 
-            filterData.sort((a, b) => {
-                // Primary sort: by 'date-from', defaulting to 1970-01-01 if missing
-                let dateA1 = a['date-from'] ? new Date(a['date-from']) : new Date(0);
-                let dateB1 = b['date-from'] ? new Date(b['date-from']) : new Date(0);
-
-                if (dateA1 < dateB1) return -1;
-                if (dateA1 > dateB1) return 1;
-
-                // Secondary sort: by 'date-to', also defaulting to 1970-01-01 if missing
-                let dateA2 = a['date-to'] ? new Date(a['date-to']) : new Date(0);
-                let dateB2 = b['date-to'] ? new Date(b['date-to']) : new Date(0);
-
-                if (dateA2 < dateB2) return -1;
-                if (dateA2 > dateB2) return 1;
-
-                return 0; // Both dates are equal
-            });
+            filterData.sort(compareByYearThenTo);
 
             // Exception for singular/plural at the beginning (no. of artworks found)
             if (filterData.length === 1) { 
-                document.getElementById("tot-results").innerHTML = filterData.length + " opera";
+                document.getElementById("tot-results").innerHTML = filterData.length + " scheda";
             } else {
-                document.getElementById("tot-results").innerHTML = filterData.length + " opere";
+                document.getElementById("tot-results").innerHTML = filterData.length + " schede";
             }
 
             // Filter with query
@@ -221,10 +205,14 @@ function renderResults(page, data, isGrid = false) {
         pageData.forEach(item => { 
 
             let imgpath = "schede/" + item['path'];
+            if (item['path'] == "") { 
+                imgpath = "img-placeholder.png";
+            }
+
             // Create the single grid
             const gridItem = `
                         <div class="col-md-4 col-sm-12 d-flex mt-2 justify-content-center">
-                            <div class="card d-flex flex-column" style="width: 15rem;" onclick="location.href='schede/${item['url']}.html'">
+                            <div class="card d-flex flex-column" style="width: 15rem;" onclick="location.href='schede/entry.html?no=${item['url']}'">
                                 <img src="assets/img/${imgpath}" class="card-img-top" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="object-fit: contain">
                                 <div class="card-body d-flex flex-column">
                                         <small class="card-text">
@@ -358,69 +346,6 @@ function renderPagination(page, data, itemsPerPage) {
     `;
 
     $('#pagination').append(paginationHtml);
-}
-
-// 3. sortData, so that user can rearrange the content
-
-
-function sortData(criterion) {
-    let sortedData = [...data]; // Copy the array to prevent direct modifications
-
-    if(criterion == 'l0-city') {
-        // Remove "Collezione privata", "Ubicazione ignota" from the main dataset
-        let extractedData = sortedData.filter(el => el["l0-cont"] == "Collezione privata" || el["l0-cont"]  == "Ubicazione ignota");
-        cleanedData = sortedData.filter((el) => !extractedData.includes(el));
-
-        // Remove missing cities
-        let missingData = cleanedData.filter(el => !el["l0-city"]);
-        cleanedData = cleanedData.filter((el) => !missingData.includes(el));
-        
-        // Sort the cleaned main dataset
-        cleanedData.sort((a, b) => {
-            if (a[criterion] < b[criterion]) return -1;
-            if (a[criterion] > b[criterion]) return 1;
-            return 0;
-        });
-
-        // Sort the removed data
-        extractedData.sort((a, b) => {
-            if (a["l0-cont"] < b["l0-cont"]) return -1;
-            if (a["l0-cont"] > b["l0-cont"]) return 1;
-            return 0;
-        });
-
-        // Merge the three dataset [MAIN] + "Collezione privata" + "Ubicazione ignota" + missing cities
-
-        sortedData = cleanedData.concat(extractedData).concat(missingData);
-
-    } else {
-        sortedData.sort((a, b) => {
-            // Update version: if data-from(A) = date-from(B), 
-            // then sort by date-to() 
-            if (criterion == 'date-from') {
-                const dateA1 = new Date(a['date-from']);
-                const dateB1 = new Date(b['date-from']);
-
-                if (dateA1 < dateB1) return -1;
-                if (dateA1 > dateB1) return 1;
-
-                // Se sono uguali, ordina per 'date-to'
-                const dateA2 = new Date(a['date-to']);
-                const dateB2 = new Date(b['date-to']);
-
-                if (dateA2 < dateB2) return -1;
-                if (dateA2 > dateB2) return 1;
-
-                return 0;
-            }
-        });
-    }
-
-    data = sortedData; 
-    if (criterion == "l0-city") {
-        data.forEach(item => console.log(item["l0-city"]));
-    }
-    renderResults(currentPage, data, isGrid);  // Rende la lista ordinata
 }
 
 // *************

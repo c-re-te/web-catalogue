@@ -561,9 +561,14 @@ function retrieveFreqData(data, property, label, isByName) {
         // Further refinement for the authors
         let cleanElement = element.trim(); // Remove leading/trailing spaces
 
-        // Extract from [...], e.g. Anonimo [Antonio Rossellino] TO REVISE [da Antonio Rossellino]
+        // Extract from [...], e.g. Anonimo [da Antonio Rossellino]
         const bracketMatches = cleanElement.match(/\[(.*?)\]/g); 
-        const bracketContents = bracketMatches ? bracketMatches.map(s => s.slice(1, -1).trim()) : [];
+        let bracketContents = bracketMatches ? bracketMatches.map(s => s.slice(1, -1).trim()) : [];
+
+        // Remove leading "da " if present
+        bracketContents = bracketContents.map(val => {
+            return val.replace(/^da\s+/i, '').trim();
+        });
 
         cleanElement = cleanElement.replace(/\[.*?\]/g, '').trim(); // Remove square bracket contents from the main string
 

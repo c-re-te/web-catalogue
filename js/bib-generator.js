@@ -129,6 +129,16 @@ function retrieveBib(cell) {
     let htmlBib = [];
     citationData.forEach(function (item) {
         let bibRef = getFullRef(item["data"]);
+
+        // --- Brute force cleaning ---
+
+        if (bibRef.includes(" , «», ")) {
+            bibRef = bibRef.replace(" , «», ", "");
+        }
+        
+        bibRef = bibRef.replace(/^,*/, ""); // To clean cases with no author nor editor
+
+        bibRef = bibRef.replace(/^, +/, ", ");
         
         // Avoid repetition of pages in the reference
         if (bibRef.includes("p.") && item["pages"]) {

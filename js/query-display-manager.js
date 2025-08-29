@@ -588,7 +588,15 @@ function retrieveFreqData(data, property, label, isByName) {
     // Sort the entries
     if (isByName) {
         // Alphabetically
-        sortedEntries.sort((a, b) => a[0].localeCompare(b[0]));
+        if (label === "Autore" || label === "Altre attribuzioni") {
+            // Custom order for authors (reuse existing compareByAuthor)
+            sortedEntries.sort((a, b) => {
+                return compareByAuthor({author: a[0]}, {author: b[0]}, 'author');
+            });
+        } else {
+            // Alphabetically
+            sortedEntries.sort((a, b) => a[0].localeCompare(b[0]));
+        }
     } else {
         // By value
         sortedEntries.sort((a, b) => b[1] - a[1]);

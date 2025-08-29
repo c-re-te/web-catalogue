@@ -130,16 +130,8 @@ function retrieveBib(cell) {
     citationData.forEach(function (item) {
         let bibRef = getFullRef(item["data"]);
 
-        // --- Brute force cleaning ---
+        bibRef = bibRef.replace(", «», ", ""); // Brute force cleaning
 
-        if (bibRef.includes(" , «», ")) {
-            bibRef = bibRef.replace(" , «», ", "");
-        }
-        
-        bibRef = bibRef.replace(/^,*/, ""); // To clean cases with no author nor editor
-
-        bibRef = bibRef.replace(/^, +/, ", ");
-        
         // Avoid repetition of pages in the reference
         if (bibRef.includes("p.") && item["pages"]) {
             if (bibRef.includes("pp. ")) {
@@ -150,7 +142,11 @@ function retrieveBib(cell) {
         }
         //
 
-        htmlBib.push(bibRef + `${item["pages"] ? `, p. ${item["pages"].trim()}` : ""}.`);
+        bibRef = bibRef + `${item["pages"] ? `, p. ${item["pages"].trim()}` : ""}.`
+        
+        bibRef = bibRef.replace(", , ", ", "); // Brute force cleaning
+
+        htmlBib.push(bibRef);
     });
     return htmlBib
 }

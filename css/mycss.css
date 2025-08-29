@@ -378,3 +378,17 @@ table.dataTable thead .sorting_desc:before {
 	background: #69B9EC url(../img/close.svg) no-repeat center right;
 	text-decoration: none;
 }
+
+/* Loader in query.html */
+
+.spinner-border {
+    margin-top: 2em;
+    --bs-spinner-width: 5rem;
+    --bs-spinner-height: 5rem;
+    --bs-spinner-border-width: 0.5em;
+    color: #b10b25;
+}
+
+.post-spinner {
+    margin-top: 1em;
+}

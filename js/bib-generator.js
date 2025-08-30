@@ -30,11 +30,14 @@ function refineMotivationField(cell) {
                 
                 let citation;
 
+                // Ensure only surname (no initials of name) is present
                 if (ref["AUTORE"]) {
                     citation = ref["AUTORE"].replace(/\b[A-Z]\./g, '') + ref["ANNO"]
                 } else if (ref["CURATORE"]) {
                     citation = ref["CURATORE"].replace(/\b[A-Z]\./g, '') + ref["ANNO"]
-                } 
+                } else {
+                    citation = "S. A. " + ref["ANNO"]
+                }
 
                 // Update the string
                 newMotivString = newMotivString.replace(bibID, citation);

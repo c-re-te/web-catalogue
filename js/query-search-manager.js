@@ -196,7 +196,7 @@ function refineQuery(chosen_filter, filter_type) {
 
 function runQuery() {
     const queryParams = parseQueryURLString()
-    const BATCH_SIZE = 100; // Define batch size
+    const BATCH_SIZE = 50; // Define batch size
     let dataFiltered = [];
 
     // Remove province from locations strings in filters*

@@ -117,11 +117,12 @@ function leaflet_data(geo_csv) {
     if (cityData.lat && cityData.long) {
       const opereText = cityData.count === 1 ? "Una scheda trovata" : `${cityData.count} schede trovate`;
 
+      if (city.includes("'")) {city = city.replace("'", "\\'");} // Escape apostrophes in city names
       const popupContent = `
             <b>${city}</b> ${cityData.prov ? `(${cityData.prov})` : ''}<br>
             ${opereText}<br>
             <div class="row justify-content-center align-items-center">
-              <button class="btn btn-primary mt-2" onclick="refineQuery('${city}','leaflet-map')"><small>Ricerca <i class="bi bi-search"></i></small></button>
+              <button class="btn btn-primary mt-2" onclick="refineQuery('${city}', 'leaflet-map')"><small>Ricerca <i class="bi bi-search"></i></small></button>
             </div>
         `;
       const marker = L.marker([cityData.lat, cityData.long], {

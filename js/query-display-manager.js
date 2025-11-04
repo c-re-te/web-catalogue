@@ -85,6 +85,21 @@ function loadCSV() {
                 'l4-prov': row['loc-4-prov'] || '',
                 'l4-cron': row['loc-4-crono'] || '',
 
+                'l5-cont': row['loc-5-contenitore'] || '',
+                'l5-city': row['loc-5-comune'] || '',
+                'l5-prov': row['loc-5-prov'] || '',
+                'l5-cron': row['loc-5-crono'] || '',
+
+                'l6-cont': row['loc-6-contenitore'] || '',
+                'l6-city': row['loc-6-comune'] || '',
+                'l6-prov': row['loc-6-prov'] || '',
+                'l6-cron': row['loc-6-crono'] || '',
+
+                'l7-cont': row['loc-7-contenitore'] || '',
+                'l7-city': row['loc-7-comune'] || '',
+                'l7-prov': row['loc-7-prov'] || '',
+                'l7-cron': row['loc-7-crono'] || '',
+
                 'url': row['id'] || '',
                 'path': row['img-path'],
 

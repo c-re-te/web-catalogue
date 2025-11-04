@@ -361,7 +361,10 @@ function runQuery() {
                 item["l1-cont"], item["l1-city"], item["l1-prov"],
                 item["l2-cont"], item["l2-city"], item["l2-prov"],
                 item["l3-cont"], item["l3-city"], item["l3-prov"],
-                item["l4-cont"], item["l4-city"], item["l4-prov"]
+                item["l4-cont"], item["l4-city"], item["l4-prov"],
+                item["l5-cont"], item["l5-city"], item["l5-prov"],
+                item["l6-cont"], item["l6-city"], item["l6-prov"],
+                item["l7-cont"], item["l7-city"], item["l7-prov"]
             ], queryParams.loc, true)) {
                 isMatch = false;
             }

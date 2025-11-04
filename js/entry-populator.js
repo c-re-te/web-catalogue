@@ -198,12 +198,20 @@ function uploadData(data) {
     // To update with carousel for more than one image
     // ============
 
+    let author = "";
     if (/[a-zA-Z]/.test(data["id"].toLowerCase())) {
         console.log(/[a-zA-Z]/.test(data["id"].toLowerCase()));
-        $("#entry-author").html("Giuseppe Andolina");
+        author = "Giuseppe Andolina";
+        $("#entry-author").html(author);
     } else {
-        $("#entry-author").html("Marco Scansani");
+        author = "Marco Scansani";
+        $("#entry-author").html(author);
     }
+
+    let citation = `${author}, <i>${data["autore-0-name"] + (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
+        ", " + capitalizeFirstLetter(data["soggetto"])}</i>, Catalogo C.Re.Te, 2025`;
+    $("#entry-cit").html(citation);
+
 
     // == Authors ==
     let authorData = [

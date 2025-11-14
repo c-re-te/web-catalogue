@@ -147,7 +147,7 @@ function uploadData(data) {
     }
     $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + imgPath));
 
-    if (data["foto-b"]) {
+    if (data["more-imgs-path"]) {
 
         let counter = 1;
 
@@ -160,7 +160,7 @@ function uploadData(data) {
 
         $("#carousel-thumbs").append(mainThumbnail);
         
-        for (let path of data["foto-b"].split(";").map(item => item.trim())) {
+        for (let path of data["more-imgs-path"].split(";").map(item => item.trim())) {
             let newFullPath = `../assets/img/schede/${path}`;
 
             // Main carousel

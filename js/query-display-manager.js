@@ -637,7 +637,7 @@ function resortFilter(label, isByName = false) {
         property = ['l0-city', 'l0-prov', 'l0-cont'];
     }
     else if (label === "Ubicazioni precedenti") {
-        property = [['l1-city', 'l1-prov', 'l1-cont'], ['l2-city', 'l2-prov', 'l2-cont'], ['l3-city', 'l3-prov', 'l3-cont'], ['l4-city', 'l4-prov', 'l4-cont']];
+        property = [['l1-city', 'l1-prov', 'l1-cont'], ['l2-city', 'l2-prov', 'l2-cont'], ['l3-city', 'l3-prov', 'l3-cont'], ['l4-city', 'l4-prov', 'l4-cont'], ['l5-city', 'l5-prov', 'l5-cont'], ['l6-city', 'l6-prov', 'l6-cont'], ['l7-city', 'l7-prov', 'l7-cont']];
     }
     else if (label === "Soggetto") {
         property = ['subj'];

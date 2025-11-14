@@ -168,9 +168,3 @@ function leaflet_data(geo_csv) {
 }
 
 // ************
-
-// Add interaction
-function debug(city) {
-  console.log(`You clicked on: ${city}`);
-  // - - - - <Function body to refine the results (new query)> - - - -
-}

@@ -7,7 +7,7 @@ let bibData = [];
 
 async function loadMainCSV() {
     return new Promise((resolve, reject) => {
-        Papa.parse("../assets/data/dh2025/data.csv", {
+        Papa.parse("../assets/data/current/data.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
@@ -19,7 +19,7 @@ async function loadMainCSV() {
 
 async function loadBibCSV() {
     return new Promise((resolve, reject) => {
-        Papa.parse("../assets/data/dh2025/biblio.csv", {
+        Papa.parse("../assets/data/current/biblio.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
@@ -147,7 +147,7 @@ function uploadData(data) {
     }
     $("#entry-carousel-img-temp").attr("src", ("../assets/img/schede/" + imgPath));
 
-    if (data["more-imgs-path"]) {
+    if (data["more-img-paths"]) {
 
         let counter = 1;
 
@@ -160,7 +160,7 @@ function uploadData(data) {
 
         $("#carousel-thumbs").append(mainThumbnail);
         
-        for (let path of data["more-imgs-path"].split(";").map(item => item.trim())) {
+        for (let path of data["more-img-paths"].split(";").map(item => item.trim())) {
             let newFullPath = `../assets/img/schede/${path}`;
 
             // Main carousel

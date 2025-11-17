@@ -20,7 +20,7 @@ let data = [];
 
 // Load CSV data using PapaParse
 function loadCSV() {
-    Papa.parse('./assets/data/dh2025/data.csv', {
+    Papa.parse('./assets/data/current/data.csv', {
         download: true,
         header: true,
         skipEmptyLines: true,

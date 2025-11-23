@@ -38,7 +38,13 @@ function leaflet_data(geo_csv) {
   }
 
   // Create map
-  var map = L.map('mapid').setView([45.53558, 10.21472], 6);
+  var map = L.map('mapid', {
+    fullscreenControl: true,
+    fullscreenControlOptions: {
+      position: 'topleft'
+    }
+  }).setView([45.53558, 10.21472], 6);
+
   // Add base layer
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'

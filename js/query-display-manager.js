@@ -114,7 +114,11 @@ function loadCSV() {
                 // to add: path to main image
             }));
 
-            var filterData = data.filter(row => runQuery().includes(row.url));
+            // Run query once
+            const matchedUrls = new Set(runQuery());  // array di url -> Set
+
+            // Filter using the Set (lookup O(1))
+            var filterData = data.filter(row => matchedUrls.has(row.url))
 
             filterData.sort(compareByYearThenTo);
 

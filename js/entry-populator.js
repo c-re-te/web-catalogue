@@ -198,18 +198,10 @@ function uploadData(data) {
     // To update with carousel for more than one image
     // ============
 
-    let author = "";
-    if (/[a-zA-Z]/.test(data["id"].toLowerCase())) {
-        console.log(/[a-zA-Z]/.test(data["id"].toLowerCase()));
-        author = "Giuseppe Andolina";
-        $("#entry-author").html(author);
-    } else {
-        author = "Marco Scansani";
-        $("#entry-author").html(author);
-    }
+    let author = data["autore-scheda"];
 
     let citation = `${author}, <i>${data["autore-0-name"] + (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
-        ", " + capitalizeFirstLetter(data["soggetto"])}</i>, Catalogo C.Re.Te, 2025`;
+        ", " + capitalizeFirstLetter(data["soggetto"])}</i>, Catalogo C.Re.Te, 2025, n. ${data["id"]}.`;
     $("#entry-cit").html(citation);
 
 
@@ -439,22 +431,6 @@ function uploadData(data) {
 
     // == Relationships ==
 
-    /*
-
-    function splitRel(rel) {
-        let aList = "";
-        if(rel.includes(";")) {
-            rel.split(";").forEach(function (item) {
-                aList += `<a href="../query.html?rel=${encodeURIComponent(item.trim())}">${item} <i class="bi bi-box-arrow-up-right"></i></a><br>`;
-            });
-    } else { 
-            aList = rel; 
-        }
-    
-        return aList;
-    }
-
-    */
     if (data["relazioni"] !== "") {
         $("#entry-rel").html(
             `<div class="col-lg-3">

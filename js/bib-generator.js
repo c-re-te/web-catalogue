@@ -20,13 +20,15 @@ function refineMotivationField(cell) {
     if (cell.includes("Bibliografia")) {
         let newMotivString = cell;
 
+        const match = cell.match(/Bibliografia \((.*?)\)/);
+        const content = match ? match[1] : null;
+
         // Iterate to handle multiple motivations
-        cell.split(";").forEach(function (item) {
-            if (item.includes("Bibliografia (")) {
+        content.split(";").forEach(function (item) {
 
                 // Create in-text citation with ad hoc function and update motivation
-                let bibID = item.split("(")[1].replace(")", "").trim();
-                let ref = retrieveBibData(bibID);
+                // let bibID = item.split("(")[1].replace(")", "").trim();
+                let ref = retrieveBibData(item.trim());
                 
                 let citation;
 
@@ -40,8 +42,8 @@ function refineMotivationField(cell) {
                 }
 
                 // Update the string
-                newMotivString = newMotivString.replace(bibID, citation);
-            }
+                newMotivString = newMotivString.replace(item.trim(), citation);
+
         });
 
         return newMotivString;
@@ -65,7 +67,16 @@ function getArticle(row) {
 }
 
 function getMonograph(row) {
-    let refFirst =  row['AUTORE'] ? `${row['AUTORE']}, ` : (row['CURATORE'] ? `${row['CURATORE']} (a cura di), ` : ``);
+    let refFirst =  "";
+
+    if (row['AUTORE']) {
+        refFirst += `${row['AUTORE']}, `;
+    } 
+    
+    if (row['CURATORE']) {
+        refFirst += `${row['CURATORE']} (a cura di), `;
+    }
+
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;
     if (row['SPECIFICHE EDIZIONE']) refFirst += `${row['SPECIFICHE EDIZIONE']}, `;
     if (row['NOTE GENERALI']) refFirst += `${row['NOTE GENERALI']}, `;
@@ -87,7 +98,6 @@ function getEssayInBook(row) {
 }
 
 function getEntry(row) {
-    console.log(row);
     let refFirst = `${row['AUTORE']}, «${row['TITOLO CONTRIBUTO SPECIFICO']}», in `;
     if (row['CURATORE']) refFirst += `${row['CURATORE']} (a cura di), `;
     refFirst += `<i>${row['TITOLO VOLUME/RIVISTA']}</i>, `;

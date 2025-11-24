@@ -189,7 +189,7 @@ function renderResults(page, data, isGrid = false) {
                                 <div class="row g-0">
                                     <div class="col-md-4 col-sm-12">
                                         <a href="schede/entry.html?no=${item['url']}">
-                                            <img src="assets/img/${imgpath}" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px; width: 100%; object-fit: contain">            
+                                            <img src="assets/img/${imgpath}" class="img-fluid rounded-start query-card-img" alt="${item['author']} ${item['author-rif'] ? `(${item['author-rif']})` : ''} ${item['subj']}" style="max-height: 200px; width: 100%; object-fit: contain"  loading="lazy" decoding="async">            
                                         </a>
                                     </div>
                                     <div class="col-md-8 col-sm-12">
@@ -661,7 +661,7 @@ function resortFilter(label, isByName = false) {
     const content = retrieveFreqData(data, property, label, isByName)
         .map(([key, count]) => {
             const safeKey = key.replace(/'/g, "\\'"); // Use safekey to handle single quotes in keys (e.g. "Anonimo dell'Italia settentrionale")
-            return `<div class="row filter-row" onclick="refineQuery(['${label}', '${safeKey}'], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`;
+            return `<div class="row filter-row" onclick="refineQuery(['${label}', encodeURIComponent('${safeKey}')], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`;
         })
         .join('');
         

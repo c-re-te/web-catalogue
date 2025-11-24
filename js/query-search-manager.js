@@ -64,12 +64,14 @@ function parseQueryURLString() {
     // Parse the query string only in queries
     if (window.location.search) {
 
+        let decodedURL = decodeURIComponent(window.location.search);
+
         // E.g. query.html?obj=rilievo&a_0=Antonio Begarelli
         // paramsArray[0] = "query.html?"
         // paramsArray[1][0] = "obj=rilievo"
         // paramsArray[1][1] = "a_0=Antonio Begarelli"
 
-        paramsArray = window.location.search.split("?")[1].split("&");
+        paramsArray = decodedURL.split("?")[1].split("&");
 
         paramsArray.forEach(paramString => {
             var paramKey = paramString.split("=")[0];                      // obj
@@ -155,6 +157,14 @@ function refineQuery(chosen_filter, filter_type) {
                 "Oggetto": "obj",
                 "Tecnica": "tec",
                 "Lavorazione": "sfc",
+            }
+
+            if (filter_label == "Autore") {
+                var queryParams = parseQueryURLString() 
+                queryParams['a_0'] = encodeURIComponent(filter_value);
+                var newQueryURLString = 'query.html?' + getURLStringfromParams(queryParams);
+                location.href = newQueryURLString;      // Check button: type = "reset"
+                break;
             }
 
             newQueryToken = mapped_label[filter_label] + "=" + encodeURIComponent(filter_value);

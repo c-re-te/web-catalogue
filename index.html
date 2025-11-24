@@ -346,5 +346,17 @@
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+
+        <script>
+            document.addEventListener("keypress", function(e) {
+                if (e.code === "Enter") {
+                    let freeSearch = document.getElementById('searchbar-index').value;
+                    if (freeSearch.trim() !== "") {
+                        console.log("Enter pressed");
+                        window.location.href = `query.html?txt=${freeSearch}`;
+                    }
+                }
+            });
+        </script>
     </body>
 </html>

@@ -311,6 +311,14 @@
         <script src="js/query-search-manager.js"></script>
 
         <script src="js/generaljs.js"></script>
+        <script>
+            document.addEventListener("keypress", function(e) {
+                if (e.code === "Enter") {
+                    console.log("Enter pressed");
+                    sendNewQueryVal();
+                }
+            });
+        </script>
 
     </body>
 </html>

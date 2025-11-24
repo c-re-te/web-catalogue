@@ -372,7 +372,6 @@ function renderPagination(page, data, itemsPerPage) {
 // *************
 
 function renderFilters(data) {
-
     // Accordion section: Autore
     renderFreqTableInAccordion(data, ['author'], 'Autore', true, true);
 
@@ -508,12 +507,11 @@ function combineValues(data, col1, col2, col3) {
 
         // ... and combine them in a single string
         // Specific for locations
-
         let locLabelinFilters = '';
 
         // If city is known
         if (val1) {
-
+            
             // If fraction is known
             if (val1.includes(",")) {
                 const parts = val1.split(',');
@@ -569,10 +567,14 @@ function retrieveFreqData(data, property, label, isByName) {
             }
         }
 
-    } else {
+    } else if (label === "Ubicazione attuale") {    // Except. 3: Current location
 
         propertyArray = combineValues(data, property[0], property[1], property[2]).filter(val => val);
-    
+
+    } else {
+
+        propertyArray = data.map((row) => row[property[0]]).filter(val => val);
+
     }
 
     for (const element of propertyArray) {

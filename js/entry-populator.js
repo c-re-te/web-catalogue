@@ -278,6 +278,8 @@ function uploadData(data) {
             if (authorData[1].includes(";")) {
                 ULAN1 = authorData[1].split(";")[0].trim();
                 ULAN2 = authorData[1].split(";")[1].trim();
+            } else if (authorData[1] == "") {
+                ULAN1 = ""; ULAN2 = "";
             }
 
             let authorString = `

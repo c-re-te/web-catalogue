@@ -211,6 +211,17 @@ function runQuery() {
     // Function to perform the search based on queryParams filters
     function advancedSearch(queryParams) {
 
+        // Pre-split txt once to improve speed
+        if (queryParams.txt && queryParams.txt[0]) {
+            queryParams.txtTokens = queryParams.txt[0]
+                .toLowerCase()
+                .trim()
+                .split(/\s+/)       // split on any whitespace
+                .filter(Boolean);   // remove empty tokens
+        } else {
+            queryParams.txtTokens = null;
+        }
+
         // Process the dataset in batches
         for (let i = 0; i < data.length; i += BATCH_SIZE) {
             let batch = data.slice(i, i + BATCH_SIZE);
@@ -278,11 +289,28 @@ function runQuery() {
             // === CHECK FOR MATCHES ===
             // =========================
 
-            // 0. Free search (partial match)
-            if (queryParams.txt && !Object.values(item).some(value => {
-                return value && value.toString().toLowerCase().includes(queryParams.txt[0].toLowerCase());
-            })) {
-                isMatch = false;
+            // 0. Free search multi-term AND (intersection of tokens)
+            if (queryParams.txtTokens) {
+                const tokens = queryParams.txtTokens;
+                let allMatch = true;
+
+                for (let t = 0; t < tokens.length && allMatch; t++) {
+                    const tok = tokens[t];
+                    let tokMatch = false;
+
+                    // same logic as before, but repeated for each token
+                    for (const value of Object.values(item)) {
+                        if (!value) continue;
+                        if (value.toString().toLowerCase().includes(tok)) {
+                            tokMatch = true;
+                            break;
+                        }
+                    }
+
+                    if (!tokMatch) allMatch = false;
+                }
+
+                if (!allMatch) isMatch = false;
             }
             
             // 1A. Authors and other attributions (partial match)
@@ -341,7 +369,7 @@ function runQuery() {
             }
 
             // 5. Surface (partial match)
-            if (queryParams.sfc && !item["lav"].toLowerCase().includes(queryParams.sfc[0].toLowerCase())) {
+            if (queryParams.sfc && item["lav"].toLowerCase() !== queryParams.sfc[0].toLowerCase()) {
                 isMatch = false;
             }
 

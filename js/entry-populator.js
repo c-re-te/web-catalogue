@@ -165,14 +165,14 @@ function uploadData(data) {
 
             // Main carousel
             let newCarouselItem = `<div class="carousel-item">
-                            <img src="${newFullPath}" class="d-block w-100" alt="...">
+                            <img src="${newFullPath}" class="d-block w-100" oncontextmenu="return false;" alt="...">
                         </div>`;
             $("#entry-carousel-img").append(newCarouselItem);
 
             // Thumbnails
             let newThumbnail = `
                 <div class="col-4 col-md-1 mb-1">
-                    <img class="mx-auto d-block" src="${newFullPath}" alt="Additional image for ${entryTitle}" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${counter}">
+                    <img class="mx-auto d-block carousel-img" src="${newFullPath}" oncontextmenu="return false;" alt="Additional image for ${entryTitle}" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${counter}">
                 </div>
             `;
             $("#carousel-thumbs").append(newThumbnail);
@@ -195,15 +195,7 @@ function uploadData(data) {
         $("#entry-carousel-img").append(controls);
     }
     
-    // To update with carousel for more than one image
     // ============
-
-    let author = data["autore-scheda"];
-
-    let citation = `${author}, <i>${data["autore-0-name"] + (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
-        ", " + capitalizeFirstLetter(data["soggetto"])}</i>, Catalogo C.Re.Te, 2025, n. ${data["id"]}.`;
-    $("#entry-cit").html(citation);
-
 
     // == Authors ==
     let authorData = [
@@ -441,5 +433,26 @@ function uploadData(data) {
             </div>`);
         }
     // =================
+
+    // == Credits ==
+
+    if (data["img-credits"] !== "") {
+        $("#entry-rel").html(
+            `<div class="col-lg-3">
+                <p class="fs-5 fw-bold">Crediti</p>
+            </div>
+            <div class="col-lg-9">
+                <p class="fs-5">${data["img-credits"]}</p>
+            </div>`);
+        }
+    // =================
+
+    // == Citation ==
+    
+    let author = data["autore-scheda"];
+
+    let citation = `${author}, <i>${data["autore-0-name"] + (data["autore-0-rif"] ? " (" + data["autore-0-rif"] + ")" : "") +
+        ", " + capitalizeFirstLetter(data["soggetto"])}</i>, Catalogo C.Re.Te, 2025, n. ${data["id"]}.`;
+    $("#entry-cit").html(citation);
     
 }

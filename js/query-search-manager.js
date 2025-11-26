@@ -64,7 +64,9 @@ function parseQueryURLString() {
     // Parse the query string only in queries
     if (window.location.search) {
 
-        let decodedURL = decodeURIComponent(window.location.search);
+        let decodedURL = decodeURIComponent(window.location.search.replace("%26","and"));
+
+        console.log("Decoded URL:", decodedURL);
 
         // E.g. query.html?obj=rilievo&a_0=Antonio Begarelli
         // paramsArray[0] = "query.html?"
@@ -77,6 +79,9 @@ function parseQueryURLString() {
             var paramKey = paramString.split("=")[0];                      // obj
             var paramVal = decodeURIComponent(paramString.split("=")[1]);  // rilievo
             
+            paramVal = paramVal.replace(/and/g, "&");                       // Revert & replacement
+
+            // Check if the key already exists (multiple values for same key)
             if (paramKey in queryParams) {
             //  E.g. query.html?alt_a=Antonio Begarelli&alt_a=Antonio Begarelli
             //  queryParams[paramKey] = ["Antonio Begarelli", "Antonio Begarelli"]

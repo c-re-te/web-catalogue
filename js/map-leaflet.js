@@ -11,7 +11,7 @@ function leaflet_data(geo_csv) {
       // console.log(artwork);
       if (artwork['lat'] && artwork['long']) {
         
-        const city = artwork['l0-city'];
+        const city = artwork['l0-city'].trim().replace("'", "&#39;");
 
         if (!artworks_locations[city]) {
           artworks_locations[city] = {

@@ -165,12 +165,14 @@ function refineQuery(chosen_filter, filter_type) {
             }
 
             if (filter_label == "Autore") {
-                var queryParams = parseQueryURLString() 
-                queryParams['a_0'] = encodeURIComponent(filter_value);
+                var queryParams = parseQueryURLString();
+                // niente encode qui: ci pensa getURLStringfromParams
+                queryParams['a_0'] = filter_value;   // es. "Niccolò dell'Arca"
                 var newQueryURLString = 'query.html?' + getURLStringfromParams(queryParams);
-                location.href = newQueryURLString;      // Check button: type = "reset"
+                location.href = newQueryURLString;
                 break;
             }
+
 
             newQueryToken = mapped_label[filter_label] + "=" + encodeURIComponent(filter_value);
             location.href = updateURLQuery(newQueryToken);

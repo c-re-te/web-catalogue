@@ -442,8 +442,18 @@ function renderFreqTableInAccordion(data, property, label, isFirst = false, hasS
 
     // Generate the first row of the frequency table using Bootstrap columns
     content = retrieveFreqData(data, property, label, isByName)
-        .map(([key, count]) => `<div class="row filter-row" onclick="refineQuery(['${label}', '${key}'], 'accordion-row')"><div class="col-10">${key}</div><div class="col-2 text-end">${count}</div></div>`)
-        .join('');
+    .map(([key, count]) => {
+        // encodeURIComponent + encode manuale degli apostrofi
+        const safeKey = encodeURIComponent(key).replace(/'/g, "%27");
+
+        return `<div class="row filter-row" onclick="refineQuery(['${label}', '${safeKey}'], 'accordion-row')">
+                    <div class="col-10">${key}</div>
+                    <div class="col-2 text-end">${count}</div>
+                </div>`;
+    })
+    .join('');
+
+
     
     const safeLabel = label.replace(/[^a-zA-Z0-9]/g, '-'); // Respect syntax for accordion label
 

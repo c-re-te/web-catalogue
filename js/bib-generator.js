@@ -17,7 +17,7 @@ function retrieveBibData(bibId) {
 function refineMotivationField(cell) {
 
     // Is bibliography a motivation?
-    if (cell.includes("Bibliografia")) {
+    if (cell.includes("Bibliografia") & cell.includes("(") & cell.includes(")")) {
         let newMotivString = cell;
 
         const match = cell.match(/Bibliografia \((.*?)\)/);
